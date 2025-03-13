@@ -24,7 +24,7 @@ public class SettingPanelController : MonoBehaviour
 
     public void OnClickCloseButton()
     {
-        this.GetComponent<RectTransform>().DOLocalMoveX(-300f, 0.3f)
+        this.GetComponent<RectTransform>().DOLocalMoveX(-600f, 0.3f)
             .OnComplete(() => this.gameObject.SetActive(false)); 
     }
 }
