@@ -774,7 +774,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -805,8 +805,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: {fileID: 8869918039459924644}
   Password: {fileID: 6372930531698207815}
-  SigninButton: {fileID: 9091893675350957842}
-  SignupButton: {fileID: 1621371669515564745}
 --- !u!1 &4485600285788587146
 GameObject:
   m_ObjectHideFlags: 0
