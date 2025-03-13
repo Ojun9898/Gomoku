@@ -12,7 +12,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     [SerializeField] private GameObject cursorImageObj;
     [SerializeField] private GameObject ClickedImageObj;
     private int _tileClickCount;
-
+    private bool isNeedOneClick;
     public int tileNumber;
     
     public Pc _piece { get; private set; }
@@ -38,6 +38,12 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
         _tileClickCount = 0;
     }
 
+    public Obstacle GetObstacle() { 
+            return obstacle;
+    }
+
+
+
     /// <summary>
     /// 타일을 클릭했을 때 실행되는 메소드 입니다
     /// 타일은 piece  여부에 따라 동작이  달라집니다
@@ -47,25 +53,47 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
         if (_piece != null)
         {
             //ToDo: 피스가 있을 때 동작
+            var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
+            if (needOneClick.Value.isNeedJustOneClick)
+            {
+                isNeedOneClick = true;
+            }
             return;
         }
-        else {
-            var pieceAndCaseValue =  GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
-            Debug.Log(GameManager.Instance.currentClickedTileindex +" : 클릭한 타일 인덱스");
-        
-            _piece =  pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
+
+        if (!isNeedOneClick)
+        {
+            var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
+            Debug.Log(GameManager.Instance.currentClickedTileindex + " : 클릭한 타일 인덱스");
+
             var caseValue = pieceAndCaseValue.Value.caseValue;
-            if (caseValue == -1)
+
+
+            if (_piece == null)
             {
-                ClickedImageObj.SetActive(false);
-                Debug.Log(_piece.GetPieceOwner() + "의 말 입니다");
-                _tileClickCount = 0;
+                _piece = pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
             }
-            else if (caseValue == 0) {
-                cursorImageObj.SetActive(false);
-                ClickedImageObj.SetActive(true);
-            }            
+
+            switch (caseValue)
+            {
+                case -1:
+                    Debug.Log(_piece.GetPieceOwner() + "의 말 입니다");
+                    ResetClick();
+                    break;
+                case 0:
+                    cursorImageObj.SetActive(false);
+                    ClickedImageObj.SetActive(true);
+                    break;
+                case 1:
+                    _tileClickCount = 0;
+                    Debug.Log("공격종료");
+                    break;
+            }
         }
+        else {
+            isNeedOneClick = false;
+        }
+      
     }
     
     public void OnPointerEnter(PointerEventData eventData)
@@ -81,6 +109,6 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
 
     public void OnPointerClick(PointerEventData eventData)
     {       
-            OnClickTileButton();
+        OnClickTileButton();
     }
 }
