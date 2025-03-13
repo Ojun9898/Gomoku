@@ -271,8 +271,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: BuyingPanelController, Assembly-CSharp
+      - m_Target: {fileID: 392726046792747270}
+        m_TargetAssemblyTypeName: RankingPanelController, Assembly-CSharp
         m_MethodName: OnClickCloseButton
         m_Mode: 1
         m_Arguments:

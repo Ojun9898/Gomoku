@@ -8,6 +8,7 @@ public class MainPanelController : MonoBehaviour
 {
     [SerializeField] private GameObject SettingPanel;
     [SerializeField] private GameObject BuyingPanel;
+    [SerializeField] private GameObject RankingPanel;
     [SerializeField] private Transform canvasTransform;
 
     private GameObject settingPanel;
@@ -15,6 +16,9 @@ public class MainPanelController : MonoBehaviour
 
     private GameObject buyingPanel;
     private RectTransform buyingPanelRect;
+
+    private GameObject rankingPanel;
+    private RectTransform rankingPanelRect;
 
     public void OnClick1pButton()
     {
@@ -38,7 +42,18 @@ public class MainPanelController : MonoBehaviour
 
     public void OnClickRankingButton() 
     {
-        Debug.Log("Ranking button clicked!");
+        if (rankingPanel == null)
+        {
+            rankingPanel = Instantiate(RankingPanel, canvasTransform);
+            rankingPanelRect = rankingPanel.GetComponent<RectTransform>();
+            rankingPanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
+        }
+        else
+        {
+            rankingPanel.SetActive(true);
+        }
+
+        rankingPanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
     public void OnClickSettingButton()
