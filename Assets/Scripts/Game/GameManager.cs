@@ -18,7 +18,7 @@ public class GameManager : Singleton<GameManager>
     public Action RangeAttackResetVisualizeEvent;
 
 
-    // ·±Å¸ÀÓ µµÁß¿¡ °è¼Ó º¯È­ÇÏÁö¸¸ ÀÏ´ÜÀº ÁöÁ¤ÇØ µ×À½
+    // ëŸ°íƒ€ì„ ë„ì¤‘ì— ê³„ì† ë³€í™”í•˜ì§€ë§Œ ì¼ë‹¨ì€ ì§€ì •í•´ ë’€ìŒ
     private Pc.Owner _playerType = Pc.Owner.PLAYER_A;
     private int _currentClickedTileindex;
     private int _lastClickedTileindex = -1;
@@ -51,30 +51,30 @@ public class GameManager : Singleton<GameManager>
     }
 
     /// <summary>
-    /// °ÔÀÓ ¸Ş´ÏÀú ÃÊ±âÈ­
+    /// ê²Œì„ ë©”ë‹ˆì € ì´ˆê¸°í™”
     /// </summary>
     private void InitGameManager()
     {
-        // Map¿¡¼­ Å¸ÀÏ »ı¼ºÈÄ °¡Á®¿À´Â ¸Ş¼Òµå
-        // piece »ı¼ºÈÄ °¡Á®¿À´Â ¸Ş¼Òµå
-        // Ä«µå »ı¼º ¸Ş¼Òµå 
+        // Mapì—ì„œ íƒ€ì¼ ìƒì„±í›„ ê°€ì ¸ì˜¤ëŠ” ë©”ì†Œë“œ
+        // piece ìƒì„±í›„ ê°€ì ¸ì˜¤ëŠ” ë©”ì†Œë“œ
+        // ì¹´ë“œ ìƒì„± ë©”ì†Œë“œ 
         SetTileClickEvent();
     }
 
-    //Ä«µå ³»±â ´ë±â ¸Ş¼Òµå
-    //¸» °ø°İ ´ë±â ¸Ş¼Òµå
+    //ì¹´ë“œ ë‚´ê¸° ëŒ€ê¸° ë©”ì†Œë“œ
+    //ë§ ê³µê²© ëŒ€ê¸° ë©”ì†Œë“œ
 
     /// <summary>
-    /// Å¸ÀÏ Å¬¸¯ ¼³Á¤À» ºÎ¿©ÇÏ´Â ¸Ş¼Òµå
+    /// íƒ€ì¼ í´ë¦­ ì„¤ì •ì„ ë¶€ì—¬í•˜ëŠ” ë©”ì†Œë“œ
     /// </summary>
     private void SetTileClickEvent()
     {
         FirstTimeTileClickEvent = (tileNumber, tileClickCount) =>
         {
             currentClickedTileindex = tileNumber;
-            //Ã³À½ Å¬¸¯ ÈÄ 
-            // Å¬¸¯ Ä«¿îÆ® 2¹øÀ¸·Î Á¶°ÇÀ» µÎ¾ú´Âµ¥
-            // Ä«µå ³»±â±îÁö ±¸ÇöÀÌ µÈ´Ù¸é Å¬¸¯ Ä«¿îÆ®¸¦ 1¹øÀ¸·Î ÇßÀ» ¶§ Á¶°Ç¿¡ µé¾î°¡ Ä«µå ³»±â¸¦ ´ë±âÇÏµµ·Ï
+            //ì²˜ìŒ í´ë¦­ í›„ 
+            // í´ë¦­ ì¹´ìš´íŠ¸ 2ë²ˆìœ¼ë¡œ ì¡°ê±´ì„ ë‘ì—ˆëŠ”ë°
+            // ì¹´ë“œ ë‚´ê¸°ê¹Œì§€ êµ¬í˜„ì´ ëœë‹¤ë©´ í´ë¦­ ì¹´ìš´íŠ¸ë¥¼ 1ë²ˆìœ¼ë¡œ í–ˆì„ ë•Œ ì¡°ê±´ì— ë“¤ì–´ê°€ ì¹´ë“œ ë‚´ê¸°ë¥¼ ëŒ€ê¸°í•˜ë„ë¡
       
                 if (_lastClickedTileindex == -1 || _mc.tiles[currentClickedTileindex] == null)
                 {
@@ -88,9 +88,9 @@ public class GameManager : Singleton<GameManager>
                     return (null, 0);
                 }
 
-            // ¹üÀ§ °ø°İ
+            // ë²”ìœ„ ê³µê²©
 
-            // + Àå¾Ö¹° Ã³¸®
+            // + ì¥ì• ë¬¼ ì²˜ë¦¬
             FinishiedAttack();
             return (null, 1);
         };
@@ -99,7 +99,7 @@ public class GameManager : Singleton<GameManager>
         {           
             currentClickedTileindex = tileNumber;
 
-           /* // ¹üÀ§ °ø°İPiece °ø°İ ¹üÀ§ º¸¿©ÁÖ±â Todo: ¼öÁ¤ ¤¡¤¡
+           /* // ë²”ìœ„ ê³µê²©Piece ê³µê²© ë²”ìœ„ ë³´ì—¬ì£¼ê¸° Todo: ìˆ˜ì • ã„±ã„±
             RangeAttackVisualizeEvent = () =>
             {
                 if (_mc.tiles[currentClickedTileindex]._piece._attackType == AttackType.RANGE_ATTACK)
@@ -119,67 +119,67 @@ public class GameManager : Singleton<GameManager>
 
                 if (tileClickCount >= 2 && _lastClickedTileindex == currentClickedTileindex )
                 {
-                    Debug.Log("ÀÚ½ÅÀÇ ¸»À»  °ñ¶ú½À´Ï´Ù");
+                    Debug.Log("ìì‹ ì˜ ë§ì„  ê³¨ëìŠµë‹ˆë‹¤");
                     _lastClickedTileindex = -1;
                     return (true, 0);
                 }else if (_lastClickedTileindex != -1)
-                { // °ø°İÅÏ¿¡ ¾Æ±º ¼±ÅÃ »óÈ²
+                { // ê³µê²©í„´ì— ì•„êµ° ì„ íƒ ìƒí™©
                     _damagedPiece = _mc.tiles[currentClickedTileindex]._piece;
                     _attackingPiece = _mc.tiles[_lastClickedTileindex]._piece;
 
                     if(_attackingPiece._attackType == Pc.AttackType.CHOOSE_ATTACK)
                     {
-                        Debug.Log("¾Æ±ºÀ» Á÷Á¢ÀûÀ¸·Î °ø°İÇÒ ¼ö ¾ø½À´Ï´Ù");
+                        Debug.Log("ì•„êµ°ì„ ì§ì ‘ì ìœ¼ë¡œ ê³µê²©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤");
                     }
                     else if (_attackingPiece._attackType == Pc.AttackType.RANGE_ATTACK)
                     {
-                        Debug.Log("¾Æ±ºÀ» Á÷Á¢ÀûÀ¸·Î °ø°İÇÒ ¼ö ¾ø½À´Ï´Ù");
+                        Debug.Log("ì•„êµ°ì„ ì§ì ‘ì ìœ¼ë¡œ ê³µê²©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤");
                     }
                     else if (_attackingPiece._attackType == Pc.AttackType.BUFF)
                     {
                         _attackingPiece.Buff(_damagedPiece);
-                        Debug.Log("¾Æ±ºÀ» Ä¡·áÇß½À´Ï´Ù" + _damagedPiece.name +"ÀÇ Hp:" + _damagedPiece.Hp);
+                        Debug.Log("ì•„êµ°ì„ ì¹˜ë£Œí–ˆìŠµë‹ˆë‹¤" + _damagedPiece.name +"ì˜ Hp:" + _damagedPiece.Hp);
                     }
                     FinishiedAttack();
                     return (true, 0);
                 }
-                // ³ªÀÇ ¸»ÀÏ ¶§ Á¶°Ç ÃæÁ·
-                // °ø°İ ´ë±â ¸Ş¼Òµå ½ÇÇà ´Ü ¾ÆÁ÷ ±¸ÇöÀÌ ¾ÈµÇÀÖÀ¸´Ï
-                // ÀÓÀÇÀÇ Á¶°Ç¹®À» »ç¿ëÇØ ±¸Çö ÇÏ°Ú´Ù
+                // ë‚˜ì˜ ë§ì¼ ë•Œ ì¡°ê±´ ì¶©ì¡±
+                // ê³µê²© ëŒ€ê¸° ë©”ì†Œë“œ ì‹¤í–‰ ë‹¨ ì•„ì§ êµ¬í˜„ì´ ì•ˆë˜ìˆìœ¼ë‹ˆ
+                // ì„ì˜ì˜ ì¡°ê±´ë¬¸ì„ ì‚¬ìš©í•´ êµ¬í˜„ í•˜ê² ë‹¤
 
-                //°ø°İÀ» ÇÏ±â À§ÇØ¼­´Â ´Ù¸¥ ¸»À» ¼±ÅÃÇØ¾ßÇÏ´Ï °ø°İÀÚÀÇ ÀÎµ¦½º¸¦ ÀúÀå
+                //ê³µê²©ì„ í•˜ê¸° ìœ„í•´ì„œëŠ” ë‹¤ë¥¸ ë§ì„ ì„ íƒí•´ì•¼í•˜ë‹ˆ ê³µê²©ìì˜ ì¸ë±ìŠ¤ë¥¼ ì €ì¥
                 _lastClickedTileindex = currentClickedTileindex;
-                Debug.Log("°ø°İÇÒ ¸»À» ¼±ÅÃÇÏ¼¼¿ä" + _lastClickedTileindex);
+                Debug.Log("ê³µê²©í•  ë§ì„ ì„ íƒí•˜ì„¸ìš”" + _lastClickedTileindex);
             }
             else 
             {
-                // ÀûÀÇ ¸»ÀÏ ¶§ Á¶°Ç ÃæÁ·
-                // ¸»ÀÇ Á¤º¸¸¦ º¸¿©ÁÜ
+                // ì ì˜ ë§ì¼ ë•Œ ì¡°ê±´ ì¶©ì¡±
+                // ë§ì˜ ì •ë³´ë¥¼ ë³´ì—¬ì¤Œ
                 if (_lastClickedTileindex != -1 )
-                { // °ø°İÅÏ¿¡ Àû ¼±ÅÃ »óÈ²
+                { // ê³µê²©í„´ì— ì  ì„ íƒ ìƒí™©
                     _damagedPiece = _mc.tiles[currentClickedTileindex]._piece;
                     _attackingPiece = _mc.tiles[_lastClickedTileindex]._piece;
                     if (_attackingPiece._attackType == Pc.AttackType.CHOOSE_ATTACK)
                     {
                         _attackingPiece.ChoseAttack(_damagedPiece);
-                        Debug.Log("ÀûÀ» °ø°İÇß½À´Ï´Ù" + _damagedPiece.name + "ÀÇ Hp:" + _damagedPiece.Hp);
+                        Debug.Log("ì ì„ ê³µê²©í–ˆìŠµë‹ˆë‹¤" + _damagedPiece.name + "ì˜ Hp:" + _damagedPiece.Hp);
 
                     }
                     else if (_attackingPiece._attackType == Pc.AttackType.RANGE_ATTACK)
                     {
                         //attackingPiece.RangeAttack(currentClickedTileindex);
-                        Debug.Log("ÀûÀ» °ø°İÇß½À´Ï´Ù" + _damagedPiece.name + "ÀÇ Hp:" + _damagedPiece.Hp);
+                        Debug.Log("ì ì„ ê³µê²©í–ˆìŠµë‹ˆë‹¤" + _damagedPiece.name + "ì˜ Hp:" + _damagedPiece.Hp);
 
                     }
                     else if (_attackingPiece._attackType == Pc.AttackType.BUFF)
                     {                        
-                        Debug.Log("Àû¿¡°Ô ¹öÇÁ¸¦ ÁÙ ¼ö ¾ø½À´Ï´Ù");
+                        Debug.Log("ì ì—ê²Œ ë²„í”„ë¥¼ ì¤„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤");
                     }
            
                     FinishiedAttack();
                 }
                 else {
-                    Debug.Log("ÀûÀÇ ¸» ÀÔ´Ï´Ù");
+                    Debug.Log("ì ì˜ ë§ ì…ë‹ˆë‹¤");
                     return (true, 0);
                 }
             }
@@ -188,7 +188,7 @@ public class GameManager : Singleton<GameManager>
     }
 
     /// <summary>
-    /// °ø°İ »óÈ²ÀÌ ³¡³µÀ» ¶§¸¦ °¡Á¤ÇÏ°í ¸ğµç »óÈ²À» ÃÊ±âÈ­ÇÏ´Â ¸Ş¼Òµå
+    /// ê³µê²© ìƒí™©ì´ ëë‚¬ì„ ë•Œë¥¼ ê°€ì •í•˜ê³  ëª¨ë“  ìƒí™©ì„ ì´ˆê¸°í™”í•˜ëŠ” ë©”ì†Œë“œ
     /// </summary>
     private void FinishiedAttack() {
         _damagedPiece = null;
@@ -201,12 +201,12 @@ public class GameManager : Singleton<GameManager>
     }
 
     /// <summary>
-    /// PieceÀÇ °ø°İ °¡´É ¹üÀ§¸¦ °è»êÇÏ´Â ¸Ş¼Òµå 
-    /// ¹ØÀÇ VisualizeAttackRange, ResetVisualizeAttackRange ¿Í ÇÔ²² MapController·Î ÀÌµ¿ÇÊ¿ä
+    /// Pieceì˜ ê³µê²© ê°€ëŠ¥ ë²”ìœ„ë¥¼ ê³„ì‚°í•˜ëŠ” ë©”ì†Œë“œ 
+    /// ë°‘ì˜ VisualizeAttackRange, ResetVisualizeAttackRange ì™€ í•¨ê»˜ MapControllerë¡œ ì´ë™í•„ìš”
     /// </summary>
-    /// <param name="index"> ¼±ÅÃÇÑ Å¸ÀÏ À§Ä¡</param>
-    /// <param name="attackRange">pieceÀÇ »ç°Å¸®</param>
-    /// <returns> pieceÀÇ Range¿¡ µû¸¥ °ø°İ °¡´É ¹üÀ§</returns>
+    /// <param name="index"> ì„ íƒí•œ íƒ€ì¼ ìœ„ì¹˜</param>
+    /// <param name="attackRange">pieceì˜ ì‚¬ê±°ë¦¬</param>
+    /// <returns> pieceì˜ Rangeì— ë”°ë¥¸ ê³µê²© ê°€ëŠ¥ ë²”ìœ„</returns>
     public List<int> CanAttackRangeCalculate(int index, int attackRange)
     {
         int width = 4;
@@ -217,7 +217,7 @@ public class GameManager : Singleton<GameManager>
 
         List<int> result = new List<int>();
 
-        // »óÇÏÁÂ¿ì 1Ä­ ¹üÀ§ ³»¿¡¼­ °ø°İÇÒ ¿ä¼Ò¸¦ Ãâ·Â
+        // ìƒí•˜ì¢Œìš° 1ì¹¸ ë²”ìœ„ ë‚´ì—ì„œ ê³µê²©í•  ìš”ì†Œë¥¼ ì¶œë ¥
         for (int dy = -attackRange; dy <= attackRange; dy++)
         {
             for (int dx = -attackRange; dx <= attackRange; dx++)
@@ -225,16 +225,16 @@ public class GameManager : Singleton<GameManager>
                 int targetX = x + dx;
                 int targetY = y + dy;
 
-                // ¹è¿­ÀÇ ¹üÀ§ ³»¿¡ ÀÖ´ÂÁö Ã¼Å©
+                // ë°°ì—´ì˜ ë²”ìœ„ ë‚´ì— ìˆëŠ”ì§€ ì²´í¬
                 if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height)
                 {
-                    // ÀÚ½ÅÀ» Á¦¿ÜÇÏ·Á¸é (x, y) ÁÂÇ¥´Â °Ç³Ê¶Ù±â
+                    // ìì‹ ì„ ì œì™¸í•˜ë ¤ë©´ (x, y) ì¢Œí‘œëŠ” ê±´ë„ˆë›°ê¸°
                     if (targetX == x && targetY == y)
                     {
-                        continue; // ÀÚ½ÅÀ» Á¦¿Ü
+                        continue; // ìì‹ ì„ ì œì™¸
                     }
 
-                    // 1D ¹è¿­·Î 2D À§Ä¡ Á¢±Ù
+                    // 1D ë°°ì—´ë¡œ 2D ìœ„ì¹˜ ì ‘ê·¼
                     int indexs = targetY * width + targetX;
                     result.Add(indexs);
                 }
@@ -243,9 +243,9 @@ public class GameManager : Singleton<GameManager>
         return result;
     }
     /// <summary>
-    /// pieceÀÇ °ø°İ °¡´É ¹üÀ§¸¦ Å¸ÀÏ¿¡ ½Ã°¢È­ ÇÕ´Ï´Ù
+    /// pieceì˜ ê³µê²© ê°€ëŠ¥ ë²”ìœ„ë¥¼ íƒ€ì¼ì— ì‹œê°í™” í•©ë‹ˆë‹¤
     /// </summary>
-    /// <param name="attackRange">CanAttackRangeCalculate ¿¡¼­ ¹İÈ¯ µÈ °ª</param>
+    /// <param name="attackRange">CanAttackRangeCalculate ì—ì„œ ë°˜í™˜ ëœ ê°’</param>
     private void VisualizeAttackRange(List<int> attackRange)
     {        
         foreach (var index in attackRange)
@@ -254,9 +254,9 @@ public class GameManager : Singleton<GameManager>
         }
     }
     /// <summary>
-    /// °ø°İ ¹üÀ§ ½Ã°¢È­¸¦ ÃÊ±âÈ­ ÇÕ´Ï´Ù + _currentPieceCanAttackRange ÃÊ±âÈ­
+    /// ê³µê²© ë²”ìœ„ ì‹œê°í™”ë¥¼ ì´ˆê¸°í™” í•©ë‹ˆë‹¤ + _currentPieceCanAttackRange ì´ˆê¸°í™”
     /// </summary>
-    /// <param name="attackRange">CanAttackRangeCalculate ¿¡¼­ ¹İÈ¯ µÈ °ª</param>
+    /// <param name="attackRange">CanAttackRangeCalculate ì—ì„œ ë°˜í™˜ ëœ ê°’</param>
     private void ResetVisualizeAttackRange(ref List<int> attackRange)
     {
         foreach (var index in attackRange)

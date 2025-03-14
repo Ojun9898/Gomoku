@@ -55,11 +55,11 @@ public class Pc : MonoBehaviour
 
     public void ChoseAttack(Pc pc) { 
         pc.Hp -= 1;
-        Debug.Log("°ø°ÝÇß½À´Ï´Ù");
+        Debug.Log("     ß½  Ï´ ");
     }
     public void Buff(Pc pc) { 
         pc.Hp += 1;
-        Debug.Log("ÈúÇß½À´Ï´Ù");
+        Debug.Log("   ß½  Ï´ ");
     }
     
 }

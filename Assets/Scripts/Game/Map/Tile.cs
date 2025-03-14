@@ -21,7 +21,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
 
 
     /// <summary>
-    ///  Å¸ÀÏÀÇ obstacle,buff,_piece¸¦ ÃÊ±âÈ­ ÇÏ´Â ¸Ş¼Òµå ÀÔ´Ï´Ù
+    ///  íƒ€ì¼ì˜ obstacle,buff,_pieceë¥¼ ì´ˆê¸°í™” í•˜ëŠ” ë©”ì†Œë“œ ì…ë‹ˆë‹¤
     /// </summary>
     public void ResetAll() {
         obstacle = null;
@@ -30,7 +30,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     }
 
     /// <summary>
-    /// Å¬¸¯ÇÑ »óÈ²À» ÃÊ±âÈ­ ÇÏ´Â ¸Ş¼Òµå ÀÔ´Ï´Ù
+    /// í´ë¦­í•œ ìƒí™©ì„ ì´ˆê¸°í™” í•˜ëŠ” ë©”ì†Œë“œ ì…ë‹ˆë‹¤
     /// </summary>
     public void ResetClick()
     {
@@ -45,14 +45,14 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
 
 
     /// <summary>
-    /// Å¸ÀÏÀ» Å¬¸¯ÇßÀ» ¶§ ½ÇÇàµÇ´Â ¸Ş¼Òµå ÀÔ´Ï´Ù
-    /// Å¸ÀÏÀº piece  ¿©ºÎ¿¡ µû¶ó µ¿ÀÛÀÌ  ´Ş¶óÁı´Ï´Ù
+    /// íƒ€ì¼ì„ í´ë¦­í–ˆì„ ë•Œ ì‹¤í–‰ë˜ëŠ” ë©”ì†Œë“œ ì…ë‹ˆë‹¤
+    /// íƒ€ì¼ì€ piece  ì—¬ë¶€ì— ë”°ë¼ ë™ì‘ì´  ë‹¬ë¼ì§‘ë‹ˆë‹¤
     /// </summary>
     public void OnClickTileButton() {
         _tileClickCount++;
         if (_piece != null)
         {
-            //ToDo: ÇÇ½º°¡ ÀÖÀ» ¶§ µ¿ÀÛ
+            //ToDo: í”¼ìŠ¤ê°€ ìˆì„ ë•Œ ë™ì‘
             var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (needOneClick.Value.isNeedJustOneClick)
             {
@@ -64,7 +64,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
         if (!isNeedOneClick)
         {
             var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
-            Debug.Log(GameManager.Instance.currentClickedTileindex + " : Å¬¸¯ÇÑ Å¸ÀÏ ÀÎµ¦½º");
+            Debug.Log(GameManager.Instance.currentClickedTileindex + " : í´ë¦­í•œ íƒ€ì¼ ì¸ë±ìŠ¤");
 
             var caseValue = pieceAndCaseValue.Value.caseValue;
 
@@ -77,7 +77,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
             switch (caseValue)
             {
                 case -1:
-                    Debug.Log(_piece.GetPieceOwner() + "ÀÇ ¸» ÀÔ´Ï´Ù");
+                    Debug.Log(_piece.GetPieceOwner() + "ì˜ ë§ ì…ë‹ˆë‹¤");
                     ResetClick();
                     break;
                 case 0:
@@ -86,7 +86,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
                     break;
                 case 1:
                     _tileClickCount = 0;
-                    Debug.Log("°ø°İÁ¾·á");
+                    Debug.Log("ê³µê²©ì¢…ë£Œ");
                     break;
             }
         }
