@@ -6,4 +6,6 @@ using UnityEngine;
 public class Mc : MonoBehaviour
 {
     public Tile[] tiles;
+    int width = 4;
+
 }

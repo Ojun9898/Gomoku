@@ -95,11 +95,12 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
         }
       
     }
-    
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (_piece == null && _tileClickCount == 0)
         cursorImageObj.SetActive(true);
+        GameManager.Instance.RangeAttackVisualizeEvent?.Invoke();
     }
 
     public void OnPointerExit(PointerEventData eventData)

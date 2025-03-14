@@ -98,4 +98,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _attackType: 1
-  AttackRange: 
+  RangeAttackRange: 
+  _attackRange: 1
+  _pieceOwner: 0

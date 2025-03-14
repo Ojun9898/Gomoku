@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Pc : MonoBehaviour
@@ -12,7 +15,8 @@ public class Pc : MonoBehaviour
     }
 
     public AttackType _attackType;
-    public int[] AttackRange;
+    public int[] RangeAttackRange;
+    [SerializeField]private int _attackRange = 1;
 
     private int _hp = 5;
     public int Hp {get{return _hp;} set{
@@ -39,6 +43,16 @@ public class Pc : MonoBehaviour
         _pieceOwner = pieceOwner;
     }
 
+
+    public int GetAttackRange()
+    {
+        return _attackRange;
+    }
+
+
+
+
+
     public void ChoseAttack(Pc pc) { 
         pc.Hp -= 1;
         Debug.Log("공격했습니다");
@@ -47,7 +61,5 @@ public class Pc : MonoBehaviour
         pc.Hp += 1;
         Debug.Log("힐했습니다");
     }
-    public void RangeAttack(int index) { 
     
-    }
 }
