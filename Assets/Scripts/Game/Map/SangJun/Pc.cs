@@ -5,8 +5,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class Pc : MonoBehaviour
+public class Pc : HaveHp
 {
+ 
     public enum AttackType {
         NONE,
         CHOOSE_ATTACK,
@@ -16,15 +17,9 @@ public class Pc : MonoBehaviour
 
     public AttackType _attackType;
     public int[] RangeAttackRange;
-    [SerializeField]private int _attackRange = 1;
+    [SerializeField] private int _attackPower=1;
+    [SerializeField] private int _attackRange = 1;
 
-    private int _hp = 5;
-    public int Hp {get{return _hp;} set{
-                _hp = value;
-                if(_hp <= 0){
-                    Destroy(this.gameObject);
-            }
-            }}
     public enum Owner
     {
         NONE,
@@ -48,18 +43,36 @@ public class Pc : MonoBehaviour
     {
         return _attackRange;
     }
-
-
-
-
-
-    public void ChoseAttack(Pc pc) { 
-        pc.Hp -= 1;
-        Debug.Log("     ߽  ϴ ");
+    public void SetAttackRange(int attackRange)
+    {
+        _attackRange = attackRange;
     }
-    public void Buff(Pc pc) { 
-        pc.Hp += 1;
-        Debug.Log("   ߽  ϴ ");
+
+
+    public int GetAttackPower()
+    {
+        return _attackPower;
     }
-    
+    public void SetAttackPower(int attackPower)
+    {
+        _attackPower = attackPower;
+    }
+
+
+
+
+
+
+    public void ChoseAttack(Pc pc,int attackPower) { 
+        pc.Hp -= attackPower;
+    }
+    public void Buff(Pc pc, int attackPower) { 
+        pc.Hp += attackPower;
+    }
+    public void ChoseAttack(Obstacle oc, int attackPower)
+    {
+        oc.Hp -= attackPower;
+    }
+
+
 }

@@ -7,14 +7,15 @@ using UnityEngine.EventSystems;
 public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
 
-    [SerializeField] private Obstacle obstacle;
-    [SerializeField] private Buff buff;
+  
     [SerializeField] private GameObject cursorImageObj;
     [SerializeField] private GameObject ClickedImageObj;
     private int _tileClickCount;
     private bool isNeedOneClick;
     public int tileNumber;
-    
+
+    [SerializeField] private Obstacle obstacle;
+    private Buff _buff;
     public Pc _piece { get; private set; }
 
     
@@ -25,7 +26,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     /// </summary>
     public void ResetAll() {
         obstacle = null;
-        buff = null;
+        _buff = null;
         _piece = null;
     }
 
@@ -41,7 +42,14 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     public Obstacle GetObstacle() { 
             return obstacle;
     }
-
+    public Buff GetBuff()
+    {
+        return _buff;
+    } 
+    public void SetBuff(Buff buff)
+    {
+        this._buff = buff;
+    }
 
 
     /// <summary>
@@ -98,7 +106,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (_piece == null && _tileClickCount == 0)
+        if (obstacle == null && _piece == null && _tileClickCount == 0)
         cursorImageObj.SetActive(true);
         GameManager.Instance.RangeAttackVisualizeEvent?.Invoke();
     }
