@@ -44,14 +44,15 @@ public class GameManager : Singleton<GameManager>
 
         }
     }
-    protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-
-    }
-
+    
     private void Awake()
     {
         InitGameManager();
+    }
+
+    protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -102,7 +103,7 @@ public class GameManager : Singleton<GameManager>
                         _mc.tiles[currentClickedTileindex].GetBuff().On(_piece.GetComponent<Pc>());
                         //_mc.ActiveBuff(_mc.tiles[currentClickedTileindex]);
                     }
-                return (_piece, -1);
+                    return (_piece, -1);
                 }
                 return (null, 0);
             }

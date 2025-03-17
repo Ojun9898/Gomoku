@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Mc : MonoBehaviour
 {
-    public Tile[] tiles;
+    public List<Tile> tiles;
     int width = 4;
 
     Buff[] buffs = new Buff[4];
