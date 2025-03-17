@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainPanelController : MonoBehaviour
 {
@@ -22,12 +23,12 @@ public class MainPanelController : MonoBehaviour
 
     public void OnClick1pButton()
     {
-        Debug.Log("1p button clicked!");
+        SceneManager.LoadSceneAsync("Game");
     }
 
     public void OnClick2pButton()
     {
-        Debug.Log("2p button clicked!");
+        SceneManager.LoadSceneAsync("Game");
     }
 
     public void OnClickExitButton()
