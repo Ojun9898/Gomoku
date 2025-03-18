@@ -1,70 +1,111 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Pc;
+using System.Linq;
 
 
+[RequireComponent(typeof(StateMachine))]
 public class GameManager : Singleton<GameManager>
-{    
-    [SerializeField] private Mc _mc;
+{
+    [SerializeField] private MapController _mc;
     [SerializeField] private GameObject piece;
 
     public Func<int, int, (GameObject piece, int caseValue)> FirstTimeTileClickEvent;
-    public Func<int, int, (bool isNeedJustOneClick,int caseValue)> SecondTimeTileClickEvent;
+    public Func<int, int, (bool isNeedJustOneClick, int caseValue)> SecondTimeTileClickEvent;
     public Action RangeAttackVisualizeEvent;
     public Action RangeAttackResetVisualizeEvent;
 
 
-    // 런타임 도중에 계속 변화하지만 일단은 지정해 뒀음
-    private Pc.Owner _playerType = Pc.Owner.PLAYER_A;
+
+    private Pc.Owner _playerType;
     private int _currentClickedTileindex;
     private int _lastClickedTileindex = -1;
     private Pc _damagedPiece;
     private Pc _attackingPiece;
     private Pc _currentChoosingPiece;
     private List<int> _currentPieceCanAttackRange;
+    private bool IsAleadySetPiece;
+    private StateMachine _FSM;
 
-    public Mc Mc { get { return _mc; } }
 
 
+    public MapController Mc { get { return _mc; } }
     public int currentClickedTileindex
     {
         get { return _currentClickedTileindex; }
 
         set
         {
-            if (_currentClickedTileindex != value) {
+            if (_currentClickedTileindex != value)
+            {
                 var beforIndex = _currentClickedTileindex;
                 _mc.tiles[beforIndex].ResetClick();
                 _currentClickedTileindex = value;
             }
-
         }
     }
-    
+
+
+
     private void Awake()
     {
         InitGameManager();
+        StartGame();
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        throw new NotImplementedException();
     }
 
     /// <summary>
     /// 게임 메니저 초기화
     /// </summary>
     private void InitGameManager()
-    {
+    {   // 카드 생성 메소드 
+
         // Map에서 타일 생성후 가져오는 메소드
-        // piece 생성후 가져오는 메소드
-        // 카드 생성 메소드 
-        SetTileClickEvent();
+        SetMapControlelr();
+        // 기타 초기화 변수 
+        // 상태 머신 가져오기 
+        SetFSM();
     }
+
+    private void StartGame()
+    {
+        _playerType = SetFirstAttackPlayer();
+        _FSM.Run(_playerType);
+    }
+
+    /// <summary>
+    /// 선공 정하기 메소드
+    /// </summary>
+    /// <returns></returns>
+    public Pc.Owner SetFirstAttackPlayer() {
+        System.Random random = new System.Random();
+        int randomIndex = random.Next(1, 3);
+        Pc.Owner owner = (Pc.Owner)1;
+
+        if (Enum.IsDefined(typeof(Pc.Owner), randomIndex))
+        {
+            owner = (Pc.Owner)randomIndex;
+        }
+        return owner;
+    }
+
+    public void SetMapControlelr() {
+        _mc = FindAnyObjectByType<MapController>();
+    }
+
+    public void SetFSM()
+    {
+        _FSM = GetComponent<StateMachine>();
+    }
+
 
     //카드 내기 대기 메소드
     //말 공격 대기 메소드
@@ -72,7 +113,7 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// 타일 클릭 설정을 부여하는 메소드
     /// </summary>
-    private void SetTileClickEvent()
+    public void SetTileClickEvent()
     {
         FirstTimeTileClickEvent = (tileNumber, tileClickCount) =>
         {
@@ -96,9 +137,15 @@ public class GameManager : Singleton<GameManager>
 
                 if (tileClickCount == 2)
                 {
-                    var _piece = Instantiate(this.piece, _mc.tiles[currentClickedTileindex].transform);
+                    if (IsAleadySetPiece) {
+                        Debug.Log("이미 말을 놓았습니다");
+                        return (null, 0);
+                    }
+                    var _piece = SetPieceAtTile(currentClickedTileindex);
+                    IsAleadySetPiece = true;
                     _piece.GetComponent<Pc>()?.SetPieceOwner(_playerType);
-                    if (_mc.tiles[currentClickedTileindex].GetBuff() != null) {
+                    if (_mc.tiles[currentClickedTileindex].GetBuff() != null)
+                    {
                         //Todo:버프 활성화?
                         _mc.tiles[currentClickedTileindex].GetBuff().On(_piece.GetComponent<Pc>());
                         //_mc.ActiveBuff(_mc.tiles[currentClickedTileindex]);
@@ -109,17 +156,18 @@ public class GameManager : Singleton<GameManager>
             }
 
 
-           
+
             if (_currentPieceCanAttackRange.Contains(currentClickedTileindex) && _currentChoosingPiece != null)
             {
                 // 일반 공격, 공격 범위 내에 있을 때
-                if (_currentChoosingPiece._attackType == AttackType.CHOOSE_ATTACK &&_mc.tiles[currentClickedTileindex].GetObstacle() != null)
+                if (_currentChoosingPiece._attackType == AttackType.CHOOSE_ATTACK && _mc.tiles[currentClickedTileindex].GetObstacle() != null)
                 { // Todo : 장애물 공격
                     _currentChoosingPiece.ChoseAttack(_mc.tiles[currentClickedTileindex].GetObstacle(), _currentChoosingPiece.GetAttackPower());
                     Debug.Log("장애물을 공격했습니다" + _mc.tiles[currentClickedTileindex].GetObstacle().name + "의 Hp:" + _mc.tiles[currentClickedTileindex].GetObstacle().Hp);
 
                 }
-                else if (_currentChoosingPiece._attackType == AttackType.CHOOSE_ATTACK|| _currentChoosingPiece._attackType == AttackType.BUFF) {
+                else if (_currentChoosingPiece._attackType == AttackType.CHOOSE_ATTACK || _currentChoosingPiece._attackType == AttackType.BUFF)
+                {
                     Debug.Log("공격 대상이 없습니다");
                 }
                 // 범위 공격, 공격 범위 내에 있을 떄
@@ -135,41 +183,49 @@ public class GameManager : Singleton<GameManager>
         };
 
         SecondTimeTileClickEvent = (tileNumber, tileClickCount) =>
-        {           
+        {
             currentClickedTileindex = tileNumber;
 
-           /* // 범위 공격Piece 공격 범위 보여주기 Todo: 수정 ㄱㄱ
-            RangeAttackVisualizeEvent = () =>
-            {
-                if (_mc.tiles[currentClickedTileindex]._piece._attackType == AttackType.RANGE_ATTACK)
-                {
-                    var attackPoint = _mc.tiles[currentClickedTileindex]._piece.RangeAttackCalculate(currentClickedTileindex);
-                    foreach (var point in attackPoint)
-                    {
-                        _mc.tiles[point].GetComponent<SpriteRenderer>().color = Color.red;
-                    }
-                }
-            };*/
+            /* // 범위 공격Piece 공격 범위 보여주기 Todo: 수정 ㄱㄱ
+             RangeAttackVisualizeEvent = () =>
+             {
+                 if (_mc.tiles[currentClickedTileindex]._piece._attackType == AttackType.RANGE_ATTACK)
+                 {
+                     var attackPoint = _mc.tiles[currentClickedTileindex]._piece.RangeAttackCalculate(currentClickedTileindex);
+                     foreach (var point in attackPoint)
+                     {
+                         _mc.tiles[point].GetComponent<SpriteRenderer>().color = Color.red;
+                     }
+                 }
+             };*/
 
             if (_mc.tiles[currentClickedTileindex]._piece.GetPieceOwner() == _playerType)
             {
-                if (_currentPieceCanAttackRange == null) { 
+                
+                if (_currentPieceCanAttackRange == null)
+                {
                     _currentPieceCanAttackRange = CanAttackRangeCalculate(currentClickedTileindex, _mc.tiles[currentClickedTileindex]._piece.GetAttackRange());
                     VisualizeAttackRange(_currentPieceCanAttackRange);
                 }
                 _currentChoosingPiece = _mc.tiles[currentClickedTileindex]._piece;
 
-                if (tileClickCount >= 2 && _lastClickedTileindex == currentClickedTileindex )
+    
+
+
+                    if (tileClickCount >= 2 && _lastClickedTileindex == currentClickedTileindex)
                 {
                     Debug.Log("자신의 말을  골랐습니다");
                     FinishiedAttack();
                     return (true, 0);
                 }
 
-                if (_lastClickedTileindex != -1 )
+                if (_lastClickedTileindex != -1)
                 { // 공격턴에 아군 선택 상황
-                    _damagedPiece = _currentChoosingPiece ;
+                    _damagedPiece = _currentChoosingPiece;
                     _attackingPiece = _mc.tiles[_lastClickedTileindex]._piece;
+
+                    
+
                     if (_currentPieceCanAttackRange.Contains(currentClickedTileindex))
                     {
 
@@ -183,11 +239,12 @@ public class GameManager : Singleton<GameManager>
                         }
                         else if (_attackingPiece._attackType == Pc.AttackType.BUFF)
                         {
-                            _attackingPiece.Buff(_damagedPiece,_attackingPiece.GetAttackPower());
+                            _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
                             Debug.Log("아군을 치료했습니다" + _damagedPiece.name + "의 Hp:" + _damagedPiece.Hp);
                         }
                     }
-                    else {
+                    else
+                    {
                         Debug.Log("공격범위 외 입니다");
                     }
                     FinishiedAttack();
@@ -199,13 +256,19 @@ public class GameManager : Singleton<GameManager>
 
                 //공격을 하기 위해서는 다른 말을 선택해야하니 공격자의 인덱스를 저장
                 _lastClickedTileindex = currentClickedTileindex;
+                if (_currentChoosingPiece.IsAleayAttack)
+                {
+                    Debug.Log("이미 기능을 시전했습니다");
+                    FinishiedAttack();
+                    return (true, 0);
+                }
                 Debug.Log("공격할 말을 선택하세요" + _lastClickedTileindex);
             }
-            else 
+            else
             {
                 // 적의 말일 때 조건 충족
                 // 말의 정보를 보여줌
-                if (_lastClickedTileindex != -1 )
+                if (_lastClickedTileindex != -1)
                 { // 공격턴에 적 선택 상황
                     _damagedPiece = _mc.tiles[currentClickedTileindex]._piece;
                     _attackingPiece = _mc.tiles[_lastClickedTileindex]._piece;
@@ -234,7 +297,8 @@ public class GameManager : Singleton<GameManager>
                     }
                     FinishiedAttack();
                 }
-                else {
+                else
+                {
                     Debug.Log("적의 말 입니다");
                     return (true, 0);
                 }
@@ -243,18 +307,38 @@ public class GameManager : Singleton<GameManager>
         };
     }
 
+
+    /// <summary>
+    /// 턴이 끝나면 부를 메소드 피스를 하나라도 두었는지의 유무를 초기화합니다
+    /// </summary>
+    public void SetFalseIsAleadySetPiece() {
+        IsAleadySetPiece = false;
+    }
+
     /// <summary>
     /// 공격 상황이 끝났을 때를 가정하고 모든 상황을 초기화하는 메소드
     /// </summary>
-    private void FinishiedAttack() {
+    private void FinishiedAttack()
+    {
         _damagedPiece = null;
         _attackingPiece = null;
         RangeAttackVisualizeEvent = null;
         _lastClickedTileindex = -1;
-        if (_currentPieceCanAttackRange != null) { 
+        if (_currentPieceCanAttackRange != null)
+        {
             ResetVisualizeAttackRange(ref _currentPieceCanAttackRange);
         }
     }
+
+    /// <summary>
+    /// Piece를 Tile에 설치하는 메소드
+    /// </summary>
+    /// <param name="tileIndex">타일 인덱스 </param>
+    /// <returns></returns>
+    public GameObject SetPieceAtTile(int tileIndex) {
+       return Instantiate(this.piece, _mc.tiles[tileIndex].transform);
+    }
+
 
     /// <summary>
     /// Piece의 공격 가능 범위를 계산하는 메소드 
@@ -265,11 +349,11 @@ public class GameManager : Singleton<GameManager>
     /// <returns> piece의 Range에 따른 공격 가능 범위</returns>
     public List<int> CanAttackRangeCalculate(int index, int attackRange)
     {
-        int width = 4;
-        int height = 4;
+        int width = 8;
+        int height = 8;
 
-        int y = index / 4;
-        int x = index % 4;
+        int y = index / 8;
+        int x = index % 8;
 
         List<int> result = new List<int>();
 
@@ -303,7 +387,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     /// <param name="attackRange">CanAttackRangeCalculate 에서 반환 된 값</param>
     private void VisualizeAttackRange(List<int> attackRange)
-    {        
+    {
         foreach (var index in attackRange)
         {
             _mc.tiles[index].GetComponent<SpriteRenderer>().color = Color.red;
@@ -320,5 +404,34 @@ public class GameManager : Singleton<GameManager>
             _mc.tiles[index].GetComponent<SpriteRenderer>().color = Color.white;
         }
         attackRange = null;
+    }
+
+    public void OnButtonClickFinishMyTurn() { 
+        switch(_playerType)
+        {
+            case Pc.Owner.PLAYER_A:
+                _playerType = Pc.Owner.PLAYER_B;
+                break;
+            case Pc.Owner.PLAYER_B:
+                _playerType = Pc.Owner.PLAYER_A;
+                break;
+        }
+        _FSM.ChangeState< PlayerTurnState>(_playerType);
+    }
+
+
+    /// <summary>
+    ///  맵위 모든 piece의 공격 초기화 메소드
+    /// </summary>
+    public void PieceSIni1t()
+    {
+        var indices = _mc.tiles.Select((tile, idx) => new { Tile = tile, Index = idx })  // Tile과 해당 인덱스를 함께 반환
+           .Where(x => x.Tile._piece != null)  // Piece가 있는 Tile만 필터링
+           .Select(x => x.Index)  // 인덱스만 추출
+           .ToList();  // 결과를 리스트로 반환
+
+        foreach (var index in indices) { 
+                _mc.tiles[index]._piece.IsAleayAttack = false;
+        }
     }
 }

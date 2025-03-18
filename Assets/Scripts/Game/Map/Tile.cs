@@ -72,6 +72,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
         if (!isNeedOneClick)
         {
             var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
+            if (pieceAndCaseValue == null) { _tileClickCount = 0; return; }
             Debug.Log(GameManager.Instance.currentClickedTileindex + " : 클릭한 타일 인덱스");
 
             var caseValue = pieceAndCaseValue.Value.caseValue;
