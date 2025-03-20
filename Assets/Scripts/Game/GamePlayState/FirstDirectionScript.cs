@@ -9,13 +9,20 @@ public class FirstDirectionScript : MonoBehaviour, IState
 
     public void Enter(Pc.Owner owner)
     {
+
         // 시작 연출
         Debug.Log("FirstDirectionState입니다");
 
-        // 5초 후에 플레이어 턴으로 넘어감
-        DOVirtual.DelayedCall(5, () =>
+        // 5초 후에 AI턴으로 넘어갈지 플레이어 턴으로 넘어갈지 고름
+        DOVirtual.DelayedCall(1, () =>
         {
-            Fsm.ChangeState<PlayerTurnState>(owner);
+            if (owner == Pc.Owner.PLAYER_A)
+            {
+                Fsm.ChangeState<PlayerTurnState>(owner);
+            }
+            else {
+                Fsm.ChangeState<AITurnState>(owner);
+            }
         });        
     }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -18,7 +19,8 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     private Buff _buff;
     public Pc _piece { get; private set; }
 
-    
+    public Action JustBeforDestroyPiece;
+    public Action JustBeforDestroyObstacle;
 
 
     /// <summary>
@@ -58,49 +60,60 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     /// </summary>
     public void OnClickTileButton() {
         _tileClickCount++;
+        if (JustBeforDestroyObstacle == null)
+        {
+            JustBeforDestroyPiece = () => { this.obstacle = null; };
+        }
         if (_piece != null)
         {
             //ToDo: 피스가 있을 때 동작
-            var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
-            if (needOneClick.Value.isNeedJustOneClick)
+            if (JustBeforDestroyPiece == null)
             {
-                isNeedOneClick = true;
+                JustBeforDestroyPiece = () => { this._piece = null; };
+            }
+            var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
+            if (needOneClick != null) { 
+            
+                if (needOneClick.Value.isNeedJustOneClick)
+                {
+                    isNeedOneClick = true;
+                }
             }
             return;
         }
 
         if (!isNeedOneClick)
         {
-            var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
-            if (pieceAndCaseValue == null) { _tileClickCount = 0; return; }
             Debug.Log(GameManager.Instance.currentClickedTileindex + " : 클릭한 타일 인덱스");
-
-            var caseValue = pieceAndCaseValue.Value.caseValue;
-
-
-            if (_piece == null)
+            var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
+            if (pieceAndCaseValue != null)
             {
-                _piece = pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
-            }
+                var caseValue = pieceAndCaseValue.Value.caseValue;
+                if (_piece == null)
+                {
+                    _piece = pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
+                }
 
-            switch (caseValue)
-            {
-                case -1:
-                    Debug.Log(_piece.GetPieceOwner() + "의 말 입니다");
-                    ResetClick();
-                    break;
-                case 0:
-                    cursorImageObj.SetActive(false);
-                    ClickedImageObj.SetActive(true);
-                    break;
-                case 1:
-                    _tileClickCount = 0;
-                    Debug.Log("공격종료");
-                    break;
-            }
+                switch (caseValue)
+                {
+                    case -1:
+                        Debug.Log(_piece.GetPieceOwner() + "의 말 입니다");
+                        ResetClick();
+                        break;
+                    case 0:
+                        cursorImageObj.SetActive(false);
+                        ClickedImageObj.SetActive(true);
+                        break;
+                    case 1:
+                        _tileClickCount = 0;
+                        Debug.Log("공격종료");
+                        break;
+                }
+            }           
         }
         else {
             isNeedOneClick = false;
+             _tileClickCount = 0;
         }
       
     }
@@ -118,7 +131,13 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     }
 
     public void OnPointerClick(PointerEventData eventData)
-    {       
+    {
+        if (GameManager.Instance.FirstTimeTileClickEvent == null && GameManager.Instance.SecondTimeTileClickEvent== null) return;
         OnClickTileButton();
+    }
+
+    public void ResetTile() {
+        cursorImageObj.SetActive(false);
+        ClickedImageObj.SetActive(false);
     }
 }

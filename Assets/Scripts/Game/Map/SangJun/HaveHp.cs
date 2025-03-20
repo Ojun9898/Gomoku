@@ -13,6 +13,8 @@ public class HaveHp : MonoBehaviour
             _hp = value;
             if (_hp <= 0)
             {
+                GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileindex].JustBeforDestroyPiece?.Invoke();
+                GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileindex].JustBeforDestroyObstacle?.Invoke();
                 Destroy(gameObject);
             }
         }

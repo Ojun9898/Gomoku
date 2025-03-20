@@ -27,6 +27,7 @@ public static class StateFactory
                     states.Add(stateMachine.AddComponent<FirstDirectionScript>());
                     states.Add(stateMachine.AddComponent<PlayerTurnState>());
                     states.Add(stateMachine.AddComponent<FinishDirectionState>());
+                    states.Add(stateMachine.AddComponent<AITurnState>());
                 }
                 break;
         }

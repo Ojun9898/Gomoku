@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Pc : HaveHp
 {
- 
+    
     public enum AttackType {
         NONE,
         CHOOSE_ATTACK,

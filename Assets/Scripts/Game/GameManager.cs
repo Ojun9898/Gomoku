@@ -12,14 +12,15 @@ using System.Linq;
 [RequireComponent(typeof(StateMachine))]
 public class GameManager : Singleton<GameManager>
 {
+
     [SerializeField] private MapController _mc;
     [SerializeField] private GameObject piece;
 
+    public Button finishTurnButton;
     public Func<int, int, (GameObject piece, int caseValue)> FirstTimeTileClickEvent;
     public Func<int, int, (bool isNeedJustOneClick, int caseValue)> SecondTimeTileClickEvent;
     public Action RangeAttackVisualizeEvent;
     public Action RangeAttackResetVisualizeEvent;
-
 
 
     private Pc.Owner _playerType;
@@ -31,6 +32,7 @@ public class GameManager : Singleton<GameManager>
     private List<int> _currentPieceCanAttackRange;
     private bool IsAleadySetPiece;
     private StateMachine _FSM;
+    private int ChangeTurnCount;
 
 
 
@@ -55,6 +57,7 @@ public class GameManager : Singleton<GameManager>
     private void Awake()
     {
         InitGameManager();
+  
         StartGame();
     }
 
@@ -70,14 +73,18 @@ public class GameManager : Singleton<GameManager>
 
         // Map에서 타일 생성후 가져오는 메소드
         SetMapControlelr();
-        // 기타 초기화 변수 
+        // 기타 초기화 
+        ChangeTurnCount = 0;
+        //턴 넘김 버튼 이벤트 추가
+        finishTurnButton.onClick.AddListener(OnButtonClickFinishMyTurn);
+        // 선공 정하기
+        _playerType =  SetFirstAttackPlayer();
         // 상태 머신 가져오기 
         SetFSM();
     }
 
     private void StartGame()
     {
-        _playerType = SetFirstAttackPlayer();
         _FSM.Run(_playerType);
     }
 
@@ -116,7 +123,7 @@ public class GameManager : Singleton<GameManager>
     public void SetTileClickEvent()
     {
         FirstTimeTileClickEvent = (tileNumber, tileClickCount) =>
-        {
+        {       
             currentClickedTileindex = tileNumber;
             //처음 클릭 후 
             // 클릭 카운트 2번으로 조건을 두었는데
@@ -143,7 +150,12 @@ public class GameManager : Singleton<GameManager>
                     }
                     var _piece = SetPieceAtTile(currentClickedTileindex);
                     IsAleadySetPiece = true;
-                    _piece.GetComponent<Pc>()?.SetPieceOwner(_playerType);
+                    var pc = _piece.GetComponent<Pc>();
+                    pc?.SetPieceOwner(_playerType);
+                    if (_playerType == Owner.PLAYER_B) {
+                        pc.GetComponent<SpriteRenderer>().color = Color.black;
+                    }
+
                     if (_mc.tiles[currentClickedTileindex].GetBuff() != null)
                     {
                         //Todo:버프 활성화?
@@ -307,6 +319,15 @@ public class GameManager : Singleton<GameManager>
         };
     }
 
+    /// <summary>
+    /// Ai 턴에 공격을 하지 못하도록 타일 입력을 막는 메소드
+    /// </summary>
+    public void SetTileClickEventOff() {
+        FinishiedAttack();
+        FirstTimeTileClickEvent = null;
+         SecondTimeTileClickEvent = null;
+    }
+
 
     /// <summary>
     /// 턴이 끝나면 부를 메소드 피스를 하나라도 두었는지의 유무를 초기화합니다
@@ -324,6 +345,7 @@ public class GameManager : Singleton<GameManager>
         _attackingPiece = null;
         RangeAttackVisualizeEvent = null;
         _lastClickedTileindex = -1;
+        _mc.tiles[_currentClickedTileindex]?.ResetTile(); 
         if (_currentPieceCanAttackRange != null)
         {
             ResetVisualizeAttackRange(ref _currentPieceCanAttackRange);
@@ -406,17 +428,43 @@ public class GameManager : Singleton<GameManager>
         attackRange = null;
     }
 
-    public void OnButtonClickFinishMyTurn() { 
-        switch(_playerType)
+    public void OnButtonClickFinishMyTurn() {
+        if (IsAleadySetPiece)
         {
-            case Pc.Owner.PLAYER_A:
-                _playerType = Pc.Owner.PLAYER_B;
-                break;
-            case Pc.Owner.PLAYER_B:
-                _playerType = Pc.Owner.PLAYER_A;
-                break;
+            ChangeTurnCount++;
+            Debug.Log("턴 진행 횟수 : "+ ChangeTurnCount);
+            if (ChangeTurnCount >= 4) { 
+                //우승자 넘기기
+                _FSM.ChangeState<FinishDirectionState>(_playerType);
+                return;
+            }
+
+            switch (_playerType)
+            {
+                case Pc.Owner.PLAYER_A:
+                    _playerType = Pc.Owner.PLAYER_B;
+                    break;
+                case Pc.Owner.PLAYER_B:
+                    _playerType = Pc.Owner.PLAYER_A;
+                    break;
+            }
+            FinishiedAttack();
+            //AI 로 가정
+            //일단 버튼은 둘다 누를 수 있게 해둠
+            if (_playerType == Pc.Owner.PLAYER_B)
+            {
+                //타일 off
+                GameManager.Instance.SetTileClickEventOff();
+                _FSM.ChangeState<AITurnState>(_playerType);
+            }
+            else
+            {
+                _FSM.ChangeState<PlayerTurnState>(_playerType);
+            }
         }
-        _FSM.ChangeState< PlayerTurnState>(_playerType);
+        else { 
+            Debug.Log("말을 놓아주세요");
+        }
     }
 
 
