@@ -1,21 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
 
 public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
 
-    [SerializeField] private Obstacle obstacle;
-    [SerializeField] private Buff buff;
+  
     [SerializeField] private GameObject cursorImageObj;
-    [SerializeField] private GameObject ClickedImageObj;
+    [SerializeField] private GameObject clickedImageObj;
     private int _tileClickCount;
-    private bool isNeedOneClick;
+    private bool _isNeedOneClick;
     public int tileNumber;
-    
-    public Pc _piece { get; private set; }
+
+    public Obstacle obstacle;
+    private Buff _buff;
+    public Piece _piece { get; private set; }
 
     
 
@@ -25,7 +24,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     /// </summary>
     public void ResetAll() {
         obstacle = null;
-        buff = null;
+        _buff = null;
         _piece = null;
     }
 
@@ -34,14 +33,21 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     /// </summary>
     public void ResetClick()
     {
-        ClickedImageObj.SetActive(false);
+        clickedImageObj.SetActive(false);
         _tileClickCount = 0;
     }
 
     public Obstacle GetObstacle() { 
             return obstacle;
     }
-
+    public Buff GetBuff()
+    {
+        return _buff;
+    } 
+    public void SetBuff(Buff buff)
+    {
+        this._buff = buff;
+    }
 
 
     /// <summary>
@@ -56,12 +62,12 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
             var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (needOneClick.Value.isNeedJustOneClick)
             {
-                isNeedOneClick = true;
+                _isNeedOneClick = true;
             }
             return;
         }
 
-        if (!isNeedOneClick)
+        if (!_isNeedOneClick)
         {
             var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             Debug.Log(GameManager.Instance.currentClickedTileindex + " : 클릭한 타일 인덱스");
@@ -71,7 +77,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
 
             if (_piece == null)
             {
-                _piece = pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
+                _piece = pieceAndCaseValue.Value.piece?.GetComponent<Piece>();
             }
 
             switch (caseValue)
@@ -82,7 +88,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
                     break;
                 case 0:
                     cursorImageObj.SetActive(false);
-                    ClickedImageObj.SetActive(true);
+                    clickedImageObj.SetActive(true);
                     break;
                 case 1:
                     _tileClickCount = 0;
@@ -91,14 +97,14 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
             }
         }
         else {
-            isNeedOneClick = false;
+            _isNeedOneClick = false;
         }
       
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (_piece == null && _tileClickCount == 0)
+        if (obstacle == null && _piece == null && _tileClickCount == 0)
             cursorImageObj.SetActive(true);
         GameManager.Instance.RangeAttackVisualizeEvent?.Invoke();
     }
