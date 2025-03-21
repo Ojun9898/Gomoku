@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Pc;
 using System.Linq;
+using UnityEditor.U2D.Aseprite;
 
 
 [RequireComponent(typeof(StateMachine))]
@@ -14,15 +15,16 @@ public class GameManager : Singleton<GameManager>
 {
 
     [SerializeField] private MapController _mc;
-    [SerializeField] private GameObject piece;
+    public GameObject forbiddenMoveObjct;
+    public GameObject piece;
 
     public Button finishTurnButton;
     public Func<int, int, (GameObject piece, int caseValue)> FirstTimeTileClickEvent;
     public Func<int, int, (bool isNeedJustOneClick, int caseValue)> SecondTimeTileClickEvent;
     public Action RangeAttackVisualizeEvent;
     public Action RangeAttackResetVisualizeEvent;
-
-
+    public RullManager _rullManager;
+    
     private Pc.Owner _playerType;
     private int _currentClickedTileindex;
     private int _lastClickedTileindex = -1;
@@ -72,13 +74,18 @@ public class GameManager : Singleton<GameManager>
     {   // 카드 생성 메소드 
 
         // Map에서 타일 생성후 가져오는 메소드
-        SetMapControlelr();
-        // 기타 초기화 
+        SetMapController();
+        // 턴 넘김 횟수 초기화 
         ChangeTurnCount = 0;
         //턴 넘김 버튼 이벤트 추가
         finishTurnButton.onClick.AddListener(OnButtonClickFinishMyTurn);
         // 선공 정하기
         _playerType =  SetFirstAttackPlayer();
+        //RullManager 가져오기
+        _rullManager = FindAnyObjectByType<RullManager>();
+        //RullManager 초기화
+        _rullManager.Init(_mc.tiles,_playerType);
+
         // 상태 머신 가져오기 
         SetFSM();
     }
@@ -104,8 +111,9 @@ public class GameManager : Singleton<GameManager>
         return owner;
     }
 
-    public void SetMapControlelr() {
+    public void SetMapController() {
         _mc = FindAnyObjectByType<MapController>();
+        _mc.CreateMap();
     }
 
     public void SetFSM()
@@ -129,6 +137,10 @@ public class GameManager : Singleton<GameManager>
             // 클릭 카운트 2번으로 조건을 두었는데
             // 카드 내기까지 구현이 된다면 클릭 카운트를 1번으로 했을 때 조건에 들어가 카드 내기를 대기하도록
 
+            if (_mc.tiles[currentClickedTileindex].isForbiddenMove) {
+               //금수일때
+                return (null, 2);
+            }
 
 
             if (_mc.tiles[currentClickedTileindex].GetObstacle() != null && (_lastClickedTileindex == -1 || _lastClickedTileindex == currentClickedTileindex))
@@ -146,8 +158,9 @@ public class GameManager : Singleton<GameManager>
                 {
                     if (IsAleadySetPiece) {
                         Debug.Log("이미 말을 놓았습니다");
-                        return (null, 0);
+                        return (null, 3);
                     }
+
                     var _piece = SetPieceAtTile(currentClickedTileindex);
                     IsAleadySetPiece = true;
                     var pc = _piece.GetComponent<Pc>();
@@ -358,9 +371,31 @@ public class GameManager : Singleton<GameManager>
     /// <param name="tileIndex">타일 인덱스 </param>
     /// <returns></returns>
     public GameObject SetPieceAtTile(int tileIndex) {
-       return Instantiate(this.piece, _mc.tiles[tileIndex].transform);
+       var piece =  Instantiate(this.piece, _mc.tiles[tileIndex].transform);
+        return piece;
     }
 
+
+    /// <summary>
+    /// 임시  Piece를 만들어 주는 메소드
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="currentPlayer"></param>
+    /// <returns>만든 Piece</returns>
+    public Pc SetTemporaryPiece(int index, Pc.Owner currentPlayer)
+    {
+
+        Pc pc = Instantiate(this.piece).GetComponent<Pc>();
+        if(currentPlayer == Pc.Owner.PLAYER_B)
+        {
+            pc._pieceOwner = Pc.Owner.PLAYER_B;
+        }
+        else if(currentPlayer == Pc.Owner.PLAYER_A)
+        {
+            pc._pieceOwner = Pc.Owner.PLAYER_A;
+        }
+        return pc;
+    }
 
     /// <summary>
     /// Piece의 공격 가능 범위를 계산하는 메소드 
@@ -429,13 +464,14 @@ public class GameManager : Singleton<GameManager>
     }
 
     public void OnButtonClickFinishMyTurn() {
+  
         if (IsAleadySetPiece)
         {
             ChangeTurnCount++;
             Debug.Log("턴 진행 횟수 : "+ ChangeTurnCount);
-            if (ChangeTurnCount >= 4) { 
+            if (ChangeTurnCount >= 30) { 
                 //우승자 넘기기
-                _FSM.ChangeState<FinishDirectionState>(_playerType);
+                _FSM.ChangeState<FinishDirectionState>(_rullManager.NotFinishedOnPlayingGame());
                 return;
             }
 
@@ -467,7 +503,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-
     /// <summary>
     ///  맵위 모든 piece의 공격 초기화 메소드
     /// </summary>
@@ -481,5 +516,20 @@ public class GameManager : Singleton<GameManager>
         foreach (var index in indices) { 
                 _mc.tiles[index]._piece.IsAleayAttack = false;
         }
+    }
+
+    public void AllTileClickCountSetZero() { 
+        for(int i = 0; i < _mc.tiles.Count; i++)
+        {
+            _mc.tiles[i].ResetClick();
+        }
+    }
+
+    public Pc.Owner GetCurrentPlayerType() {
+        return _playerType;
+    }
+    public StateMachine GetFSM()
+    {
+        return _FSM;
     }
 }

@@ -16,6 +16,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     public int tileNumber;
 
     [SerializeField] private Obstacle obstacle;
+    public bool isForbiddenMove;
     private Buff _buff;
     public Pc _piece { get; private set; }
 
@@ -92,6 +93,15 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
                 if (_piece == null)
                 {
                     _piece = pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
+                    // 오목이 만들어진 턴에 턴종료를 누르면 종료연출상태로 넘어가는 구문을 다음 스테이트에서 실행하게 함 즉 게임 종료
+                    (bool, Pc.Owner) CheckSome = GameManager.Instance._rullManager.CheckGameOver();
+                    if (CheckSome.Item1)
+                    {
+                        GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
+                        GameManager.Instance.finishTurnButton.onClick.AddListener(() => {
+                            GameManager.Instance.GetFSM().ChangeState<FinishDirectionState>(CheckSome.Item2);
+                        });
+                    }
                 }
 
                 switch (caseValue)
@@ -108,8 +118,16 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
                         _tileClickCount = 0;
                         Debug.Log("공격종료");
                         break;
+                    case 2:
+                        _tileClickCount = 0;
+                        Debug.Log("금수입니다");
+                        break;
+                    case 3:
+                        Debug.Log("선택종료");
+                        ResetClick();
+                        break;
                 }
-            }           
+            }
         }
         else {
             isNeedOneClick = false;
@@ -139,5 +157,9 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     public void ResetTile() {
         cursorImageObj.SetActive(false);
         ClickedImageObj.SetActive(false);
+    }
+
+    public void SetPiece(Pc pc) {
+        _piece = pc;
     }
 }

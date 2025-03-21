@@ -18,8 +18,11 @@ public class Pc : HaveHp
     public AttackType _attackType;
     public bool IsAleayAttack;
     public int[] RangeAttackRange;
+    public readonly int Cost;
     [SerializeField] private int _attackPower=1;
     [SerializeField] private int _attackRange = 1;
+
+   
 
     public enum Owner
     {
