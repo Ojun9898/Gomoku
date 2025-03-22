@@ -9,11 +9,17 @@ using UnityEngine.Tilemaps;
 
 public class MapController : MonoBehaviour
 {
-    [SerializeField] private GameObject obstacle;
+    //[SerializeField] private GameObject obstacle;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private Transform tilesParent;
+    private Tile[] _tiles;
     private int width = 8;
     public List<Tile> tiles;
+
+    private void Awake()
+    {
+        CreateMap();
+    }
 
     public void CreateMap()
     {
@@ -21,8 +27,8 @@ public class MapController : MonoBehaviour
         {
             for (int j = 0; j <= width - 1; j++)
             {
-                Vector2 tilePos = new Vector2(j, -i);
-                tilePos = new Vector2(tilePos.x -3.5f, tilePos.y +3.5f);
+                Vector2 tilePos = new Vector2(j, i);
+                tilePos = new Vector2(tilePos.x -3.5f, tilePos.y -3.5f);
                 var tileInstance = Instantiate(tilePrefab, tilePos, Quaternion.identity, tilesParent);
                
                 Tile tileComponent = tileInstance.GetComponent<Tile>();

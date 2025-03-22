@@ -13,8 +13,8 @@ public class CameraRandomMove : MonoBehaviour
 
     void MoveToRandomPosition()
     {
-        float randomX = Random.Range(0f, 15f);
-        float randomY = Random.Range(-20f, 0f);
+        float randomX = Random.Range(0f, 9f);
+        float randomY = Random.Range(-15f, 0f);
         Vector3 targetPosition = new Vector3(randomX, randomY, transform.position.z); // Z값 고정
 
         // DoTween으로 이동 후 다시 MoveToRandomPosition 호출하여 무한 반복
