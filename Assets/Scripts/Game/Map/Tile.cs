@@ -18,10 +18,10 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     [SerializeField] private Obstacle obstacle;
     public bool isForbiddenMove;
     private Buff _buff;
-    public Piece Piece { get; private set; }
-    
-    public Action JustBeforeDestroyPiece;
-    public Action JustBeforeDestroyObstacle;
+    public Pc _piece { get; private set; }
+
+    public Action JustBeforDestroyPiece;
+    public Action JustBeforDestroyObstacle;
 
 
     /// <summary>
@@ -30,7 +30,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     public void ResetAll() {
         obstacle = null;
         _buff = null;
-        Piece = null;
+        _piece = null;
     }
 
     /// <summary>
@@ -61,16 +61,16 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     /// </summary>
     public void OnClickTileButton() {
         _tileClickCount++;
-        if (JustBeforeDestroyObstacle == null)
+        if (JustBeforDestroyObstacle == null)
         {
-            JustBeforeDestroyPiece = () => { this.obstacle = null; };
+            JustBeforDestroyPiece = () => { this.obstacle = null; };
         }
-        if (Piece != null)
+        if (_piece != null)
         {
             //ToDo: 피스가 있을 때 동작
-            if (JustBeforeDestroyPiece == null)
+            if (JustBeforDestroyPiece == null)
             {
-                JustBeforeDestroyPiece = () => { this.Piece = null; };
+                JustBeforDestroyPiece = () => { this._piece = null; };
             }
             var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (needOneClick != null) { 
@@ -90,11 +90,11 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
             if (pieceAndCaseValue != null)
             {
                 var caseValue = pieceAndCaseValue.Value.caseValue;
-                if (Piece == null)
+                if (_piece == null)
                 {
-                    Piece = pieceAndCaseValue.Value.piece?.GetComponent<Piece>();
+                    _piece = pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
                     // 오목이 만들어진 턴에 턴종료를 누르면 종료연출상태로 넘어가는 구문을 다음 스테이트에서 실행하게 함 즉 게임 종료
-                    (bool, Piece.Owner) CheckSome = GameManager.Instance._rullManager.CheckGameOver();
+                    (bool, Pc.Owner) CheckSome = GameManager.Instance._rullManager.CheckGameOver();
                     if (CheckSome.Item1)
                     {
                         GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
@@ -107,7 +107,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
                 switch (caseValue)
                 {
                     case -1:
-                        Debug.Log(Piece.GetPieceOwner() + "의 말 입니다");
+                        Debug.Log(_piece.GetPieceOwner() + "의 말 입니다");
                         ResetClick();
                         break;
                     case 0:
@@ -138,7 +138,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (obstacle == null && Piece == null && _tileClickCount == 0)
+        if (obstacle == null && _piece == null && _tileClickCount == 0)
         cursorImageObj.SetActive(true);
         GameManager.Instance.RangeAttackVisualizeEvent?.Invoke();
     }
@@ -159,7 +159,7 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
         ClickedImageObj.SetActive(false);
     }
 
-    public void SetPiece(Piece piece) {
-        Piece = piece;
+    public void SetPiece(Pc pc) {
+        _piece = pc;
     }
 }

@@ -1,49 +1,58 @@
-using System;
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+public struct SigninData
+{
+    public string id;
+    public string password;
+}
 
+public struct SigninResult
+{
+    public int result;
+}
 public class SigninPanelController : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField Username;
+    [SerializeField] private TMP_InputField ID;
     [SerializeField] private TMP_InputField Password;
     
     public void OnClickSigninButton()
     {
-        string username = Username.text;
+        string id = ID.text;
         string password = Password.text;
 
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(password))
         {
-            MainManager.Instance.ShowErrorPanel("모든 항목을\n입력해주세요.");
+            // 입력창 오류 팝업
             return;
         }
 
-        LoginUser(username, password);
+        var signinData = new SigninData();
+        signinData.id = id;
+        signinData.password = password;
+
+        // StartCoroutine(NetworkManage.Instance.Signin(signinData, () =>
+        // {
+        //     Destroy(gameObject);
+        // }, result =>
+        // {
+        //     if (result == 0)
+        //     {
+        //         ID.text = "";
+        //     }
+        //     else if (result == 1)
+        //     {
+        //         Password.text = "";
+        //     }
+        // }));
     }
 
     public void OnClickSignupButton()
     {
-        MainManager.Instance.CloseSigninPanel();
-        MainManager.Instance.ShowSignupPanel();
+        Debug.Log("Signup button clicked!");
     }
 
-    public void LoginUser(string username, string password)
-    {
-        // 로그인 요청
-        LoginManager.Instance.AttemptLogin(username, password, (result) =>
-        {
-            if (result == 0)
-            {
-                MainManager.Instance.ShowErrorPanel("아이디 또는 비밀번호가\n일치하지 않습니다.");
-                return;
-            }
-            else
-            {
-                MainManager.Instance.CloseSigninPanel();
-                MainManager.Instance.ShowErrorPanel("로그인 성공했습니다.");
-                MainManager.Instance.ShowMainPanel();
-            }
-        });
-    }
 
 }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 150441555108583826}
   - component: {fileID: 8453085956770792682}
-  - component: {fileID: 3546907125511064595}
+  - component: {fileID: 2072571286458135129}
   m_Layer: 0
   m_Name: Piece
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3546907125511064595
+--- !u!114 &2072571286458135129
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,13 +94,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 976281851169760228}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51198b795ed24d4488ed18c8c3dfbd12, type: 3}
+  m_Script: {fileID: 11500000, guid: b70eb50488d6cdd44a088161e29fd700, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pieceType: 0
-  attackType: 0
-  RangeAttackRange: 01000000
-  pieceCost: 0
-  attackPower: 1
-  attackRange: 1
-  pieceOwner: 0
+  _attackType: 1
+  RangeAttackRange: 
+  _attackRange: 1
+  _pieceOwner: 0

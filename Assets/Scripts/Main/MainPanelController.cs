@@ -10,7 +10,6 @@ public class MainPanelController : MonoBehaviour
     [SerializeField] private GameObject SettingPanel;
     [SerializeField] private GameObject BuyingPanel;
     [SerializeField] private GameObject RankingPanel;
-    [SerializeField] private GameObject ProfilePanel;
     [SerializeField] private Transform canvasTransform;
 
     private GameObject settingPanel;
@@ -21,8 +20,6 @@ public class MainPanelController : MonoBehaviour
 
     private GameObject rankingPanel;
     private RectTransform rankingPanelRect;
-    private GameObject profilePanel;
-    private RectTransform profilePanelRect;
 
     public void OnClick1pButton()
     {
@@ -90,22 +87,5 @@ public class MainPanelController : MonoBehaviour
         }
 
         buyingPanelRect.DOLocalMoveX(0f, 0.3f); 
-    }
-
-    public void OnClickProfileButton()
-    {
-       if(profilePanel == null) 
-       {
-            profilePanel = Instantiate(ProfilePanel, canvasTransform);
-            profilePanelRect = profilePanel.GetComponent<RectTransform>();
-            profilePanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
-        }
-        else
-        {
-            profilePanel.SetActive(true);
-        }
-
-        profilePanelRect.DOLocalMoveX(0f, 0.3f);
-       
     }
 }
