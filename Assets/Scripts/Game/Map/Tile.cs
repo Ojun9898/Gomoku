@@ -45,6 +45,12 @@ public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, I
     public Obstacle GetObstacle() { 
             return obstacle;
     }
+
+    public void SetObstacle(Obstacle obstacle)
+    {
+        this.obstacle = obstacle;
+    }
+    
     public Buff GetBuff()
     {
         return _buff;

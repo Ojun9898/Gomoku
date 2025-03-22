@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e33d7bc1cd1aa34baca4b48fc5fd8f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mc: {fileID: 0}
+  _mc: {fileID: 889808490}
   forbiddenMoveObjct: {fileID: 7964786777866648389, guid: 8b1760d8d5339a549bca6c2d5f8c3987, type: 3}
   piece: {fileID: 976281851169760228, guid: 0c1da41c3ad25774490c9f355951849a, type: 3}
   finishTurnButton: {fileID: 331564257}
@@ -335,7 +335,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16fc54cb1b167c740809d86622f702a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstacle: {fileID: 32611799262931044, guid: cd678289673f7dc43999e76cecca15ca, type: 3}
+  obstaclePrefab: {fileID: 0}
+  buffPrefab: {fileID: 0}
   tilePrefab: {fileID: 6075720127300758442, guid: 4b41facc398d4b5458bed8efb9f00b41, type: 3}
   tilesParent: {fileID: 889808491}
   tiles: []
