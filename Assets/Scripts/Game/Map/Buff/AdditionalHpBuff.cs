@@ -6,7 +6,7 @@ public class AdditionalHpBuff : Buff
 {
     public override void SetBuffContent()
     {
-        base.BuffContent = (Pc pc) =>
+        base.BuffContent = (Piece pc) =>
         {
             if (pc != null)
             {

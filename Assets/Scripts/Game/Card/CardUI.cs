@@ -24,7 +24,7 @@ public class CardUI : MonoBehaviour
     /// </summary>
     private void OnCardSelected()
     {
-        GameManager.Instance.SelectCard(_cardData.pieceType);
+        // GameManager.Instance.SelectCard(_cardData.pieceType);
     }
 
     /// <summary>

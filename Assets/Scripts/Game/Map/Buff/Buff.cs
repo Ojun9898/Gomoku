@@ -5,13 +5,13 @@ using UnityEngine;
 
 public abstract class Buff 
 {
-    protected  Action<Pc> BuffContent;
+    protected  Action<Piece> BuffContent;
     
-    public void On(Pc pc)
+    public void On(Piece piece)
     {
         Debug.Log("랜덤 버프 발동!");
         SetBuffContent();
-        BuffContent?.Invoke(pc);
+        BuffContent?.Invoke(piece);
     }
 
     public abstract void SetBuffContent();

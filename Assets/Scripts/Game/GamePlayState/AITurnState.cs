@@ -5,7 +5,7 @@ using UnityEngine;
 public class AITurnState : MonoBehaviour, IState
 {
     public StateMachine Fsm { get; set; }
-    public void Enter(Pc.Owner owner)
+    public void Enter(Piece.Owner owner)
     {
         //모든 피스 공격 초기화
         GameManager.Instance.PieceSIni1t();
@@ -18,7 +18,7 @@ public class AITurnState : MonoBehaviour, IState
         Debug.Log(owner + "의 턴 입니다");
     }
 
-    public void Exit(Pc.Owner owner)
+    public void Exit(Piece.Owner owner)
     {
         GameManager.Instance.SetTileClickEventOff();
         GameManager.Instance.SetFalseIsAleadySetPiece();

@@ -4,12 +4,12 @@ public class RullManager : MonoBehaviour
 {
     private int BOARD_SIZE;
     private List<Tile> board;
-    private Pc.Owner EMPTY = Pc.Owner.NONE;
-    private Pc.Owner BLACK ;
-    private Pc.Owner WHITE ;
-    private Pc.Owner currentPlayer;
+    private Piece.Owner EMPTY = Piece.Owner.NONE;
+    private Piece.Owner BLACK ;
+    private Piece.Owner WHITE ;
+    private Piece.Owner currentPlayer;
     private bool gameOver;
-    private Pc.Owner winner;
+    private Piece.Owner winner;
     private List<(int, int)> forbiddenMoves;
     private List<GameObject> forbiddenMovesOnMap = new List<GameObject>();
 
@@ -17,16 +17,16 @@ public class RullManager : MonoBehaviour
     readonly int[] dy = { 1, 1, 0, -1 };
 
 
-    public void Init(List<Tile> mapTiles,  Pc.Owner firstTurnPlayer)
+    public void Init(List<Tile> mapTiles,  Piece.Owner firstTurnPlayer)
     {
         BOARD_SIZE = 8;
         board = mapTiles;
         BLACK = firstTurnPlayer;
-        if (firstTurnPlayer == Pc.Owner.PLAYER_A) { 
-           WHITE = Pc.Owner.PLAYER_B;
-        }else if(firstTurnPlayer == Pc.Owner.PLAYER_B)
+        if (firstTurnPlayer == Piece.Owner.PLAYER_A) { 
+           WHITE = Piece.Owner.PLAYER_B;
+        }else if(firstTurnPlayer == Piece.Owner.PLAYER_B)
         {
-            WHITE = Pc.Owner.PLAYER_A;
+            WHITE = Piece.Owner.PLAYER_A;
         }
         gameOver = false;
         winner = EMPTY;
@@ -38,7 +38,7 @@ public class RullManager : MonoBehaviour
     /// <summary>
     /// 선공만 금수 계산
     /// </summary>
-    public void UpdateForbiddenMoves(Pc.Owner currentPlayer)
+    public void UpdateForbiddenMoves(Piece.Owner currentPlayer)
     {
         if (currentPlayer != BLACK) return;
         if (currentPlayer == BLACK)
@@ -49,7 +49,7 @@ public class RullManager : MonoBehaviour
                 for (int x = 0; x < BOARD_SIZE; x++)
                 {
                     int index = y * BOARD_SIZE + x; // 1차원 인덱스 계산
-                    if (board[index]._piece == null && IsForbiddenMove(x, y))
+                    if (board[index].Piece == null && IsForbiddenMove(x, y))
                     {
                         forbiddenMoves.Add((x, y));
                     }
@@ -74,7 +74,7 @@ public class RullManager : MonoBehaviour
             int index = y * BOARD_SIZE + x;
 
             board[index].isForbiddenMove = true;
-            forbiddenMovesOnMap.Add(Instantiate(GameManager.Instance.forbiddenMoveObjct, board[index].transform));
+            forbiddenMovesOnMap.Add(Instantiate(GameManager.Instance.forbiddenMoveObject, board[index].transform));
         }
     }
 
@@ -109,7 +109,7 @@ public class RullManager : MonoBehaviour
     {
         int index = y * BOARD_SIZE + x; // 1차원 인덱스 계산
         // 이미 돌이 있는 경우
-        if (board[index]._piece != null)
+        if (board[index].Piece != null)
             return false;
         else { 
             // 임시로 흑돌 놓기
@@ -124,7 +124,7 @@ public class RullManager : MonoBehaviour
 
 
             // 임시 돌 제거
-            Destroy(board[index]._piece.gameObject);
+            Destroy(board[index].Piece.gameObject);
             board[index].SetPiece(null);
 
             return isForbidden;
@@ -166,7 +166,7 @@ public class RullManager : MonoBehaviour
         while (IsInBoard(nx, ny))
         {
             int index = ny * BOARD_SIZE + nx; // 1차원 인덱스 계산
-            if (board[index]._piece?._pieceOwner == BLACK)
+            if (board[index].Piece?.pieceOwner == BLACK)
             {
                 count++;
                 nx += dx;
@@ -248,7 +248,7 @@ public class RullManager : MonoBehaviour
     {
         int index = y * BOARD_SIZE + x;
         // 돌을 놓기 전 상태로 되돌림
-        Pc originalValue = board[index]._piece;
+        Piece originalValue = board[index].Piece;
         board[index].SetPiece(null);
 
         for (int i = -4; i <= 0; i++)
@@ -273,14 +273,14 @@ public class RullManager : MonoBehaviour
                 {
                     blackCount++;
                 }
-                else if (board[index2]._piece != null)
+                else if (board[index2].Piece != null)
                 {
-                    if (board[index2]._piece._pieceOwner == BLACK) { 
+                    if (board[index2].Piece.pieceOwner == BLACK) { 
                     
                         blackCount++;
                     }
                 }
-                else if (board[index2]._piece == null)
+                else if (board[index2].Piece == null)
                 {
                     emptyCount++;
                 }
@@ -339,7 +339,7 @@ public class RullManager : MonoBehaviour
     {
         int index = y * BOARD_SIZE + x;
         // 돌을 놓기 전 상태로 되돌림
-        Pc originalValue = board[index]._piece;
+        Piece originalValue = board[index].Piece;
         board[index].SetPiece(null);
 
         // 열린 3 패턴 예시: _OOO_, _OO_O_, _O_OO_
@@ -388,7 +388,7 @@ public class RullManager : MonoBehaviour
 
                 if (expected == '_')
                 {
-                    if (board[index2]._piece != null)
+                    if (board[index2].Piece != null)
                     {
                         valid = false;
                         break;
@@ -400,7 +400,7 @@ public class RullManager : MonoBehaviour
                     {
                         // 현재 위치는 흑돌로 간주
                     }
-                    else if (board[index2]._piece?._pieceOwner != BLACK)
+                    else if (board[index2].Piece?.pieceOwner != BLACK)
                     {
                         valid = false;
                         break;
@@ -421,7 +421,7 @@ public class RullManager : MonoBehaviour
     /// 게임판 위에 오목이 있는지 체크
     /// </summary>
     /// <returns>우승자의 타입을 반환,None이면 게속 진행</returns>
-    public (bool,Pc.Owner) CheckGameOver()
+    public (bool,Piece.Owner) CheckGameOver()
     {
       
         // 승리 조건: 5개 연속
@@ -430,12 +430,12 @@ public class RullManager : MonoBehaviour
             for (int x = 0; x < BOARD_SIZE; x++)
             {
                 int index = y * BOARD_SIZE + x;
-                if (board[index]._piece != null)
+                if (board[index].Piece != null)
                 {
                     if (CheckFiveInARow(x, y))
                     {
                         gameOver = true;
-                        winner = board[index]._piece._pieceOwner;
+                        winner = board[index].Piece.pieceOwner;
                         return (true,winner);
                     }
                 }
@@ -450,9 +450,9 @@ public class RullManager : MonoBehaviour
     private bool CheckFiveInARow(int x, int y)
     {
         int index = y * BOARD_SIZE + x;
-        Pc.Owner stone = Pc.Owner.NONE;
-        if (board[index]._piece != null) { 
-            stone = board[index]._piece._pieceOwner;
+        Piece.Owner stone = Piece.Owner.NONE;
+        if (board[index].Piece != null) { 
+            stone = board[index].Piece.pieceOwner;
         }
         for (int dir = 0; dir < 4; dir++)
         {
@@ -466,7 +466,7 @@ public class RullManager : MonoBehaviour
 
                 int index2 = ny * BOARD_SIZE + nx;
                 if (IsInBoard(nx, ny)) {
-                    if (board[index2]._piece?._pieceOwner == stone) { 
+                    if (board[index2].Piece?.pieceOwner == stone) { 
                         count++;
                     }
                 }
@@ -483,7 +483,7 @@ public class RullManager : MonoBehaviour
                 int index2 = ny * BOARD_SIZE + nx;
                 if (IsInBoard(nx, ny))
                 {
-                    if (board[index2]._piece?._pieceOwner == stone)
+                    if (board[index2].Piece?.pieceOwner == stone)
                     {
                         count++;
                     }
@@ -505,36 +505,36 @@ public class RullManager : MonoBehaviour
     /// 양측 모든 말을 다 낸 후 게임이 끝나지 않았다면  점수 합계 후 우승자 가리기
     /// </summary>
     /// <returns>우승자의 타입을 보냄 , 무승부시 None</returns>
-    public Pc.Owner NotFinishedOnPlayingGame() {
+    public Piece.Owner NotFinishedOnPlayingGame() {
       
             int APoint = 0;
             int BPoint = 0;
             foreach (var tile in board)
             {
-                if (tile._piece?._pieceOwner == Pc.Owner.PLAYER_A)
+                if (tile.Piece?.pieceOwner == Piece.Owner.PLAYER_A)
                 {
-                    APoint += tile._piece.Cost;
+                    APoint += tile.Piece.cost;
                 }
-                else if (tile._piece?._pieceOwner == Pc.Owner.PLAYER_B)
+                else if (tile.Piece?.pieceOwner == Piece.Owner.PLAYER_B)
                 {
-                    BPoint += tile._piece.Cost;
+                    BPoint += tile.Piece.cost;
                 }
             }
 
         if (APoint > BPoint)
         {
             gameOver = true;
-            winner = Pc.Owner.PLAYER_A;
+            winner = Piece.Owner.PLAYER_A;
             return winner;
         }
         else if (APoint < BPoint)
         {
             gameOver = true;
-            winner = Pc.Owner.PLAYER_B;
+            winner = Piece.Owner.PLAYER_B;
             return winner;
         }
         else { 
-            return Pc.Owner.NONE;
+            return Piece.Owner.NONE;
         }
         
     }
@@ -550,7 +550,7 @@ public class RullManager : MonoBehaviour
     {
 
         int index = y * BOARD_SIZE + x;
-        Pc stone = board[index]._piece;
+        Piece stone = board[index].Piece;
         int[] dx = { 0, 1, 1, 1 };
         int[] dy = { 1, 1, 0, -1 };
 
@@ -563,7 +563,7 @@ public class RullManager : MonoBehaviour
             _count += CountStonesInDirection(x, y, -dx[dir], -dy[dir]);
 
             
-            if (stone?._pieceOwner == BLACK && _count == 5)
+            if (stone?.pieceOwner == BLACK && _count == 5)
                 return true;
         }
 

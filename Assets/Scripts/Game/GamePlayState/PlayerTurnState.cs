@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerTurnState : MonoBehaviour, IState
 {
     public StateMachine Fsm { get; set; }
-    public void Enter(Pc.Owner owner)
+    public void Enter(Piece.Owner owner)
     {
         //모든 피스 공격 초기화
         GameManager.Instance.PieceSIni1t();
@@ -19,7 +19,7 @@ public class PlayerTurnState : MonoBehaviour, IState
         Debug.Log("FirstDirectionState입니다");
     }
 
-    public void Exit(Pc.Owner owner)
+    public void Exit(Piece.Owner owner)
     {
         //ToDo : Ai 턴 생기면 활성화
         //GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
