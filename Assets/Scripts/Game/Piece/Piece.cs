@@ -23,6 +23,7 @@ public class Piece : HaveHp
     public PieceType pieceType;
     public AttackType attackType;
     public int[] RangeAttackRange;
+    
     [SerializeField] private int pieceCost;
     [SerializeField] private int attackPower = 1;
     [SerializeField] private int attackRange = 1;

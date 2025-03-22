@@ -6,7 +6,7 @@ public class CardUI : MonoBehaviour
 {
     [SerializeField] private Image cardImage;
     [SerializeField] private Button cardButton;
-    private DeckManager.Card cardData;
+    private DeckManager.Card _cardData;
 
     /// <summary>
     /// 카드 정보를 설정하는 메소드
@@ -14,7 +14,7 @@ public class CardUI : MonoBehaviour
     /// <param name="card"></param>
     public void SetCard(DeckManager.Card card)
     {
-        cardData = card;
+        _cardData = card;
         cardImage.sprite = card.cardSprite;
         cardButton.onClick.AddListener(OnCardSelected);
     }
@@ -24,7 +24,7 @@ public class CardUI : MonoBehaviour
     /// </summary>
     private void OnCardSelected()
     {
-        GameManager.Instance.SelectCard(cardData.pieceType);
+        GameManager.Instance.SelectCard(_cardData.pieceType);
     }
 
     /// <summary>

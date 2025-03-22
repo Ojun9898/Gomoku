@@ -4,8 +4,6 @@ using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour , IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-
-  
     [SerializeField] private GameObject cursorImageObj;
     [SerializeField] private GameObject clickedImageObj;
     private int _tileClickCount;

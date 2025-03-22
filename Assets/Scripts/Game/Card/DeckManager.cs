@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
+
 
 public class DeckManager : MonoBehaviour
 {
@@ -24,27 +26,44 @@ public class DeckManager : MonoBehaviour
     public void InitializeDeck()
     {
         // 덱에 카드 추가 (예시)
-        deck.Add(new Card { pieceType = Piece.PieceType.WARRIOR, pieceCost = 1, cardSprite = null }); // 실제 Sprite는 에디터에서 할당
-        deck.Add(new Card { pieceType = Piece.PieceType.MAGE, pieceCost = 2, cardSprite = null });
-        deck.Add(new Card { pieceType = Piece.PieceType.ARCHER, pieceCost = 3, cardSprite = null });
-        deck.Add(new Card { pieceType = Piece.PieceType.RANCER, pieceCost = 4, cardSprite = null });
-        // ... 추가로 덱에 카드들을 넣어주세요.
+        for (int i = 0; i < 15; i++)
+        {
+            int typeIndex = Random.Range(0, 4);
 
-        ShuffleDeck();
+            switch (typeIndex)
+            {
+                case 0:
+                    deck.Add(new Card { pieceType = Piece.PieceType.WARRIOR, pieceCost = 1, cardSprite = null });
+                    break;
+                
+                case 1:
+                    deck.Add(new Card { pieceType = Piece.PieceType.MAGE, pieceCost = 2, cardSprite = null });
+                    break;
+                
+                case 2:
+                    deck.Add(new Card { pieceType = Piece.PieceType.ARCHER, pieceCost = 3, cardSprite = null });
+                    break;
+                
+                case 3:
+                    deck.Add(new Card { pieceType = Piece.PieceType.RANCER, pieceCost = 4, cardSprite = null });
+                    break;
+            }
+        } 
+        
         DealCards();
     }
 
     /// <summary>
     /// 덱을 섞는 메소드
     /// </summary>
-    private void ShuffleDeck()
+    private void ShuffleDeck(List<Card> decks)
     {
-        for (int i = 0; i < deck.Count; i++)
+        for (int i = 0; i < decks.Count; i++)
         {
-            Card temp = deck[i];
-            int randomIndex = UnityEngine.Random.Range(i, deck.Count);
-            deck[i] = deck[randomIndex];
-            deck[randomIndex] = temp;
+            Card temp = decks[i];
+            int randomIndex = UnityEngine.Random.Range(i, decks.Count);
+            decks[i] = decks[randomIndex];
+            decks[randomIndex] = temp;
         }
     }
 
@@ -55,13 +74,18 @@ public class DeckManager : MonoBehaviour
     {
         playerACards.Clear();
         playerBCards.Clear();
-
+        
+        
+        
         // 플레이어 A와 B에게 각각 15장씩 카드 분배
         for (int i = 0; i < 15; i++)
         {
             playerACards.Add(deck[i]);
-            playerBCards.Add(deck[15 + i]);
+            playerBCards.Add(deck[i]);
         }
+        
+        ShuffleDeck(playerACards);
+        ShuffleDeck(playerBCards);
     }
 
     /// <summary>
@@ -75,14 +99,18 @@ public class DeckManager : MonoBehaviour
 
         switch (pieceType)
         {
+            // TODO: 플레이어 타입에 따라서 path값 수정.
             case Piece.PieceType.WARRIOR:
-                piecePrefab = Resources.Load<GameObject>("Prefabs/Warrior"); // Prefab 경로 예시
+                piecePrefab = Resources.Load<GameObject>("Units/Warrior"); // Prefab 경로 예시
                 break;
             case Piece.PieceType.MAGE:
-                piecePrefab = Resources.Load<GameObject>("Prefabs/Mage");
+                piecePrefab = Resources.Load<GameObject>("Units/Magician");
                 break;
             case Piece.PieceType.ARCHER:
-                piecePrefab = Resources.Load<GameObject>("Prefabs/Archer");
+                piecePrefab = Resources.Load<GameObject>("Units/Archer");
+                break;
+            case Piece.PieceType.RANCER:
+                piecePrefab = Resources.Load<GameObject>("Units/Rancer");
                 break;
             // 추가적인 PieceType에 대해 Prefab 로딩
         }
