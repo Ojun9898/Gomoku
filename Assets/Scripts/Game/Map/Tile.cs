@@ -6,6 +6,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 {
     [SerializeField] private GameObject cursorImageObj;
     [SerializeField] private GameObject ClickedImageObj;
+    [SerializeField] private GameObject handPanelPrefab;
     private int _tileClickCount;
     private bool isNeedOneClick;
     public int tileNumber;
@@ -17,6 +18,37 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public Action JustBeforDestroyPiece;
     public Action JustBeforDestroyObstacle;
+
+    private void Start()
+    {
+        handPanelPrefab = FindObjectOfType<HandManager>().transform.GetChild(0).gameObject;
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            // UI 요소 위를 클릭한 경우는 제외하고
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                // 마우스 위치에서 Raycast를 실행하여 Tile 컴포넌트가 있는지 확인
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (!Physics.Raycast(ray, out hit))
+                {
+                    handPanelPrefab.SetActive(false);
+                }
+                else
+                {
+                    // 만약 Raycast된 오브젝트에 Tile 컴포넌트가 없다면 카드 패널 비활성화
+                    if (hit.collider.GetComponent<Tile>() == null)
+                    {
+                        handPanelPrefab.SetActive(false);
+                    }
+                }
+            }
+        }
+    }
 
     public void ResetAll() {
         obstacle = null;
@@ -72,6 +104,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         if (!isNeedOneClick)
         {
             Debug.Log(GameManager.Instance.currentClickedTileindex + " : 클릭한 타일 인덱스");
+            handPanelPrefab.SetActive(true);
             var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (pieceAndCaseValue != null)
             {

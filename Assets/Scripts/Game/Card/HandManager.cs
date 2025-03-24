@@ -9,7 +9,7 @@ public class HandManager : MonoBehaviour
     private List<DeckManager.Card> _handCards = new List<DeckManager.Card>();
 
     // 플레이어의 Owner 타입을 지정 (인스펙터에서 바인딩 가능)
-    [SerializeField] private Piece.Owner playerOwner = Piece.Owner.PLAYER_A;
+    public Piece.Owner playerOwner = Piece.Owner.PLAYER_A;
 
     private DeckManager _deckManager;
     private Tile _selectedTile;
@@ -66,7 +66,7 @@ public class HandManager : MonoBehaviour
         }
 
         // 선택된 카드에 따른 유닛 생성: 선택된 타일의 위치에 생성
-        _deckManager.PlayCard(selectedCard.pieceType, _selectedTile.transform.position);
+        _deckManager.PlayCard(selectedCard.pieceType, _selectedTile.transform.position, playerOwner);
 
         // 손패에서 해당 카드를 제거하고 UI 갱신
         _handCards.Remove(selectedCard);

@@ -7,17 +7,31 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
     [SerializeField] private Image cardImage;
     [SerializeField] private Button cardButton;
 
-    // 흰색(PLAYER_A) 카드용 Sprite
-    [SerializeField] private Sprite warriorWhite;
-    [SerializeField] private Sprite mageWhite;
-    [SerializeField] private Sprite archerWhite;
-    [SerializeField] private Sprite lancerWhite;
+    [System.Serializable]
+    public struct PlayerA
+    {
+        // 흰색(PLAYER_A) 카드용 Sprite
+        public Sprite warriorWhite;
+        public Sprite archerWhite;
+        public Sprite magicianWhite;
+        public Sprite lancerWhite;
+    }
+    
+    [System.Serializable]
+    public struct PlayerB
+    {
+        // 검정색(PLAYER_B) 카드용 Sprite
+        public Sprite warriorBlack;
+        public Sprite archerBlack;
+        public Sprite magicianBlack;
+        public Sprite lancerBlack;
+    }
+    
+    [Header("Sprites")]
+    [SerializeField] private PlayerA playerA;
+    [SerializeField] private PlayerB playerB;
+    
 
-    // 검정색(PLAYER_B) 카드용 Sprite
-    [SerializeField] private Sprite warriorBlack;
-    [SerializeField] private Sprite mageBlack;
-    [SerializeField] private Sprite archerBlack;
-    [SerializeField] private Sprite lancerBlack;
 
     private DeckManager.Card _cardData;
     private Piece.Owner _owner; // 카드 소유자 (PLAYER_A, PLAYER_B)
@@ -44,16 +58,16 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         switch(_cardData.pieceType)
         {
             case Piece.PieceType.WARRIOR:
-                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? warriorWhite : warriorBlack;
+                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.warriorWhite : playerB.warriorBlack;
                 break;
             case Piece.PieceType.MAGE:
-                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? mageWhite : mageBlack;
+                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.magicianWhite : playerB.magicianBlack;
                 break;
             case Piece.PieceType.ARCHER:
-                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? archerWhite : archerBlack;
+                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.archerWhite : playerB.archerBlack;
                 break;
             case Piece.PieceType.RANCER:
-                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? lancerWhite : lancerBlack;
+                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.lancerWhite : playerB.lancerBlack;
                 break;
             default:
                 cardImage.sprite = null;

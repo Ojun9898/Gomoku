@@ -6494,7 +6494,7 @@ GameObject:
   - component: {fileID: 4504046839762797942}
   - component: {fileID: 150705331976650411}
   m_Layer: 5
-  m_Name: Rancer_Black
+  m_Name: RancerBlack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
