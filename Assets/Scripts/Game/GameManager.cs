@@ -15,6 +15,7 @@ public class GameManager : Singleton<GameManager>
 {
 
     [SerializeField] private MapController _mc;
+    
     public GameObject forbiddenMoveObjct;
     public GameObject piece;
 
@@ -35,8 +36,6 @@ public class GameManager : Singleton<GameManager>
     private bool IsAleadySetPiece;
     private StateMachine _FSM;
     private int ChangeTurnCount;
-
-
 
     public MapController Mc { get { return _mc; } }
     public int currentClickedTileindex
@@ -146,7 +145,7 @@ public class GameManager : Singleton<GameManager>
             if (_mc.tiles[currentClickedTileindex].GetObstacle() != null && (_lastClickedTileindex == -1 || _lastClickedTileindex == currentClickedTileindex))
             {
                 // 장애물 정보 보여주기
-                Debug.Log("장애물이 있습니다");
+                MessageManager.Instance.ShowMessagePanel("장애물이 있습니다");
                 return (null, 1);
             }
 
@@ -157,7 +156,7 @@ public class GameManager : Singleton<GameManager>
                 if (tileClickCount == 2)
                 {
                     if (IsAleadySetPiece) {
-                        Debug.Log("이미 말을 놓았습니다");
+                        MessageManager.Instance.ShowMessagePanel("이미 말이 존재합니다");
                         return (null, 3);
                     }
 
@@ -193,14 +192,14 @@ public class GameManager : Singleton<GameManager>
                 }
                 else if (_currentChoosingPiece._attackType == AttackType.CHOOSE_ATTACK || _currentChoosingPiece._attackType == AttackType.BUFF)
                 {
-                    Debug.Log("공격 대상이 없습니다");
+                    MessageManager.Instance.ShowMessagePanel("공격 대상이 없습니다");
                 }
                 // 범위 공격, 공격 범위 내에 있을 떄
 
             }
             else
             {
-                Debug.Log("공격범위 외 입니다");
+                MessageManager.Instance.ShowMessagePanel("공격 범위를 벗어납니다");
             }
             // + 장애물 처리
             FinishiedAttack();
@@ -239,7 +238,7 @@ public class GameManager : Singleton<GameManager>
 
                     if (tileClickCount >= 2 && _lastClickedTileindex == currentClickedTileindex)
                 {
-                    Debug.Log("자신의 말을  골랐습니다");
+                    MessageManager.Instance.ShowMessagePanel("플레이어의 말 입니다");
                     FinishiedAttack();
                     return (true, 0);
                 }
@@ -256,21 +255,21 @@ public class GameManager : Singleton<GameManager>
 
                         if (_attackingPiece._attackType == Pc.AttackType.CHOOSE_ATTACK)
                         {
-                            Debug.Log("아군을 직접적으로 공격할 수 없습니다");
+                            MessageManager.Instance.ShowMessagePanel("아군을 공격할 수 없습니다");
                         }
                         else if (_attackingPiece._attackType == Pc.AttackType.RANGE_ATTACK)
                         {
-                            Debug.Log("아군을 직접적으로 공격할 수 없습니다");
+                            MessageManager.Instance.ShowMessagePanel("아군을 공격할 수 없습니다");
                         }
                         else if (_attackingPiece._attackType == Pc.AttackType.BUFF)
                         {
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
-                            Debug.Log("아군을 치료했습니다" + _damagedPiece.name + "의 Hp:" + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + _damagedPiece.name + "의 Hp:" + _damagedPiece.Hp);
                         }
                     }
                     else
                     {
-                        Debug.Log("공격범위 외 입니다");
+                        MessageManager.Instance.ShowMessagePanel("공격 범위를 벗어납니다");
                     }
                     FinishiedAttack();
                     return (true, 0);
@@ -283,11 +282,11 @@ public class GameManager : Singleton<GameManager>
                 _lastClickedTileindex = currentClickedTileindex;
                 if (_currentChoosingPiece.IsAleayAttack)
                 {
-                    Debug.Log("이미 기능을 시전했습니다");
+                    MessageManager.Instance.ShowMessagePanel("이미 공격이 시작됐습니다");
                     FinishiedAttack();
                     return (true, 0);
                 }
-                Debug.Log("공격할 말을 선택하세요" + _lastClickedTileindex);
+                MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요" + _lastClickedTileindex);
             }
             else
             {
@@ -302,29 +301,29 @@ public class GameManager : Singleton<GameManager>
                         if (_attackingPiece._attackType == Pc.AttackType.CHOOSE_ATTACK)
                         {
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
-                            Debug.Log("적을 공격했습니다" + _damagedPiece.name + "의 Hp:" + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + _damagedPiece.name + "의 Hp:" + _damagedPiece.Hp);
 
                         }
                         else if (_attackingPiece._attackType == Pc.AttackType.RANGE_ATTACK)
                         {
                             //attackingPiece.RangeAttack(currentClickedTileindex);
-                            Debug.Log("적을 공격했습니다" + _damagedPiece.name + "의 Hp:" + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + _damagedPiece.name + "의 Hp:" + _damagedPiece.Hp);
 
                         }
                         else if (_attackingPiece._attackType == Pc.AttackType.BUFF)
                         {
-                            Debug.Log("적에게 버프를 줄 수 없습니다");
+                            MessageManager.Instance.ShowMessagePanel("적에게 버프를 줄 수 없습니다");
                         }
                     }
                     else
                     {
-                        Debug.Log("공격범위 외 입니다");
+                        MessageManager.Instance.ShowMessagePanel("공격 범위를 벗어납니다");
                     }
                     FinishiedAttack();
                 }
                 else
                 {
-                    Debug.Log("적의 말 입니다");
+                    MessageManager.Instance.ShowMessagePanel("상대의 말입니다");
                     return (true, 0);
                 }
             }
@@ -468,7 +467,7 @@ public class GameManager : Singleton<GameManager>
         if (IsAleadySetPiece)
         {
             ChangeTurnCount++;
-            Debug.Log("턴 진행 횟수 : "+ ChangeTurnCount);
+            MessageManager.Instance.ShowMessagePanel("턴 진행 횟수 : "+ ChangeTurnCount);
             if (ChangeTurnCount >= 30) { 
                 //우승자 넘기기
                 _FSM.ChangeState<FinishDirectionState>(_rullManager.NotFinishedOnPlayingGame());
@@ -499,7 +498,7 @@ public class GameManager : Singleton<GameManager>
             }
         }
         else { 
-            Debug.Log("말을 놓아주세요");
+            MessageManager.Instance.ShowMessagePanel("말을 놓아주세요");
         }
     }
 
