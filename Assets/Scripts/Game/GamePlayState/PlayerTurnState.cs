@@ -16,9 +16,10 @@ public class PlayerTurnState : MonoBehaviour, IState
         //타일 on
         GameManager.Instance.SetTileClickEvent();
         //타이머 ON
+        GameManager.Instance.GamePanelController.StartTimer();
         //카드 뽑기
         //코스트 증가
-        
+
         Debug.Log(owner + "의 턴 입니다");
     }
 
@@ -29,7 +30,7 @@ public class PlayerTurnState : MonoBehaviour, IState
         //ToDo : Ai 턴 생기면 활성화
         //GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
         GameManager.Instance.SetTileClickEventOff();
-        GameManager.Instance.SetFalseIsAleadySetPiece();
+        GameManager.Instance.SetFalseIsAlreadySetPiece();
         GameManager.Instance.AllTileClickCountSetZero();
         Debug.Log("PlayerTurnState 나갔습니다");
     }

@@ -21,7 +21,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     private void Start()
     {
-        handPanelPrefab = FindObjectOfType<HandManager>().transform.GetChild(0).gameObject;
+      handPanelPrefab = FindObjectOfType<HandManager>().transform.GetChild(0).gameObject;
     }
 
     void Update()
