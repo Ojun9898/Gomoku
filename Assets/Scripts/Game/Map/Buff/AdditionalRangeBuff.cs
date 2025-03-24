@@ -6,7 +6,7 @@ public class AdditionalRangeBuff : Buff
 {
     public override void SetBuffContent()
     {
-        base.BuffContent = (Piece pc) =>
+        base.BuffContent = (Pc pc) =>
         {
             if (pc != null)
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -6,8 +7,8 @@ using Random = UnityEngine.Random;
 public class DeckManager : MonoBehaviour
 {
     [SerializeField] private List<Card> deck = new List<Card>();
-    [SerializeField] private List<Card> playerACards = new List<Card>();
-    [SerializeField] private List<Card> playerBCards = new List<Card>();
+    public List<Card> playerACards = new List<Card>();
+    public List<Card> playerBCards = new List<Card>();
 
     /// <summary>
     /// 카드 데이터 구조체
@@ -18,6 +19,13 @@ public class DeckManager : MonoBehaviour
         public Piece.PieceType pieceType;
         public int pieceCost;
         public Sprite cardSprite; // 카드 이미지
+        // 추가: 카드가 어느 플레이어의 손패인지 나타내기 위해 owner를 추가 (기본값 PLAYER_A)
+        public Piece.Owner owner = Piece.Owner.PLAYER_A;
+    }
+
+    private void Start()
+    {
+        InitializeDeck();
     }
 
     /// <summary>
@@ -119,5 +127,18 @@ public class DeckManager : MonoBehaviour
         {
             Instantiate(piecePrefab, position, Quaternion.identity);
         }
+    }
+    
+    // 추가: 덱에서 카드를 Pop 방식으로 받아오는 메소드 (삭제 없이 추가)
+    public Card PopCard(List<Card> deckList)
+    {
+        if (deckList.Count > 0)
+        {
+            Card card = deckList[deckList.Count - 1];
+            deckList.RemoveAt(deckList.Count - 1);
+            return card;
+        }
+        Debug.LogWarning("덱이 비었습니다!");
+        return null;
     }
 }

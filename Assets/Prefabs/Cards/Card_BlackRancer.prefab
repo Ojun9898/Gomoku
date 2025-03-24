@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7493348231590929614}
   - component: {fileID: 6496166972421640561}
   - component: {fileID: 8278327811242654926}
+  - component: {fileID: 2933909473903488305}
   m_Layer: 5
   m_Name: Card_BlackRancer
   m_TagString: Untagged
@@ -121,6 +122,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2933909473903488305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045631311997114317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43648c8e4950f014a9cf10c594cd12be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardImage: {fileID: 0}
+  cardButton: {fileID: 0}
 --- !u!1 &5274955795985773207
 GameObject:
   m_ObjectHideFlags: 0

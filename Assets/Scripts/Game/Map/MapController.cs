@@ -6,10 +6,6 @@ using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
-public enum TileType
-{
-    Obstacle, Buff, PlayerA, PlayerB
-}
 
 public class MapController : MonoBehaviour
 {
@@ -17,46 +13,33 @@ public class MapController : MonoBehaviour
     [SerializeField] private GameObject buffPrefab;
     [SerializeField] private GameObject tilePrefab;
     [SerializeField] private Transform tilesParent;
-    
+    private int width = 8;
     public List<Tile> tiles;
-    
-    private TileType[] _currentTileInfo;
-    private Buff[] _buffs = new Buff[4];
     
     private int _buffIndex;
     private int _obstacleIndex;
     private const int BuffMaxCount = 5;
     private const int ObstacleMaxCount = 5;
     
-    private readonly HashSet<int> _usedIndexes = new HashSet<int>(); // 사용된 인덱스를 저장하는 HashSet
-
-    private void Awake()
-    {
-        CreateMap();
-    }
+    private readonly HashSet<int> _usedIndexes = new HashSet<int>();
 
     public void CreateMap()
     {
-        // 타일 생성 및 Mc에 등록
-        for (int i = 0; i <= 7; i++)
+        for (int i = 0; i <= width -1; i++)
         {
-            for (int j = 0; j <= 7; j++)
+            for (int j = 0; j <= width - 1; j++)
             {
-                Vector2 tilePos = new Vector2(j, i);
+                Vector2 tilePos = new Vector2(j * 1.25f, -i * 1.25f);
+                tilePos = new Vector2(tilePos.x -4.375f, tilePos.y +4.375f);
                 var tileInstance = Instantiate(tilePrefab, tilePos, Quaternion.identity, tilesParent);
-
-                // 생성된 타일을 Mc에 등록
+               
                 Tile tileComponent = tileInstance.GetComponent<Tile>();
                 tileComponent.tileNumber = i * 8 + j;
                 tiles.Add(tileComponent);
-                
-                
             }
         }
-        
-        ActiveBuff();
-        ActiveObstacle();
     }
+
 
     /// <summary>
     /// Tile의 랜덤 인덱스에 장애물 생성
@@ -78,7 +61,7 @@ public class MapController : MonoBehaviour
 
             _usedIndexes.Add(obstacleIndex); // 사용된 인덱스 저장
             var obstacleInstance = Instantiate(obstaclePrefab, tiles[obstacleIndex].transform);
-            tiles[obstacleIndex].obstacle = obstacleInstance.GetComponent<Obstacle>();
+            tiles[obstacleIndex].SetObstacle(obstacleInstance.GetComponent<Obstacle>());
         }
     }
 

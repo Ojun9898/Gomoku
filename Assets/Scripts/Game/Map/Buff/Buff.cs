@@ -5,9 +5,9 @@ using UnityEngine;
 
 public abstract class Buff 
 {
-    protected  Action<Piece> BuffContent;
+    protected  Action<Pc> BuffContent;
     
-    public void On(Piece pc)
+    public void On(Pc pc)
     {
         Debug.Log("랜덤 버프 발동!");
         SetBuffContent();
