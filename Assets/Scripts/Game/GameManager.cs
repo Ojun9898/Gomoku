@@ -5,8 +5,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Piece;
 using System.Linq;
-using UnityEngine.Serialization;
-using UnityEngine.XR;
 
 
 [RequireComponent(typeof(StateMachine))]

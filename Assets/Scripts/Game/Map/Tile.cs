@@ -1,13 +1,14 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] private GameObject cursorImageObj;
-    [SerializeField] private GameObject ClickedImageObj;
+    [SerializeField] private GameObject clickedImageObj;
     private int _tileClickCount;
-    private bool isNeedOneClick;
+    private bool _isNeedOneClick;
     public int tileNumber;
 
     [SerializeField] private Obstacle obstacle;
@@ -61,7 +62,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void ResetClick()
     {
-        ClickedImageObj.SetActive(false);
+        clickedImageObj.SetActive(false);
         _tileClickCount = 0;
     }
 
@@ -98,13 +99,13 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             if (needOneClick != null) { 
                 if (needOneClick.Value.isNeedJustOneClick)
                 {
-                    isNeedOneClick = true;
+                    _isNeedOneClick = true;
                 }
             }
             return;
         }
 
-        if (!isNeedOneClick)
+        if (!_isNeedOneClick)
         {
             Debug.Log(GameManager.Instance.CurrentClickedTileIndex + " : 클릭한 타일 인덱스");
             if (_handManager.playerOwner == Piece.Owner.PLAYER_A)
@@ -140,7 +141,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                         break;
                     case 0:
                         cursorImageObj.SetActive(false);
-                        ClickedImageObj.SetActive(true);
+                        clickedImageObj.SetActive(true);
                         break;
                     case 1:
                         _tileClickCount = 0;
@@ -158,7 +159,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             }
         }
         else {
-            isNeedOneClick = false;
+            _isNeedOneClick = false;
             _tileClickCount = 0;
         }
     }
@@ -190,7 +191,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void ResetTile() {
         cursorImageObj.SetActive(false);
-        ClickedImageObj.SetActive(false);
+        clickedImageObj.SetActive(false);
     }
 
     public void SetPiece(Piece piece) {

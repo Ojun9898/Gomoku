@@ -269,8 +269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorImageObj: {fileID: 2972535498509595510}
-  ClickedImageObj: {fileID: 1623480065376457769}
-  handPanelPrefab: {fileID: 0}
+  clickedImageObj: {fileID: 1623480065376457769}
   tileNumber: 0
   obstacle: {fileID: 0}
   isForbiddenMove: 0
