@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 4923351486001933412}
   - component: {fileID: 2945029845078667824}
   - component: {fileID: 3912439261827266086}
+  - component: {fileID: 3020389853883073404}
   m_Layer: 5
   m_Name: Card_WhiteWarrior
   m_TagString: Untagged
@@ -196,3 +197,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3020389853883073404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7652466317729760042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43648c8e4950f014a9cf10c594cd12be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardImage: {fileID: 0}
+  cardButton: {fileID: 0}

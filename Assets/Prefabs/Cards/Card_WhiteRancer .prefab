@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 4984350808581275629}
   - component: {fileID: 7186099742935908873}
   - component: {fileID: 1787001202680767811}
+  - component: {fileID: -967721668464635713}
   m_Layer: 5
   m_Name: 'Card_WhiteRancer '
   m_TagString: Untagged
@@ -196,3 +197,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-967721668464635713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6358171503967698448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43648c8e4950f014a9cf10c594cd12be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardImage: {fileID: 0}
+  cardButton: {fileID: 0}
