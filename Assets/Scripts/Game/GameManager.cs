@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using static Pc;
 using System.Linq;
 using UnityEditor.U2D.Aseprite;
+using Unity.Mathematics;
 
 
 [RequireComponent(typeof(StateMachine))]
@@ -17,13 +18,14 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private MapController _mc;
     public GameObject forbiddenMoveObjct;
     public GameObject piece;
-
+    public GamePanelController GamePanelController;
     public Button finishTurnButton;
     public Func<int, int, (GameObject piece, int caseValue)> FirstTimeTileClickEvent;
     public Func<int, int, (bool isNeedJustOneClick, int caseValue)> SecondTimeTileClickEvent;
     public Action RangeAttackVisualizeEvent;
     public Action RangeAttackResetVisualizeEvent;
     public RullManager _rullManager;
+    public AI ai;
     
     private Pc.Owner _playerType;
     private int _currentClickedTileindex;
@@ -32,7 +34,7 @@ public class GameManager : Singleton<GameManager>
     private Pc _attackingPiece;
     private Pc _currentChoosingPiece;
     private List<int> _currentPieceCanAttackRange;
-    private bool IsAleadySetPiece;
+    private bool IsAlreadySetPiece;
     private StateMachine _FSM;
     private int ChangeTurnCount;
 
@@ -83,6 +85,8 @@ public class GameManager : Singleton<GameManager>
         _playerType =  SetFirstAttackPlayer();
         //RullManager 가져오기
         _rullManager = FindAnyObjectByType<RullManager>();
+        //게임패널컨트롤러 가져오기
+        GamePanelController  = FindAnyObjectByType<GamePanelController>();
         //RullManager 초기화
         _rullManager.Init(_mc.tiles,_playerType);
 
@@ -156,13 +160,13 @@ public class GameManager : Singleton<GameManager>
 
                 if (tileClickCount == 2)
                 {
-                    if (IsAleadySetPiece) {
+                    if (IsAlreadySetPiece) {
                         Debug.Log("이미 말을 놓았습니다");
                         return (null, 3);
                     }
 
                     var _piece = SetPieceAtTile(currentClickedTileindex);
-                    IsAleadySetPiece = true;
+                    IsAlreadySetPiece = true;
                     var pc = _piece.GetComponent<Pc>();
                     pc?.SetPieceOwner(_playerType);
                     if (_playerType == Owner.PLAYER_B) {
@@ -281,7 +285,7 @@ public class GameManager : Singleton<GameManager>
 
                 //공격을 하기 위해서는 다른 말을 선택해야하니 공격자의 인덱스를 저장
                 _lastClickedTileindex = currentClickedTileindex;
-                if (_currentChoosingPiece.IsAleayAttack)
+                if (_currentChoosingPiece.IsAlreayAttack)
                 {
                     Debug.Log("이미 기능을 시전했습니다");
                     FinishiedAttack();
@@ -345,8 +349,8 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// 턴이 끝나면 부를 메소드 피스를 하나라도 두었는지의 유무를 초기화합니다
     /// </summary>
-    public void SetFalseIsAleadySetPiece() {
-        IsAleadySetPiece = false;
+    public void SetFalseIsAlreadySetPiece() {
+        IsAlreadySetPiece = false;
     }
 
     /// <summary>
@@ -465,8 +469,9 @@ public class GameManager : Singleton<GameManager>
 
     public void OnButtonClickFinishMyTurn() {
   
-        if (IsAleadySetPiece)
+        if (IsAlreadySetPiece)
         {
+            GameManager.Instance.GamePanelController.StopTimer();
             ChangeTurnCount++;
             Debug.Log("턴 진행 횟수 : "+ ChangeTurnCount);
             if (ChangeTurnCount >= 30) { 
@@ -514,7 +519,7 @@ public class GameManager : Singleton<GameManager>
            .ToList();  // 결과를 리스트로 반환
 
         foreach (var index in indices) { 
-                _mc.tiles[index]._piece.IsAleayAttack = false;
+                _mc.tiles[index]._piece.IsAlreayAttack = false;
         }
     }
 
@@ -525,6 +530,13 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public bool GetIsAlReadySetPiece() {
+        return IsAlreadySetPiece;
+    }
+    public void SetIsAlReadySetPiece(bool _IsAlreadySetPiece)
+    {
+        IsAlreadySetPiece = _IsAlreadySetPiece;
+    }
     public Pc.Owner GetCurrentPlayerType() {
         return _playerType;
     }

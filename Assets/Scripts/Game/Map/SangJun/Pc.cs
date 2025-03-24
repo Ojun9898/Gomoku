@@ -16,7 +16,7 @@ public class Pc : HaveHp
     }
 
     public AttackType _attackType;
-    public bool IsAleayAttack;
+    public bool IsAlreayAttack;
     public int[] RangeAttackRange;
     public readonly int Cost;
     [SerializeField] private int _attackPower=1;
@@ -69,16 +69,16 @@ public class Pc : HaveHp
 
     public void ChoseAttack(Pc pc,int attackPower) { 
         pc.Hp -= attackPower;
-        IsAleayAttack = true;
+        IsAlreayAttack = true;
     }
     public void Buff(Pc pc, int attackPower) {
         pc.Hp += attackPower;
-        IsAleayAttack = true;
+        IsAlreayAttack = true;
     }
     public void ChoseAttack(Obstacle oc, int attackPower)
     {
         oc.Hp -= attackPower;
-        IsAleayAttack = true;
+        IsAlreayAttack = true;
     }
 
 

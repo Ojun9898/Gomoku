@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class RullManager : MonoBehaviour
 {
+    public AI ai;
     private int BOARD_SIZE;
     private List<Tile> board;
     private Pc.Owner EMPTY = Pc.Owner.NONE;
@@ -20,6 +21,7 @@ public class RullManager : MonoBehaviour
     public void Init(List<Tile> mapTiles,  Pc.Owner firstTurnPlayer)
     {
         BOARD_SIZE = 8;
+        //ai = new AI(mapTiles);
         board = mapTiles;
         BLACK = firstTurnPlayer;
         if (firstTurnPlayer == Pc.Owner.PLAYER_A) { 

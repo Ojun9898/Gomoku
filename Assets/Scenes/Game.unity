@@ -2250,6 +2250,7 @@ MonoBehaviour:
   _mc: {fileID: 1020357780}
   forbiddenMoveObjct: {fileID: 7964786777866648389, guid: 8b1760d8d5339a549bca6c2d5f8c3987, type: 3}
   piece: {fileID: 976281851169760228, guid: 0c1da41c3ad25774490c9f355951849a, type: 3}
+  GamePanelController: {fileID: 0}
   finishTurnButton: {fileID: 1434667255967934846}
   _rullManager: {fileID: 0}
 --- !u!4 &247115418
@@ -3694,7 +3695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd019fc20debfc341aa815f149157844, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Timer: {fileID: 1594506252661295648}
+  timerObject: {fileID: 1594506252661295648}
   PausePanel: {fileID: 2675564367923826324, guid: a84803c449732c240b14df91dd942153, type: 3}
   canvasTransform: {fileID: 1909044259}
 --- !u!1 &1241444600
