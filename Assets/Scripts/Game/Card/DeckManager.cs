@@ -13,7 +13,7 @@ public class DeckManager : MonoBehaviour
     /// <summary>
     /// 카드 데이터 구조체
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class Card
     {
         public Piece.PieceType pieceType;
@@ -21,11 +21,6 @@ public class DeckManager : MonoBehaviour
         public Sprite cardSprite; // 카드 이미지
         // 추가: 카드가 어느 플레이어의 손패인지 나타내기 위해 owner를 추가 (기본값 PLAYER_A)
         public Piece.Owner owner = Piece.Owner.PLAYER_A;
-    }
-
-    private void Start()
-    {
-        InitializeDeck();
     }
 
     /// <summary>
@@ -45,11 +40,11 @@ public class DeckManager : MonoBehaviour
                     break;
                 
                 case 1:
-                    deck.Add(new Card { pieceType = Piece.PieceType.MAGE, pieceCost = 2, cardSprite = null });
+                    deck.Add(new Card { pieceType = Piece.PieceType.ARCHER, pieceCost = 2, cardSprite = null });
                     break;
                 
                 case 2:
-                    deck.Add(new Card { pieceType = Piece.PieceType.ARCHER, pieceCost = 3, cardSprite = null });
+                    deck.Add(new Card { pieceType = Piece.PieceType.MAGICIAN, pieceCost = 3, cardSprite = null });
                     break;
                 
                 case 3:
@@ -69,7 +64,7 @@ public class DeckManager : MonoBehaviour
         for (int i = 0; i < decks.Count; i++)
         {
             Card temp = decks[i];
-            int randomIndex = UnityEngine.Random.Range(i, decks.Count);
+            int randomIndex = Random.Range(i, decks.Count);
             decks[i] = decks[randomIndex];
             decks[randomIndex] = temp;
         }
@@ -115,22 +110,27 @@ public class DeckManager : MonoBehaviour
         {
             case Piece.PieceType.WARRIOR:
                 piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/WarriorWhite" : "Units/WarriorBlack");
+                piecePrefab.GetComponent<Piece>().hp = 3;
                 break;
-            case Piece.PieceType.MAGE:
+            case Piece.PieceType.MAGICIAN:
                 piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/MagicianWhite" : "Units/MagicianBlack");
+                piecePrefab.GetComponent<Piece>().hp = 1;
                 break;
             case Piece.PieceType.ARCHER:
                 piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/ArcherWhite" : "Units/ArcherBlack");
+                piecePrefab.GetComponent<Piece>().hp = 2;
                 break;
             case Piece.PieceType.RANCER:
                 piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/RancerWhite" : "Units/RancerBlack");
+                piecePrefab.GetComponent<Piece>().hp = 3;
                 break;
             // 추가 PieceType 처리 가능
         }
 
         if (piecePrefab != null)
         {
-            Instantiate(piecePrefab, position + Vector3.back, Quaternion.identity);
+            // Instantiate(piecePrefab, position + Vector3.back, Quaternion.identity);
+            GameManager.Instance.piece = piecePrefab;
         }
     }
 

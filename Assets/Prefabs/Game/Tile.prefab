@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 21
+  m_SortingOrder: -1
   m_Sprite: {fileID: -1686659439, guid: 5ed4163f6ea9afa4db05cc0e507de85a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -156,7 +156,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 21
+  m_SortingOrder: -1
   m_Sprite: {fileID: -2058886630, guid: 5ed4163f6ea9afa4db05cc0e507de85a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -244,7 +244,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 21
+  m_SortingOrder: -2
   m_Sprite: {fileID: -552127866, guid: 5ed4163f6ea9afa4db05cc0e507de85a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorImageObj: {fileID: 2972535498509595510}
-  ClickedImageObj: {fileID: 1623480065376457769}
+  clickedImageObj: {fileID: 1623480065376457769}
   tileNumber: 0
   obstacle: {fileID: 0}
   isForbiddenMove: 0

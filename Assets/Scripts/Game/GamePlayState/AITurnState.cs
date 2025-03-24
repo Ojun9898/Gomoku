@@ -1,20 +1,17 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AITurnState : MonoBehaviour, IState
 {
     public StateMachine Fsm { get; set; }
-    public void Enter(Pc.Owner owner)
+    public void Enter(Piece.Owner owner)
     {
         //렌즈룰
-        GameManager.Instance._rullManager.UpdateForbiddenMoves(owner);
+        GameManager.Instance.ruleManager.UpdateForbiddenMoves(owner);
 
         //모든 피스 공격 초기화
-        GameManager.Instance.PieceSIni1t();
+        GameManager.Instance.PiecesInit();
         GameManager.Instance.SetTileClickEvent();
-        GameManager.Instance.GamePanelController.StartTimer();
+        GameManager.Instance.gamePanelController.StartTimer();
 
         //돌 두기 ai
         //돌 공격 ai
@@ -24,9 +21,9 @@ public class AITurnState : MonoBehaviour, IState
         Debug.Log(owner + "의 턴 입니다");
     }
 
-    public void Exit(Pc.Owner owner)
+    public void Exit(Piece.Owner owner)
     {
-        GameManager.Instance._rullManager.DeleteForviddensOnMap();
+        GameManager.Instance.ruleManager.DeleteForviddensOnMap();
         GameManager.Instance.SetTileClickEventOff();
         GameManager.Instance.SetFalseIsAlreadySetPiece();
         GameManager.Instance.AllTileClickCountSetZero();

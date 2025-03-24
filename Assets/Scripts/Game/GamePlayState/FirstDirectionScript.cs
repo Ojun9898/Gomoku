@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -7,7 +5,7 @@ public class FirstDirectionScript : MonoBehaviour, IState
 {
     public StateMachine Fsm { get; set; }
 
-    public void Enter(Pc.Owner owner)
+    public void Enter(Piece.Owner owner)
     {
 
         // 시작 연출
@@ -16,7 +14,7 @@ public class FirstDirectionScript : MonoBehaviour, IState
         // 5초 후에 AI턴으로 넘어갈지 플레이어 턴으로 넘어갈지 고름
         DOVirtual.DelayedCall(1, () =>
         {
-            if (owner == Pc.Owner.PLAYER_A)
+            if (owner == Piece.Owner.PLAYER_A)
             {
                 Fsm.ChangeState<PlayerTurnState>(owner);
             }
@@ -26,7 +24,7 @@ public class FirstDirectionScript : MonoBehaviour, IState
         });        
     }
 
-    public void Exit(Pc.Owner owner)
+    public void Exit(Piece.Owner owner)
     {
         Debug.Log("FirstDirectionState 나갔습니다");
     }

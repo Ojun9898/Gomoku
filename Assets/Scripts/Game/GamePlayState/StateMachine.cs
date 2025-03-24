@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
-using static Pc;
 
 public enum StaterType
 {
@@ -40,10 +37,10 @@ public class StateMachine : MonoBehaviour
 {
     [SerializeField] private string defaultState;
 
-    private IState currentState;
-    private Dictionary<Type, IState> states = new Dictionary<Type, IState>();
+    private IState _currentState;
+    private Dictionary<Type, IState> _states = new Dictionary<Type, IState>();
 
-    public void Run(Pc.Owner owner)
+    public void Run(Piece.Owner owner)
     {
         List<IState> states = this.CreateStates(StaterType.PlayGame);
         foreach (var state in states)
@@ -57,19 +54,19 @@ public class StateMachine : MonoBehaviour
     public void AddState(IState state)
     {
         state.Fsm = this;
-        states.Add(state.GetType(), state);
+        _states.Add(state.GetType(), state);
     }
 
-    public void ChangeState<T>(Pc.Owner owner) where T : IState
+    public void ChangeState<T>(Piece.Owner owner) where T : IState
     {
         ChangeState(typeof(T), owner);
     }
 
-    private void ChangeState(Type stateType, Pc.Owner owner)
+    private void ChangeState(Type stateType, Piece.Owner owner)
     {
-        currentState?.Exit(owner);
+        _currentState?.Exit(owner);
 
-        if (!states.TryGetValue(stateType, out currentState)) return;
-        currentState?.Enter(owner);
+        if (!_states.TryGetValue(stateType, out _currentState)) return;
+        _currentState?.Enter(owner);
     }
 }

@@ -1,27 +1,29 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] private GameObject cursorImageObj;
-    [SerializeField] private GameObject ClickedImageObj;
-    [SerializeField] private GameObject handPanelPrefab;
+    [SerializeField] private GameObject clickedImageObj;
     private int _tileClickCount;
-    private bool isNeedOneClick;
+    private bool _isNeedOneClick;
     public int tileNumber;
 
     [SerializeField] private Obstacle obstacle;
     public bool isForbiddenMove;
     private Buff _buff;
-    public Pc _piece { get; private set; }
+    public Piece Piece { get; private set; }
+    
+    private HandManager _handManager;
 
-    public Action JustBeforDestroyPiece;
-    public Action JustBeforDestroyObstacle;
+    public Action JustBeforeDestroyPiece;
+    public Action JustBeforeDestroyObstacle;
 
     private void Start()
     {
-      handPanelPrefab = FindObjectOfType<HandManager>().transform.GetChild(0).gameObject;
+        _handManager = FindObjectOfType<HandManager>();
     }
 
     void Update()
@@ -36,14 +38,16 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                 RaycastHit hit;
                 if (!Physics.Raycast(ray, out hit))
                 {
-                    handPanelPrefab.SetActive(false);
+                        _handManager.playerAHandPanel.SetActive(false);
+                        _handManager.playerBHandPanel.SetActive(false);
                 }
                 else
                 {
                     // 만약 Raycast된 오브젝트에 Tile 컴포넌트가 없다면 카드 패널 비활성화
                     if (hit.collider.GetComponent<Tile>() == null)
                     {
-                        handPanelPrefab.SetActive(false);
+                        _handManager.playerAHandPanel.SetActive(false);
+                        _handManager.playerBHandPanel.SetActive(false);
                     }
                 }
             }
@@ -53,12 +57,12 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public void ResetAll() {
         obstacle = null;
         _buff = null;
-        _piece = null;
+        Piece = null;
     }
 
     public void ResetClick()
     {
-        ClickedImageObj.SetActive(false);
+        clickedImageObj.SetActive(false);
         _tileClickCount = 0;
     }
 
@@ -81,38 +85,45 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void OnClickTileButton() {
         _tileClickCount++;
-        if (JustBeforDestroyObstacle == null)
+        if (JustBeforeDestroyObstacle == null)
         {
-            JustBeforDestroyPiece = () => { this.obstacle = null; };
+            JustBeforeDestroyPiece = () => { this.obstacle = null; };
         }
-        if (_piece != null)
+        if (Piece != null)
         {
-            if (JustBeforDestroyPiece == null)
+            if (JustBeforeDestroyPiece == null)
             {
-                JustBeforDestroyPiece = () => { this._piece = null; };
+                JustBeforeDestroyPiece = () => { this.Piece = null; };
             }
             var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (needOneClick != null) { 
                 if (needOneClick.Value.isNeedJustOneClick)
                 {
-                    isNeedOneClick = true;
+                    _isNeedOneClick = true;
                 }
             }
             return;
         }
 
-        if (!isNeedOneClick)
+        if (!_isNeedOneClick)
         {
-            Debug.Log(GameManager.Instance.currentClickedTileindex + " : 클릭한 타일 인덱스");
-            handPanelPrefab.SetActive(true);
+            Debug.Log(GameManager.Instance.CurrentClickedTileIndex + " : 클릭한 타일 인덱스");
+            if (_handManager.playerOwner == Piece.Owner.PLAYER_A)
+            {
+                _handManager.playerAHandPanel.SetActive(true);
+            }
+            else
+            {
+                _handManager.playerBHandPanel.SetActive(true);
+            }
             var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (pieceAndCaseValue != null)
             {
                 var caseValue = pieceAndCaseValue.Value.caseValue;
-                if (_piece == null)
+                if (Piece == null)
                 {
-                    _piece = pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
-                    (bool, Pc.Owner) CheckSome = GameManager.Instance._rullManager.CheckGameOver();
+                    Piece = pieceAndCaseValue.Value.piece?.GetComponent<Piece>();
+                    (bool, Piece.Owner) CheckSome = GameManager.Instance.ruleManager.CheckGameOver();
                     if (CheckSome.Item1)
                     {
                         GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
@@ -125,12 +136,12 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                 switch (caseValue)
                 {
                     case -1:
-                        Debug.Log(_piece.GetPieceOwner() + "의 말 입니다");
+                        Debug.Log(Piece.GetPieceOwner() + "의 말 입니다");
                         ResetClick();
                         break;
                     case 0:
                         cursorImageObj.SetActive(false);
-                        ClickedImageObj.SetActive(true);
+                        clickedImageObj.SetActive(true);
                         break;
                     case 1:
                         _tileClickCount = 0;
@@ -148,14 +159,14 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             }
         }
         else {
-            isNeedOneClick = false;
+            _isNeedOneClick = false;
             _tileClickCount = 0;
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (obstacle == null && _piece == null && _tileClickCount == 0)
+        if (obstacle == null && Piece == null && _tileClickCount == 0)
             cursorImageObj.SetActive(true);
         GameManager.Instance.RangeAttackVisualizeEvent?.Invoke();
     }
@@ -180,10 +191,10 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void ResetTile() {
         cursorImageObj.SetActive(false);
-        ClickedImageObj.SetActive(false);
+        clickedImageObj.SetActive(false);
     }
 
-    public void SetPiece(Pc pc) {
-        _piece = pc;
+    public void SetPiece(Piece piece) {
+        this.Piece = piece;
     }
 }
