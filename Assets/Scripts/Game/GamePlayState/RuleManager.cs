@@ -49,7 +49,7 @@ public class RuleManager : MonoBehaviour
                 for (int x = 0; x < BOARD_SIZE; x++)
                 {
                     int index = y * BOARD_SIZE + x; // 1차원 인덱스 계산
-                    if (board[index]._piece == null && IsForbiddenMove(x, y))
+                    if (board[index].Piece == null && IsForbiddenMove(x, y))
                     {
                         forbiddenMoves.Add((x, y));
                     }
@@ -109,7 +109,7 @@ public class RuleManager : MonoBehaviour
     {
         int index = y * BOARD_SIZE + x; // 1차원 인덱스 계산
         // 이미 돌이 있는 경우
-        if (board[index]._piece != null)
+        if (board[index].Piece != null)
             return false;
         else { 
             // 임시로 흑돌 놓기
@@ -124,7 +124,7 @@ public class RuleManager : MonoBehaviour
 
 
             // 임시 돌 제거
-            Destroy(board[index]._piece.gameObject);
+            Destroy(board[index].Piece.gameObject);
             board[index].SetPiece(null);
 
             return isForbidden;
@@ -166,7 +166,7 @@ public class RuleManager : MonoBehaviour
         while (IsInBoard(nx, ny))
         {
             int index = ny * BOARD_SIZE + nx; // 1차원 인덱스 계산
-            if (board[index]._piece?.pieceOwner == BLACK)
+            if (board[index].Piece?.pieceOwner == BLACK)
             {
                 count++;
                 nx += dx;
@@ -248,7 +248,7 @@ public class RuleManager : MonoBehaviour
     {
         int index = y * BOARD_SIZE + x;
         // 돌을 놓기 전 상태로 되돌림
-        Piece originalValue = board[index]._piece;
+        Piece originalValue = board[index].Piece;
         board[index].SetPiece(null);
 
         for (int i = -4; i <= 0; i++)
@@ -273,14 +273,14 @@ public class RuleManager : MonoBehaviour
                 {
                     blackCount++;
                 }
-                else if (board[index2]._piece != null)
+                else if (board[index2].Piece != null)
                 {
-                    if (board[index2]._piece.pieceOwner == BLACK) { 
+                    if (board[index2].Piece.pieceOwner == BLACK) { 
                     
                         blackCount++;
                     }
                 }
-                else if (board[index2]._piece == null)
+                else if (board[index2].Piece == null)
                 {
                     emptyCount++;
                 }
@@ -339,7 +339,7 @@ public class RuleManager : MonoBehaviour
     {
         int index = y * BOARD_SIZE + x;
         // 돌을 놓기 전 상태로 되돌림
-        Piece originalValue = board[index]._piece;
+        Piece originalValue = board[index].Piece;
         board[index].SetPiece(null);
 
         // 열린 3 패턴 예시: _OOO_, _OO_O_, _O_OO_
@@ -388,7 +388,7 @@ public class RuleManager : MonoBehaviour
 
                 if (expected == '_')
                 {
-                    if (board[index2]._piece != null)
+                    if (board[index2].Piece != null)
                     {
                         valid = false;
                         break;
@@ -400,7 +400,7 @@ public class RuleManager : MonoBehaviour
                     {
                         // 현재 위치는 흑돌로 간주
                     }
-                    else if (board[index2]._piece?.pieceOwner != BLACK)
+                    else if (board[index2].Piece?.pieceOwner != BLACK)
                     {
                         valid = false;
                         break;
@@ -430,12 +430,12 @@ public class RuleManager : MonoBehaviour
             for (int x = 0; x < BOARD_SIZE; x++)
             {
                 int index = y * BOARD_SIZE + x;
-                if (board[index]._piece != null)
+                if (board[index].Piece != null)
                 {
                     if (CheckFiveInARow(x, y))
                     {
                         gameOver = true;
-                        winner = board[index]._piece.pieceOwner;
+                        winner = board[index].Piece.pieceOwner;
                         return (true,winner);
                     }
                 }
@@ -451,8 +451,8 @@ public class RuleManager : MonoBehaviour
     {
         int index = y * BOARD_SIZE + x;
         Piece.Owner stone = Piece.Owner.NONE;
-        if (board[index]._piece != null) { 
-            stone = board[index]._piece.pieceOwner;
+        if (board[index].Piece != null) { 
+            stone = board[index].Piece.pieceOwner;
         }
         for (int dir = 0; dir < 4; dir++)
         {
@@ -466,7 +466,7 @@ public class RuleManager : MonoBehaviour
 
                 int index2 = ny * BOARD_SIZE + nx;
                 if (IsInBoard(nx, ny)) {
-                    if (board[index2]._piece?.pieceOwner == stone) { 
+                    if (board[index2].Piece?.pieceOwner == stone) { 
                         count++;
                     }
                 }
@@ -483,7 +483,7 @@ public class RuleManager : MonoBehaviour
                 int index2 = ny * BOARD_SIZE + nx;
                 if (IsInBoard(nx, ny))
                 {
-                    if (board[index2]._piece?.pieceOwner == stone)
+                    if (board[index2].Piece?.pieceOwner == stone)
                     {
                         count++;
                     }
@@ -511,13 +511,13 @@ public class RuleManager : MonoBehaviour
             int BPoint = 0;
             foreach (var tile in board)
             {
-                if (tile._piece?.pieceOwner == Piece.Owner.PLAYER_A)
+                if (tile.Piece?.pieceOwner == Piece.Owner.PLAYER_A)
                 {
-                    APoint += tile._piece.cost;
+                    APoint += tile.Piece.cost;
                 }
-                else if (tile._piece?.pieceOwner == Piece.Owner.PLAYER_B)
+                else if (tile.Piece?.pieceOwner == Piece.Owner.PLAYER_B)
                 {
-                    BPoint += tile._piece.cost;
+                    BPoint += tile.Piece.cost;
                 }
             }
 
@@ -550,7 +550,7 @@ public class RuleManager : MonoBehaviour
     {
 
         int index = y * BOARD_SIZE + x;
-        Piece stone = board[index]._piece;
+        Piece stone = board[index].Piece;
         int[] dx = { 0, 1, 1, 1 };
         int[] dy = { 1, 1, 0, -1 };
 

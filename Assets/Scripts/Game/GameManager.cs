@@ -226,15 +226,15 @@ public class GameManager : Singleton<GameManager>
                  }
              };*/
 
-            if (mc.tiles[CurrentClickedTileIndex]._piece.GetPieceOwner() == _playerType)
+            if (mc.tiles[CurrentClickedTileIndex].Piece.GetPieceOwner() == _playerType)
             {
                 
                 if (_currentPieceCanAttackRange == null)
                 {
-                    _currentPieceCanAttackRange = CanAttackRangeCalculate(CurrentClickedTileIndex, mc.tiles[CurrentClickedTileIndex]._piece.GetAttackRange());
+                    _currentPieceCanAttackRange = CanAttackRangeCalculate(CurrentClickedTileIndex, mc.tiles[CurrentClickedTileIndex].Piece.GetAttackRange());
                     VisualizeAttackRange(_currentPieceCanAttackRange);
                 }
-                _currentChoosingPiece = mc.tiles[CurrentClickedTileIndex]._piece;
+                _currentChoosingPiece = mc.tiles[CurrentClickedTileIndex].Piece;
 
     
 
@@ -249,7 +249,7 @@ public class GameManager : Singleton<GameManager>
                 if (_lastClickedTileIndex != -1)
                 { // 공격턴에 아군 선택 상황
                     _damagedPiece = _currentChoosingPiece;
-                    _attackingPiece = mc.tiles[_lastClickedTileIndex]._piece;
+                    _attackingPiece = mc.tiles[_lastClickedTileIndex].Piece;
 
                     
 
@@ -297,8 +297,8 @@ public class GameManager : Singleton<GameManager>
                 // 말의 정보를 보여줌
                 if (_lastClickedTileIndex != -1)
                 { // 공격턴에 적 선택 상황
-                    _damagedPiece = mc.tiles[CurrentClickedTileIndex]._piece;
-                    _attackingPiece = mc.tiles[_lastClickedTileIndex]._piece;
+                    _damagedPiece = mc.tiles[CurrentClickedTileIndex].Piece;
+                    _attackingPiece = mc.tiles[_lastClickedTileIndex].Piece;
                     if (_currentPieceCanAttackRange.Contains(CurrentClickedTileIndex))
                     {
                         if (_attackingPiece.attackType == AttackType.CHOOSE_ATTACK)
@@ -476,16 +476,19 @@ public class GameManager : Singleton<GameManager>
                 _fsm.ChangeState<FinishDirectionState>(ruleManager.NotFinishedOnPlayingGame());
                 return;
             }
-
+            
+            
             switch (_playerType)
             {
                 case Owner.PLAYER_A:
                     _playerType = Owner.PLAYER_B;
                     _handManager.playerOwner = _playerType;
+                    _handManager.playerAHandPanel.SetActive(false);
                     break;
                 case Owner.PLAYER_B:
                     _playerType = Owner.PLAYER_A;
                     _handManager.playerOwner = _playerType;
+                    _handManager.playerBHandPanel.SetActive(false);
                     break;
             }
             FinishedAttack();
@@ -513,12 +516,12 @@ public class GameManager : Singleton<GameManager>
     public void PieceSInit()
     {
         var indices = mc.tiles.Select((tile, idx) => new { Tile = tile, Index = idx })  // Tile과 해당 인덱스를 함께 반환
-           .Where(x => x.Tile._piece != null)  // Piece가 있는 Tile만 필터링
+           .Where(x => x.Tile.Piece != null)  // Piece가 있는 Tile만 필터링
            .Select(x => x.Index)  // 인덱스만 추출
            .ToList();  // 결과를 리스트로 반환
 
         foreach (var index in indices) { 
-                mc.tiles[index]._piece.isAlreadyAttack = false;
+                mc.tiles[index].Piece.isAlreadyAttack = false;
         }
     }
 
