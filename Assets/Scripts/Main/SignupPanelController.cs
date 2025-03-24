@@ -30,7 +30,7 @@ public class SignupPanelController : MonoBehaviour
         // CSV 파일이 없으면 헤더 추가
         if (!File.Exists(filePath))
         {
-            File.WriteAllText(filePath, "Date,Username,Password,Nickname,Score,Coin\n");
+            File.WriteAllText(filePath, "Date,Username,Password,Nickname,Score,Buy\n");
         }
     }
     public void OnClickSigninButton()
@@ -56,6 +56,7 @@ public class SignupPanelController : MonoBehaviour
     public void RegisterUser(string nickname, string username, string password)
     {
         float score = 0;
+        string buy = "";
 
         // 글자수 제한
         if (nickname.Length < 3 || username.Length < 3 || password.Length < 3)
@@ -92,7 +93,7 @@ public class SignupPanelController : MonoBehaviour
         string date = DateTime.Now.ToString("yyyy-MM-dd");
 
         // 새로운 유저 데이터 추가
-        string newEntry = $"{date},{username},{password},{nickname},{score}\n";
+        string newEntry = $"{date},{username},{password},{nickname},{score},{buy}\n";
         File.AppendAllText(filePath, newEntry);
 
         MainManager.Instance.ShowErrorPanel("회원가입이\n완료되었습니다.");

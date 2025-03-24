@@ -140,27 +140,6 @@ public class SPUM_UIManager : MonoBehaviour
                 CloseToast();
             }
         }
-
-        // if (_hexColorText.text != null)
-        // {
-        //     nowColor = HexToColor(_hexColorText.text);
-        // }
-    }
-    
-    public static Color HexToColor(string hex)
-    {
-        hex = hex.Replace("#", ""); // "#" 문자 제거
-        if (hex.Length != 6)
-        {
-            Debug.LogError("유효하지 않은 Hex 값입니다.");
-            return Color.white;
-        }
-
-        byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-        byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-        byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-
-        return new Color32(r, g, b, 255);
     }
     public void SetPackageActiveStateList(){{
         SpritePackagesFilterList = spumManager.SpritePackageNameList.ToDictionary(name => name, name => true);
