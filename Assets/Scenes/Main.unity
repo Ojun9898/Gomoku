@@ -374,7 +374,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 1605494001}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -1262,6 +1262,10 @@ PrefabInstance:
     - target: {fileID: 2114361575412452140, guid: 60abb7b79affecf448b3a3ee7ab0ab8c, type: 3}
       propertyPath: m_Name
       value: Grid
+      objectReference: {fileID: 0}
+    - target: {fileID: 3470637111311576904, guid: 60abb7b79affecf448b3a3ee7ab0ab8c, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
