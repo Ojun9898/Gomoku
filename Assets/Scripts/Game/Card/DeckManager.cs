@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -6,8 +7,8 @@ using Random = UnityEngine.Random;
 public class DeckManager : MonoBehaviour
 {
     [SerializeField] private List<Card> deck = new List<Card>();
-    [SerializeField] private List<Card> playerACards = new List<Card>();
-    [SerializeField] private List<Card> playerBCards = new List<Card>();
+    public List<Card> playerACards = new List<Card>();
+    public List<Card> playerBCards = new List<Card>();
 
     /// <summary>
     /// 카드 데이터 구조체
@@ -18,6 +19,13 @@ public class DeckManager : MonoBehaviour
         public Piece.PieceType pieceType;
         public int pieceCost;
         public Sprite cardSprite; // 카드 이미지
+        // 추가: 카드가 어느 플레이어의 손패인지 나타내기 위해 owner를 추가 (기본값 PLAYER_A)
+        public Piece.Owner owner = Piece.Owner.PLAYER_A;
+    }
+
+    private void Start()
+    {
+        InitializeDeck();
     }
 
     /// <summary>
@@ -80,7 +88,13 @@ public class DeckManager : MonoBehaviour
         // 플레이어 A와 B에게 각각 15장씩 카드 분배
         for (int i = 0; i < 15; i++)
         {
+            deck[i].owner = Piece.Owner.PLAYER_A;
             playerACards.Add(deck[i]);
+        }
+        
+        for (int i = 0; i < 15; i++)
+        {
+            deck[i].owner = Piece.Owner.PLAYER_B;
             playerBCards.Add(deck[i]);
         }
         
@@ -93,31 +107,44 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     /// <param name="pieceType"></param>
     /// <param name="position"></param>
-    public void PlayCard(Piece.PieceType pieceType, Vector3 position)
+    public void PlayCard(Piece.PieceType pieceType, Vector3 position, Piece.Owner owner)
     {
         GameObject piecePrefab = null;
 
         switch (pieceType)
         {
-            // TODO: 플레이어 타입에 따라서 path값 수정.
             case Piece.PieceType.WARRIOR:
-                piecePrefab = Resources.Load<GameObject>("Units/Warrior"); // Prefab 경로 예시
+                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/WarriorWhite" : "Units/WarriorBlack");
                 break;
             case Piece.PieceType.MAGE:
-                piecePrefab = Resources.Load<GameObject>("Units/Magician");
+                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/MagicianWhite" : "Units/MagicianBlack");
                 break;
             case Piece.PieceType.ARCHER:
-                piecePrefab = Resources.Load<GameObject>("Units/Archer");
+                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/ArcherWhite" : "Units/ArcherBlack");
                 break;
             case Piece.PieceType.RANCER:
-                piecePrefab = Resources.Load<GameObject>("Units/Rancer");
+                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/RancerWhite" : "Units/RancerBlack");
                 break;
-            // 추가적인 PieceType에 대해 Prefab 로딩
+            // 추가 PieceType 처리 가능
         }
 
         if (piecePrefab != null)
         {
-            Instantiate(piecePrefab, position, Quaternion.identity);
+            Instantiate(piecePrefab, position + Vector3.back, Quaternion.identity);
         }
+    }
+
+    
+    // 추가: 덱에서 카드를 Pop 방식으로 받아오는 메소드 (삭제 없이 추가)
+    public Card PopCard(List<Card> deckList)
+    {
+        if (deckList.Count > 0)
+        {
+            Card card = deckList[deckList.Count - 1];
+            deckList.RemoveAt(deckList.Count - 1);
+            return card;
+        }
+        Debug.LogWarning("덱이 비었습니다!");
+        return null;
     }
 }
