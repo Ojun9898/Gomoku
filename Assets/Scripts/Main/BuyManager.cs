@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class BuyManager : Singleton<BuyManager>
 {
     private string filePath = Path.Combine(Application.dataPath, "Data", "UserPurchases.csv");
-
 
     public string[] SetData()
     {

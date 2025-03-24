@@ -90,8 +90,6 @@ public class MainManager : Singleton<MainManager>
             errorPanelRect = errorPanel.GetComponent<RectTransform>();
             errorPanelRect.anchoredPosition = new Vector2(-500f, 0f);
         }
-
-        errorPanel.transform.SetAsLastSibling();
         errorPanel.GetComponentInChildren<TMP_Text>().text = message;
         errorPanel.SetActive(true);
         errorPanelRect.DOLocalMoveX(0f, 0.3f);
