@@ -264,11 +264,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e33d7bc1cd1aa34baca4b48fc5fd8f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mc: {fileID: 776014526}
-  forbiddenMoveObjct: {fileID: 7964786777866648389, guid: 8b1760d8d5339a549bca6c2d5f8c3987, type: 3}
+  mc: {fileID: 0}
+  forbiddenMoveObject: {fileID: 7964786777866648389, guid: 8b1760d8d5339a549bca6c2d5f8c3987, type: 3}
   piece: {fileID: 976281851169760228, guid: 0c1da41c3ad25774490c9f355951849a, type: 3}
   finishTurnButton: {fileID: 5353251249203675391}
-  _rullManager: {fileID: 0}
+  ruleManager: {fileID: 0}
 --- !u!4 &592240009
 Transform:
   m_ObjectHideFlags: 0

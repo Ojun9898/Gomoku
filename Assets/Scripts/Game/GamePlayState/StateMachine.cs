@@ -4,7 +4,7 @@ using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
-using static Pc;
+using static Piece;
 
 public enum StaterType
 {
@@ -43,7 +43,7 @@ public class StateMachine : MonoBehaviour
     private IState currentState;
     private Dictionary<Type, IState> states = new Dictionary<Type, IState>();
 
-    public void Run(Pc.Owner owner)
+    public void Run(Piece.Owner owner)
     {
         List<IState> states = this.CreateStates(StaterType.PlayGame);
         foreach (var state in states)
@@ -60,12 +60,12 @@ public class StateMachine : MonoBehaviour
         states.Add(state.GetType(), state);
     }
 
-    public void ChangeState<T>(Pc.Owner owner) where T : IState
+    public void ChangeState<T>(Piece.Owner owner) where T : IState
     {
         ChangeState(typeof(T), owner);
     }
 
-    private void ChangeState(Type stateType, Pc.Owner owner)
+    private void ChangeState(Type stateType, Piece.Owner owner)
     {
         currentState?.Exit(owner);
 

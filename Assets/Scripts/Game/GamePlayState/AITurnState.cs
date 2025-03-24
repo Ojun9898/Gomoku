@@ -6,13 +6,13 @@ using UnityEngine;
 public class AITurnState : MonoBehaviour, IState
 {
     public StateMachine Fsm { get; set; }
-    public void Enter(Pc.Owner owner)
+    public void Enter(Piece.Owner owner)
     {
         //렌즈룰
-        GameManager.Instance._rullManager.UpdateForbiddenMoves(owner);
+        GameManager.Instance.ruleManager.UpdateForbiddenMoves(owner);
 
         //모든 피스 공격 초기화
-        GameManager.Instance.PieceSIni1t();
+        GameManager.Instance.PieceSInit();
         GameManager.Instance.SetTileClickEvent();
 
         //돌 두기 ai
@@ -23,11 +23,11 @@ public class AITurnState : MonoBehaviour, IState
         Debug.Log(owner + "의 턴 입니다");
     }
 
-    public void Exit(Pc.Owner owner)
+    public void Exit(Piece.Owner owner)
     {
-        GameManager.Instance._rullManager.DeleteForviddensOnMap();
+        GameManager.Instance.ruleManager.DeleteForviddensOnMap();
         GameManager.Instance.SetTileClickEventOff();
-        GameManager.Instance.SetFalseIsAleadySetPiece();
+        GameManager.Instance.SetFalseIsAlreadySetPiece();
         GameManager.Instance.AllTileClickCountSetZero();
         Debug.Log("AITurnState 나갔습니다");
     }

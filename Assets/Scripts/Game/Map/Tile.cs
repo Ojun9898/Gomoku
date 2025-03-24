@@ -14,10 +14,10 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     [SerializeField] private Obstacle obstacle;
     public bool isForbiddenMove;
     private Buff _buff;
-    public Pc _piece { get; private set; }
+    public Piece _piece { get; private set; }
 
-    public Action JustBeforDestroyPiece;
-    public Action JustBeforDestroyObstacle;
+    public Action JustBeforeDestroyPiece;
+    public Action JustBeforeDestroyObstacle;
 
     private void Start()
     {
@@ -81,15 +81,15 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void OnClickTileButton() {
         _tileClickCount++;
-        if (JustBeforDestroyObstacle == null)
+        if (JustBeforeDestroyObstacle == null)
         {
-            JustBeforDestroyPiece = () => { this.obstacle = null; };
+            JustBeforeDestroyPiece = () => { this.obstacle = null; };
         }
         if (_piece != null)
         {
-            if (JustBeforDestroyPiece == null)
+            if (JustBeforeDestroyPiece == null)
             {
-                JustBeforDestroyPiece = () => { this._piece = null; };
+                JustBeforeDestroyPiece = () => { this._piece = null; };
             }
             var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (needOneClick != null) { 
@@ -103,7 +103,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
         if (!isNeedOneClick)
         {
-            Debug.Log(GameManager.Instance.currentClickedTileindex + " : 클릭한 타일 인덱스");
+            Debug.Log(GameManager.Instance.CurrentClickedTileIndex + " : 클릭한 타일 인덱스");
             handPanelPrefab.SetActive(true);
             var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (pieceAndCaseValue != null)
@@ -111,8 +111,8 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                 var caseValue = pieceAndCaseValue.Value.caseValue;
                 if (_piece == null)
                 {
-                    _piece = pieceAndCaseValue.Value.piece?.GetComponent<Pc>();
-                    (bool, Pc.Owner) CheckSome = GameManager.Instance._rullManager.CheckGameOver();
+                    _piece = pieceAndCaseValue.Value.piece?.GetComponent<Piece>();
+                    (bool, Piece.Owner) CheckSome = GameManager.Instance.ruleManager.CheckGameOver();
                     if (CheckSome.Item1)
                     {
                         GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
@@ -183,7 +183,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         ClickedImageObj.SetActive(false);
     }
 
-    public void SetPiece(Pc pc) {
-        _piece = pc;
+    public void SetPiece(Piece piece) {
+        _piece = piece;
     }
 }

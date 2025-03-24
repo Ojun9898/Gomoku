@@ -2021,6 +2021,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2587870082082586029}
   - component: {fileID: 5236342034093927490}
+  - component: {fileID: 5550966432458716115}
   m_Layer: 5
   m_Name: MagicianBlack
   m_TagString: Untagged
@@ -2036,7 +2037,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4027062969280666243}
   m_LocalRotation: {x: -0, y: 0.008726557, z: -0, w: 0.9999619}
-  m_LocalPosition: {x: 0, y: 0, z: 0.00015256465}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2045,7 +2046,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 1, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -170}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5236342034093927490
@@ -5088,6 +5089,25 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 4c70df3312bb83346a1bf065b30d3467, type: 2}
   - {fileID: 7400000, guid: 1ef525d53ae254f7d82ef364ced85490, type: 2}
   - {fileID: 7400000, guid: fabe4f140fdb9cb448bc941c7c93e8b6, type: 2}
+--- !u!114 &5550966432458716115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4027062969280666243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b70eb50488d6cdd44a088161e29fd700, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackType: 1
+  isAlreadyAttack: 0
+  rangeAttackRange: 
+  cost: 0
+  attackPower: 2
+  attackRange: 4
+  _pieceOwner: 0
 --- !u!1 &4093855273343562219
 GameObject:
   m_ObjectHideFlags: 0

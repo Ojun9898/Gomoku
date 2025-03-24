@@ -60,7 +60,7 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
             case Piece.PieceType.WARRIOR:
                 cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.warriorWhite : playerB.warriorBlack;
                 break;
-            case Piece.PieceType.MAGE:
+            case Piece.PieceType.MAGICIAN:
                 cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.magicianWhite : playerB.magicianBlack;
                 break;
             case Piece.PieceType.ARCHER:

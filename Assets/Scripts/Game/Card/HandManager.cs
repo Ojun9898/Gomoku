@@ -9,7 +9,7 @@ public class HandManager : MonoBehaviour
     private List<DeckManager.Card> _handCards = new List<DeckManager.Card>();
 
     // 플레이어의 Owner 타입을 지정 (인스펙터에서 바인딩 가능)
-    public Piece.Owner playerOwner = Piece.Owner.PLAYER_A;
+    public Piece.Owner playerOwner;
 
     private DeckManager _deckManager;
     private Tile _selectedTile;
@@ -30,21 +30,34 @@ public class HandManager : MonoBehaviour
     {
         for (int i = 0; i < handSize; i++)
         {
-            DeckManager.Card card = _deckManager.PopCard(GetPlayerDeck());
-            if (card != null)
+            if (playerOwner == Piece.Owner.PLAYER_A)
             {
-                _handCards.Add(card);
-                CreateCardUI(card);
+                DeckManager.Card card = _deckManager.PopCard(GetPlayerDeck(_deckManager.playerACards));
+                if (card != null)
+                {
+                    _handCards.Add(card);
+                    CreateCardUI(card);
+                }
+            }
+
+            else
+            {
+                DeckManager.Card card = _deckManager.PopCard(GetPlayerDeck(_deckManager.playerBCards));
+                if (card != null)
+                {
+                    _handCards.Add(card);
+                    CreateCardUI(card);
+                }
             }
         }
     }
 
-    // 예시: 플레이어 A의 덱을 사용 (원하는 덱으로 수정 가능)
-    private List<DeckManager.Card> GetPlayerDeck()
+    // 매개변수로 deck을 받아와 원하는 덱을 가져온다.
+    private List<DeckManager.Card> GetPlayerDeck(List<DeckManager.Card> deck)
     {
         // playerACards는 private이지만, 필요한 경우 public 접근자를 추가하거나 여기서 처리합니다.
         // 이 예제에서는 단순히 deckManager 내부의 playerACards를 반환한다고 가정합니다.
-        return _deckManager.playerACards;
+        return deck;
     }
 
     // 카드 UI를 동적으로 생성하여 handPanel에 추가

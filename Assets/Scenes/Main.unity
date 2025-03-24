@@ -573,10 +573,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9098fd422f4d8d842b206631653c09c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SettingPanel: {fileID: 1995805009728476610, guid: 888337dff00f12a45b2c8f93f0cecece, type: 3}
-  BuyingPanel: {fileID: 1995805009728476610, guid: a97fc6b7803dcf64b844cc9c852e2dbf, type: 3}
-  RankingPanel: {fileID: 1995805009728476610, guid: 228715c514cfe0a4bb9f5226f40bed5b, type: 3}
-  ProfilePanel: {fileID: 1995805009728476610, guid: e4b239a8815a2044ea08997afbf83bd0, type: 3}
+  SettingPanel: {fileID: 1995805009728476610, guid: a4d6fc8cd331cd54394dc562743a8ca5, type: 3}
+  BuyingPanel: {fileID: 1995805009728476610, guid: 220d188d9b021b646aaa396bcbff13d5, type: 3}
+  RankingPanel: {fileID: 1995805009728476610, guid: c383f3ad7b435214781b276caa50ee73, type: 3}
+  ProfilePanel: {fileID: 1995805009728476610, guid: c13daccf2c73a514398289e8a12e97e0, type: 3}
   canvasTransform: {fileID: 234400114}
 --- !u!225 &549960616
 CanvasGroup:
