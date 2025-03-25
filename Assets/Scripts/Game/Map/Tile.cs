@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] private GameObject cursorImageObj;
-    [SerializeField] private GameObject clickedImageObj;
+    public GameObject clickedImageObj;
     private int _tileClickCount;
     private bool _isNeedOneClick;
     public int tileNumber;
@@ -14,7 +14,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     [SerializeField] private Obstacle obstacle;
     public bool isForbiddenMove;
     private Buff _buff;
-    public Piece Piece { get; private set; }
+    public Piece Piece { get; set; }
     
     private HandManager _handManager;
 

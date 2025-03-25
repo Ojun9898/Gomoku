@@ -3090,13 +3090,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b70eb50488d6cdd44a088161e29fd700, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hp: 5
   attackType: 1
   isAlreadyAttack: 0
   rangeAttackRange: 
-  cost: 0
+  cost: 2
   attackPower: 1
   attackRange: 3
-  _pieceOwner: 0
+  pieceOwner: 1
 --- !u!1 &211680019222928550
 GameObject:
   m_ObjectHideFlags: 0

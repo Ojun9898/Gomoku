@@ -7,11 +7,17 @@ using UnityEngine.EventSystems;
 
 public class GamePanelController : MonoBehaviour
 {
-    [SerializeField] private GameObject Timer;
+    [SerializeField] private GameObject timerObject;
     [SerializeField] private GameObject PausePanel;
     [SerializeField] private Transform canvasTransform;
+    private Timer timer;
     private CanvasGroup canvasGroup;
     private GameObject pausePanel;
+
+    private void Awake()
+    {
+        timer = timerObject.GetComponent<Timer>();
+    }
 
     public void OnClickPauseButton()
     {
@@ -25,10 +31,23 @@ public class GamePanelController : MonoBehaviour
         //GameManager.Instance.OnButtonClickFinishMyTurn();
     }
 
+    public void StartTimer() {
+        timer.StartTimer();
+    }
+
+    public void StopTimer() {
+        timer.StopTimer();
+    }
     public void OnTimerEnd()
     {
-        
+        if (GameManager.Instance.GetIsAlReadySetPiece() == false) {
+            //Todo: 피스 생성 메소드 시작
+
+        }
+        GameManager.Instance.OnButtonClickFinishMyTurn();
     } 
+
+
 
     public void ShowPausePanel()
     {

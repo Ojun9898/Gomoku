@@ -7,6 +7,7 @@ public class Piece : HaveHp
         WARRIOR,
         RANCER,
         MAGICIAN,
+        HEALER,
         ARCHER
     }
     

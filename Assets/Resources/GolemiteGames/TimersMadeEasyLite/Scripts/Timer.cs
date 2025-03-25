@@ -1,14 +1,16 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Events;
+using DG.Tweening;
 
 
 public class Timer : MonoBehaviour
 {
+
     public UnityEvent onTimerEnd;
 
     [Range(0, 23)]
@@ -17,13 +19,14 @@ public class Timer : MonoBehaviour
     public int minutes;
     [Range(0, 59)]
     public int seconds;
-    
+
+    public Image TimeDialImage;
     public enum CountMethod
     {
         CountDown,
         CountUp
     };
-    
+
     public enum SeperatorType
     {
         Colon,
@@ -48,7 +51,7 @@ public class Timer : MonoBehaviour
     public bool secondsDisplay = true;
 
     [Space]
-    
+
     [Tooltip("Select to count up or down")]
     public CountMethod countMethod;
 
@@ -62,34 +65,34 @@ public class Timer : MonoBehaviour
     bool timerRunning = false;
     bool timerPaused = false;
     public double timeRemaining;
-    
-
+    private Tween colorTween;
+    private Tween ShakingTween;
     private void Awake()
     {
-        if(!standardText)
-        if(GetComponent<Text>())
-        {
-            standardText = GetComponent<Text>();
-        }
-        if(!textMeshProText)
-        if(GetComponent<TextMeshProUGUI>())
-        {
-            textMeshProText = GetComponent<TextMeshProUGUI>();
-        }
-        if(!standardSlider)
-        if(GetComponent<Slider>())
-        {
-            standardSlider = GetComponent<Slider>();
-        }
-        if(!dialSlider)
-        if(GetComponent<Image>())
-        {
-            dialSlider = GetComponent<Image>();
-        }
-        if(standardSlider)
+        if (!standardText)
+            if (GetComponent<Text>())
+            {
+                standardText = GetComponent<Text>();
+            }
+        if (!textMeshProText)
+            if (GetComponent<TextMeshProUGUI>())
+            {
+                textMeshProText = GetComponent<TextMeshProUGUI>();
+            }
+        if (!standardSlider)
+            if (GetComponent<Slider>())
+            {
+                standardSlider = GetComponent<Slider>();
+            }
+        if (!dialSlider)
+            if (GetComponent<Image>())
+            {
+                dialSlider = GetComponent<Image>();
+            }
+        if (standardSlider)
         {
             standardSlider.maxValue = ReturnTotalSeconds();
-            if(countMethod == CountMethod.CountDown)
+            if (countMethod == CountMethod.CountDown)
             {
                 standardSlider.value = standardSlider.maxValue;
             }
@@ -98,7 +101,7 @@ public class Timer : MonoBehaviour
                 standardSlider.value = standardSlider.minValue;
             }
         }
-        if(dialSlider)
+        if (dialSlider)
         {
             if (countMethod == CountMethod.CountDown)
             {
@@ -112,19 +115,19 @@ public class Timer : MonoBehaviour
     }
     void Start()
     {
-        if(startAtRuntime)
+        if (startAtRuntime)
         {
             StartTimer();
         }
         else
         {
-            if(countMethod == CountMethod.CountDown)
+            if (countMethod == CountMethod.CountDown)
             {
-                if(standardText)
+                if (standardText)
                 {
                     standardText.text = DisplayFormattedTime(ReturnTotalSeconds());
                 }
-                if(textMeshProText)
+                if (textMeshProText)
                 {
                     textMeshProText.text = DisplayFormattedTime(ReturnTotalSeconds());
                 }
@@ -144,16 +147,16 @@ public class Timer : MonoBehaviour
     }
     void Update()
     {
-        if(timerRunning)
+        if (timerRunning)
         {
-            if(countMethod == CountMethod.CountDown)
+            if (countMethod == CountMethod.CountDown)
             {
                 CountDown();
-                if(standardSlider)
+                if (standardSlider)
                 {
                     StandardSliderDown();
                 }
-                if(dialSlider)
+                if (dialSlider)
                 {
                     DialSliderDown();
                 }
@@ -165,7 +168,7 @@ public class Timer : MonoBehaviour
                 {
                     StandardSliderUp();
                 }
-                if(dialSlider)
+                if (dialSlider)
                 {
                     DialSliderUp();
                 }
@@ -177,7 +180,7 @@ public class Timer : MonoBehaviour
     {
         /*If you choose to edit this back to 0 for 100% accuracy,
         1 frame at the end of the timer will display maximum numbers as it takes time to switch to the else statement
-        which sets the time remaining to 0. This is accurate up to 20 milliseconds or 0.02 of a second.*/  
+        which sets the time remaining to 0. This is accurate up to 20 milliseconds or 0.02 of a second.*/
         if (timeRemaining > 0.02)
         {
             timeRemaining -= Time.deltaTime;
@@ -211,7 +214,7 @@ public class Timer : MonoBehaviour
     }
     private void StandardSliderDown()
     {
-        if(standardSlider.value > standardSlider.minValue)
+        if (standardSlider.value > standardSlider.minValue)
         {
             standardSlider.value -= Time.deltaTime;
         }
@@ -227,17 +230,47 @@ public class Timer : MonoBehaviour
     {
         float timeRangeClamped = Mathf.InverseLerp(ReturnTotalSeconds(), 0, (float)timeRemaining);
         dialSlider.fillAmount = Mathf.Lerp(1, 0, timeRangeClamped);
+        DialSliderCheckAndChangeColor();
     }
     private void DialSliderUp()
     {
         float timeRangeClamped = Mathf.InverseLerp(0, ReturnTotalSeconds(), (float)timeRemaining);
         dialSlider.fillAmount = Mathf.Lerp(0, 1, timeRangeClamped);
     }
+
+
+    private void DialSliderCheckAndChangeColor()
+    {
+
+        if (Mathf.Abs(dialSlider.fillAmount - 0.166f) < 0.01)
+        {
+            if (colorTween == null || !colorTween.IsPlaying())
+            {
+                colorTween = dialSlider.DOColor(new Color32(255, 73, 42, 255), 1f).OnKill(() => { colorTween = null; });
+            }
+        }
+        else if (Mathf.Abs(dialSlider.fillAmount - 0.50f) < 0.01)
+        {
+            if (colorTween == null || !colorTween.IsPlaying())
+            {
+                colorTween = dialSlider.DOColor(new Color32(243, 155, 38, 255), 1f).OnKill(() => { colorTween = null; });
+            }
+        }
+
+    }
     private void DisplayInTextObject()
     {
         if (standardText)
         {
+
             standardText.text = DisplayFormattedTime(timeRemaining);
+            if (timeRemaining <= 11)
+            {
+                if (ShakingTween == null || !ShakingTween.IsPlaying())
+                {
+                    ShakingTween = standardText.transform.DOShakePosition(1f, new Vector3(5, 0f, 0f), 10, 0, false, true).OnKill(() => { ShakingTween = null; });
+                }
+            }
         }
         if (textMeshProText)
         {
@@ -267,7 +300,7 @@ public class Timer : MonoBehaviour
     }
     private void StartTimerCustom(double timeToSet)
     {
-        if(!timerRunning && !timerPaused)
+        if (!timerRunning && !timerPaused)
         {
             timeRemaining = timeToSet;
             timerRunning = true;
@@ -282,17 +315,19 @@ public class Timer : MonoBehaviour
     private void ResetTimer()
     {
         timerPaused = false;
-        
+        dialSlider.color = new Color32(159, 241, 65, 255);
+
+
         if (countMethod == CountMethod.CountDown)
         {
             timeRemaining = ReturnTotalSeconds();
             DisplayInTextObject();
-            if(standardSlider)
+            if (standardSlider)
             {
                 standardSlider.maxValue = ReturnTotalSeconds();
                 standardSlider.value = standardSlider.maxValue;
             }
-            if(dialSlider)
+            if (dialSlider)
             {
                 dialSlider.fillAmount = 1f;
             }
@@ -321,7 +356,7 @@ public class Timer : MonoBehaviour
         totalTimeSet += seconds;
         return totalTimeSet;
     }
-   
+
     public double ConvertToTotalSeconds(float hours, float minutes, float seconds)
     {
         timeRemaining = hours * 60 * 60;
@@ -365,13 +400,13 @@ public class Timer : MonoBehaviour
         {
             if (secondsDisplay)
             {
-                string secondsFormatted; 
-                secondsFormatted = string.Format("{0:00}", seconds);              
+                string secondsFormatted;
+                secondsFormatted = string.Format("{0:00}", seconds);
                 return secondsFormatted;
             }
             return null;
         }
-        
+
 
         convertedNumber = HoursFormat() + MinutesFormat() + SecondsFormat();
 

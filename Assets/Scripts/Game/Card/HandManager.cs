@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class HandManager : MonoBehaviour
 {
@@ -16,21 +17,13 @@ public class HandManager : MonoBehaviour
 
     private DeckManager _deckManager;
     private Tile _selectedTile;
+    public bool isAlreadySetPiece;
 
-    private void Awake()
+    // 플레이어 덱에서 handSize만큼 카드를 Pop하여 손패에 추가 후 UI 생성
+    public void InitializeHand(DeckManager deckManager)
     {
-        _deckManager = FindObjectOfType<DeckManager>();
-    }
-
-    private void Start()
-    {
-        // 게임 시작 시 플레이어의 손패 초기화 (예: handSize만큼 Pop)
-        InitializeHand();
-    }
-
-// 플레이어 덱에서 handSize만큼 카드를 Pop하여 손패에 추가 후 UI 생성
-    private void InitializeHand()
-    {
+        _deckManager = deckManager;
+        
         for (int i = 0; i < handSize; i++)
         {
             // Player A의 덱에서 카드 Pop
@@ -58,7 +51,7 @@ public class HandManager : MonoBehaviour
     }
 
     // 카드 UI를 동적으로 생성하여 handPanel에 추가
-// 카드 UI를 동적으로 생성하여 해당 플레이어의 Hand Panel에 추가하는 메소드
+    // 카드 UI를 동적으로 생성하여 해당 플레이어의 Hand Panel에 추가하는 메소드
     private void CreateCardUI(DeckManager.Card card, Piece.Owner owner)
     {
         GameObject parentPanel = (owner == Piece.Owner.PLAYER_A) ? playerAHandPanel : playerBHandPanel;
@@ -68,7 +61,7 @@ public class HandManager : MonoBehaviour
         cardUIScript.SetCard(card, owner);
     }
 
-    // HandManager가 CardUI에서 호출하는 메소드: 카드가 선택되었을 때 호출됨
+    // 카드가 선택되었을 때 호출됨 (카드 클릭 → 타일 선택 후 말 생성)
     public void OnCardSelected(DeckManager.Card selectedCard)
     {
         if (_selectedTile == null)
@@ -76,24 +69,48 @@ public class HandManager : MonoBehaviour
             Debug.Log("먼저 타일을 선택하세요.");
             return;
         }
-
-        // 선택된 카드에 따른 유닛 생성: 선택된 타일의 위치에 생성
-        _deckManager.PlayCard(selectedCard.pieceType, _selectedTile.transform.position, playerOwner);
-
-        // 손패에서 해당 카드를 제거하고 UI 갱신
-        if (playerOwner == Piece.Owner.PLAYER_A)
+        
+        if (isAlreadySetPiece == false)
         {
-            _playerAHandCards.Remove(selectedCard);
-        }
-        else if (playerOwner == Piece.Owner.PLAYER_B)
-        {
-            _playerBHandCards.Remove(selectedCard);
-        }
-        RefreshHandUI(playerOwner);
+            // GameManager의 SetPieceAtTile 메소드를 사용하여 선택된 타일에 말을 생성합니다.
+            _deckManager.PlayCard(selectedCard.pieceType, playerOwner);
+            GameObject pieceInstance = GameManager.Instance.SetPieceAtTile(_selectedTile.tileNumber);
+            isAlreadySetPiece = true;
+            Piece pieceComponent = pieceInstance.GetComponent<Piece>();
+            _selectedTile.Piece = pieceComponent;
+            if (pieceComponent != null)
+            {
+                // 카드에 따른 말의 속성(예: 소유자 설정)을 지정합니다.
+                pieceComponent.SetPieceOwner(playerOwner);
+                // (필요 시 카드 데이터(selectedCard) 기반 추가 설정 가능)
 
-        // 선택한 타일 초기화 (원한다면)
-        _selectedTile = null;
+                // 타일에 버프가 있을 경우 적용합니다.
+                if (_selectedTile.GetBuff() != null)
+                {
+                    _selectedTile.GetBuff().On(pieceComponent);
+                }
+            }
+
+            // 타일 선택 시 활성화했던 표시를 해제
+            _selectedTile.clickedImageObj.SetActive(false);
+
+            // 손패에서 해당 카드를 제거하고 UI를 갱신합니다.
+            if (playerOwner == Piece.Owner.PLAYER_A)
+            {
+                _playerAHandCards.Remove(selectedCard);
+            }
+            else if (playerOwner == Piece.Owner.PLAYER_B)
+            {
+                _playerBHandCards.Remove(selectedCard);
+            }
+
+            RefreshHandUI(playerOwner);
+
+            // 선택된 타일 초기화
+            _selectedTile = null;
+        }
     }
+
 
     // 타일 클릭 시 HandManager에서 호출: 선택된 타일 저장
     public void SetSelectedTile(Tile tile)

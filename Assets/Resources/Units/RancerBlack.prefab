@@ -9671,13 +9671,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b70eb50488d6cdd44a088161e29fd700, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hp: 5
   attackType: 1
   isAlreadyAttack: 0
   rangeAttackRange: 
-  cost: 0
+  cost: 4
   attackPower: 2
   attackRange: 1
-  _pieceOwner: 0
+  pieceOwner: 2
 --- !u!1 &8649827891395288027
 GameObject:
   m_ObjectHideFlags: 0

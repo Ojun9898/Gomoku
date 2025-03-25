@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class RuleManager : MonoBehaviour
 {
+    public AI ai;
     private int BOARD_SIZE;
     private List<Tile> board;
     private Piece.Owner EMPTY = Piece.Owner.NONE;
@@ -20,6 +21,7 @@ public class RuleManager : MonoBehaviour
     public void Init(List<Tile> mapTiles,  Piece.Owner firstTurnPlayer)
     {
         BOARD_SIZE = 8;
+        //ai = new AI(mapTiles);
         board = mapTiles;
         BLACK = firstTurnPlayer;
         if (firstTurnPlayer == Piece.Owner.PLAYER_A) { 

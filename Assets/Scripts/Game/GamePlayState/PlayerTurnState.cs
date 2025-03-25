@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerTurnState : MonoBehaviour, IState
@@ -12,13 +9,14 @@ public class PlayerTurnState : MonoBehaviour, IState
         GameManager.Instance.ruleManager.UpdateForbiddenMoves(owner);
     
         //모든 피스 공격 초기화
-        GameManager.Instance.PieceSInit();
+        GameManager.Instance.PiecesInit();
         //타일 on
         GameManager.Instance.SetTileClickEvent();
         //타이머 ON
+        GameManager.Instance.gamePanelController.StartTimer();
         //카드 뽑기
         //코스트 증가
-        
+
         Debug.Log(owner + "의 턴 입니다");
     }
 
