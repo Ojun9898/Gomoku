@@ -473,7 +473,6 @@ public class GameManager : Singleton<GameManager>
                 return;
             }
             
-            
             switch (_playerType)
             {
                 case Owner.PLAYER_A:
@@ -489,6 +488,16 @@ public class GameManager : Singleton<GameManager>
                     _handManager.playerBHandPanel.SetActive(false);
                     break;
             }
+
+            for (int i = 0; i < mc.tiles.Count; i++)
+            {
+                if (mc.tiles[i].Piece != null)
+                {
+                    mc.tiles[i].Piece.isAlreadyAttack = false;
+                }
+            }
+            
+            
             FinishedAttack();
             //AI 로 가정
             //일단 버튼은 둘다 누를 수 있게 해둠
