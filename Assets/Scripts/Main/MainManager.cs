@@ -13,11 +13,14 @@ public class MainManager : Singleton<MainManager>
     [SerializeField] private GameObject SignupPanel;
     [SerializeField] private Transform Canvas;
     [SerializeField] private GameObject ErrorPanel;
+    [SerializeField] private GameObject LogoutPanel;
 
     private GameObject errorPanel;
     private RectTransform errorPanelRect;
     private GameObject signinPanel;
     private GameObject signupPanel;
+    private GameObject logoutPanel;
+    private RectTransform logoutPanelRect;
     private float fadeDuration = 0.1f;
 
    void Start()
@@ -34,7 +37,7 @@ public class MainManager : Singleton<MainManager>
         if (!signinPanel.activeSelf)
         {
             signinPanel.SetActive(true);
-            signinPanel.GetComponent<CanvasGroup>().DOFade(1, fadeDuration);
+            signinPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
         }
     }
 
@@ -47,7 +50,7 @@ public class MainManager : Singleton<MainManager>
         if (!signupPanel.activeSelf)
         {
             signupPanel.SetActive(true);
-            signupPanel.GetComponent<CanvasGroup>().DOFade(1, fadeDuration);
+            signupPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
         }
     }
 
@@ -55,7 +58,7 @@ public class MainManager : Singleton<MainManager>
     {
         if (signinPanel != null && signinPanel.activeSelf)
         {
-            signinPanel.GetComponent<CanvasGroup>().DOFade(0, fadeDuration).OnComplete(() =>
+            signinPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
             {
                 signinPanel.SetActive(false);
             });
@@ -66,9 +69,20 @@ public class MainManager : Singleton<MainManager>
     {
         if (signupPanel != null && signupPanel.activeSelf)
         {
-            signupPanel.GetComponent<CanvasGroup>().DOFade(0, fadeDuration).OnComplete(() =>
+            signupPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
             {
                 signupPanel.SetActive(false);
+            });
+        }
+    }
+
+    public void CloseMainPanel()
+    {
+        if (MainPanel.activeSelf)
+        {
+            MainPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
+            {
+                MainPanel.SetActive(false);
             });
         }
     }
@@ -78,7 +92,7 @@ public class MainManager : Singleton<MainManager>
         if (!MainPanel.activeSelf)
         {
             MainPanel.SetActive(true);
-            MainPanel.GetComponent<CanvasGroup>().DOFade(1, fadeDuration);
+            MainPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
         }
     }
     
@@ -95,6 +109,20 @@ public class MainManager : Singleton<MainManager>
         errorPanel.GetComponentInChildren<TMP_Text>().text = message;
         errorPanel.SetActive(true);
         errorPanelRect.DOLocalMoveX(0f, 0.3f);
+    }
+
+    public void ShowLogoutPanel()
+    {
+        if (logoutPanel == null)
+        {
+            logoutPanel = Instantiate(LogoutPanel, Canvas);
+            logoutPanelRect = logoutPanel.GetComponent<RectTransform>();
+            logoutPanelRect.anchoredPosition = new Vector2(-500f, 0f);
+        }
+
+        logoutPanel.transform.SetAsLastSibling();
+        logoutPanel.SetActive(true);
+        logoutPanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,6 @@ public class SettingPanelController : MonoBehaviour
    
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider effectSlider;
-    [SerializeField] private Button closeButton;
 
     public void OnValueChangedMusicSlider()
     {
@@ -26,5 +26,10 @@ public class SettingPanelController : MonoBehaviour
     {
         this.GetComponent<RectTransform>().DOLocalMoveX(-600f, 0.3f)
             .OnComplete(() => this.gameObject.SetActive(false)); 
+    }
+
+    public void OnClickLogoutButton()
+    {
+        MainManager.Instance.ShowLogoutPanel();
     }
 }

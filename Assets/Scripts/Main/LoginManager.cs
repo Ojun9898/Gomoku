@@ -109,6 +109,13 @@ public class LoginManager : Singleton<LoginManager>
         return userInfoFilepath;
     }
 
+    public void Logout()
+    {
+        currentUsername = null;
+        MainManager.Instance.CloseMainPanel();
+        MainManager.Instance.ShowSigninPanel();
+    }
+
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
     }

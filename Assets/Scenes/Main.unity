@@ -175,6 +175,7 @@ MonoBehaviour:
   SignupPanel: {fileID: 7830865074060712543, guid: fde617bcac839234786433a285bd4941, type: 3}
   Canvas: {fileID: 234400114}
   ErrorPanel: {fileID: 6412832676752804061, guid: 3aefd2915d2460749a162883ea79b50e, type: 3}
+  LogoutPanel: {fileID: 6412832676752804061, guid: f867bb76b5f47284b9f62d65de9be07d, type: 3}
 --- !u!4 &77449030
 Transform:
   m_ObjectHideFlags: 0

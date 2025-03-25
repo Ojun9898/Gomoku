@@ -197,7 +197,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7183289966820104333}
@@ -244,8 +244,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 21
-  m_Sprite: {fileID: -552127866, guid: 5ed4163f6ea9afa4db05cc0e507de85a, type: 3}
+  m_SortingOrder: 20
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -253,7 +253,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &4017245072122875736
@@ -270,6 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cursorImageObj: {fileID: 2972535498509595510}
   ClickedImageObj: {fileID: 1623480065376457769}
+  handPanelPrefab: {fileID: 0}
   tileNumber: 0
   obstacle: {fileID: 0}
   isForbiddenMove: 0

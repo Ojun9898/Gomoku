@@ -96,6 +96,10 @@ public class SignupPanelController : MonoBehaviour
         File.AppendAllText(filePath, newEntry);
 
         MainManager.Instance.ShowErrorPanel("회원가입이\n완료되었습니다.");
+
+        MainManager.Instance.CloseSignupPanel();
+        MainManager.Instance.ShowSigninPanel();
+
     }
 
      private bool IsUsernameExists(string username)
