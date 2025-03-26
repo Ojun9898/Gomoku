@@ -35,8 +35,8 @@ public class SignupPanelController : MonoBehaviour
     }
     public void OnClickSigninButton()
     {
-        MainManager.Instance.CloseSignupPanel();
-        MainManager.Instance.ShowSigninPanel();
+        LoginManager.Instance.CloseSignupPanel();
+        LoginManager.Instance.ShowSigninPanel();
     }
 
     public void OnClickSignupButton()
@@ -97,8 +97,8 @@ public class SignupPanelController : MonoBehaviour
 
         MainManager.Instance.ShowErrorPanel("회원가입이\n완료되었습니다.");
 
-        MainManager.Instance.CloseSignupPanel();
-        MainManager.Instance.ShowSigninPanel();
+        LoginManager.Instance.CloseSignupPanel();
+        LoginManager.Instance.ShowSigninPanel();
 
     }
 

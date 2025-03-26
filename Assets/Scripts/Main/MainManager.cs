@@ -9,71 +9,20 @@ using UnityEngine.SceneManagement;
 public class MainManager : Singleton<MainManager>
 {
     [SerializeField] private GameObject MainPanel;
-    [SerializeField] private GameObject SigninPanel;
-    [SerializeField] private GameObject SignupPanel;
     [SerializeField] private Transform Canvas;
     [SerializeField] private GameObject ErrorPanel;
     [SerializeField] private GameObject LogoutPanel;
 
+    private GameObject mainPanel;
     private GameObject errorPanel;
     private RectTransform errorPanelRect;
-    private GameObject signinPanel;
-    private GameObject signupPanel;
     private GameObject logoutPanel;
     private RectTransform logoutPanelRect;
     private float fadeDuration = 0.1f;
 
-   void Start()
+    void Start()
     {
-        ShowSigninPanel();
-    }
-
-    public void ShowSigninPanel()
-    {
-        if (signinPanel == null)
-        {
-            signinPanel = Instantiate(SigninPanel, Canvas);
-        }
-        if (!signinPanel.activeSelf)
-        {
-            signinPanel.SetActive(true);
-            signinPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
-        }
-    }
-
-    public void ShowSignupPanel()
-    {
-        if (signupPanel == null)
-        {
-            signupPanel = Instantiate(SignupPanel, Canvas);
-        }
-        if (!signupPanel.activeSelf)
-        {
-            signupPanel.SetActive(true);
-            signupPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
-        }
-    }
-
-    public void CloseSigninPanel()
-    {
-        if (signinPanel != null && signinPanel.activeSelf)
-        {
-            signinPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
-            {
-                signinPanel.SetActive(false);
-            });
-        }
-    }
-
-    public void CloseSignupPanel()
-    {
-        if (signupPanel != null && signupPanel.activeSelf)
-        {
-            signupPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
-            {
-                signupPanel.SetActive(false);
-            });
-        }
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     public void CloseMainPanel()
@@ -89,10 +38,15 @@ public class MainManager : Singleton<MainManager>
 
     public void ShowMainPanel()
     {
-        if (!MainPanel.activeSelf)
+        if (mainPanel == null)
         {
-            MainPanel.SetActive(true);
-            MainPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
+            mainPanel = Instantiate(MainPanel, Canvas);
+        }
+
+        if (!mainPanel.activeSelf)
+        {
+            mainPanel.SetActive(true);
+            mainPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
         }
     }
     
@@ -125,7 +79,31 @@ public class MainManager : Singleton<MainManager>
         logoutPanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
+    public void Logout()
+    {
+        CloseMainPanel();
+        SceneManager.LoadScene("Login");
+    }
+
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name == "Main")
+        {
+            DOTween.KillAll();
+            Canvas = GameObject.Find("Canvas")?.transform;
+
+            if (Canvas == null)
+            {
+                Debug.LogError("Canvas를 찾을 수 없습니다!");
+                return;
+            }
+
+            ShowMainPanel();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

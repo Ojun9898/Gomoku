@@ -12,7 +12,7 @@ public class LogoutPanelController : MonoBehaviour
         
         FindObjectOfType<SettingPanelController>().gameObject.SetActive(false);
         
-        LoginManager.Instance.Logout();
+        MainManager.Instance.Logout();
     }
 
     public void OnClickNoButton()
