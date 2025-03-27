@@ -298,6 +298,7 @@ public class Timer : MonoBehaviour
             }
         }
     }
+ 
     private void StartTimerCustom(double timeToSet)
     {
         if (!timerRunning && !timerPaused)
@@ -423,4 +424,40 @@ public class Timer : MonoBehaviour
     {
         timeRemaining = ConvertToTotalSeconds(hours, minutes, seconds);
     }
+
+
+    public void OnTimerEnd()
+    {
+        if (GameManager.Instance.GetIsAlReadySetPiece() == false)
+        {
+            //Todo: 피스 생성 메소드 시작
+            StartCoroutine(PutPiece(Piece.Owner.PLAYER_A));
+
+        }
+        else {
+            MessageManager.Instance.ShowMessagePanel("타이머가 종료되어 턴이 넘어갑니다");
+            GameManager.Instance.OnButtonClickFinishMyTurn();
+        }
+    }
+    IEnumerator PutPiece(Piece.Owner owner)
+    {
+        MessageManager.Instance.ShowMessagePanel("타이머가 종료되어 자동으로 말이 배치됩니다");
+        yield return new WaitForSeconds(1.6f);
+
+        (int x, int y) bestMoveIndex = GameManager.Instance.ruleManager.FindOptimalMove(owner);
+
+        int index = bestMoveIndex.y * 8 + bestMoveIndex.x;
+        MessageManager.Instance.ShowMessagePanel(index + "에 말이 놓였습니다");
+        Tile selectedTile = GameManager.Instance.Mc.tiles[index];
+        //선택된 타일 클릭 발생
+        selectedTile.OnClickTileButton();
+        List<DeckManager.Card> HandDeck = GameManager.Instance._handManager.GetPlayerAorBHandCards(owner);
+        if (HandDeck != null)
+        {
+            GameManager.Instance._handManager.OnCardSelected(HandDeck[0]);
+            yield return new WaitForSeconds(2);
+            GameManager.Instance.OnButtonClickFinishMyTurn();
+        }
+    }
+
 }

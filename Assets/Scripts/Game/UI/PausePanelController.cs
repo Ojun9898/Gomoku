@@ -7,6 +7,10 @@ public class PausePanelController : MonoBehaviour
 {
     private CanvasGroup canvasGroup;
 
+    private void Update()
+    {
+        transform.SetAsLastSibling();
+    }
     public void OnClickYesButton()
     {
         //GameManager.Instance.ResumeGame();

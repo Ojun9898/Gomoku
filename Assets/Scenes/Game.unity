@@ -2248,12 +2248,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mc: {fileID: 0}
+  BlockPanelPrefab: {fileID: 7473840830817089632, guid: 9ec0f97c0b79c11439fb2b7ef4b6dd90, type: 3}
   forbiddenMoveObject: {fileID: 7964786777866648389, guid: 8b1760d8d5339a549bca6c2d5f8c3987, type: 3}
   piece: {fileID: 976281851169760228, guid: 0c1da41c3ad25774490c9f355951849a, type: 3}
+  canvasTransform: {fileID: 1909044259}
   finishTurnButton: {fileID: 1434667255967934846}
   gamePanelController: {fileID: 0}
   ruleManager: {fileID: 0}
   currentClickedTileIndex: 0
+  _handManager: {fileID: 0}
+  Costs: 
+  PlayerLevel: 17
 --- !u!4 &247115418
 Transform:
   m_ObjectHideFlags: 0
@@ -4586,6 +4591,7 @@ MonoBehaviour:
   playerBHandPanel: {fileID: 1847198535}
   handSize: 5
   playerOwner: 1
+  isAlreadySetPiece: 0
 --- !u!1 &1612082718
 GameObject:
   m_ObjectHideFlags: 0
@@ -5730,19 +5736,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4346169214848118577}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1241072548}
-        m_TargetAssemblyTypeName: GamePanelController, Assembly-CSharp
-        m_MethodName: OnClickTurnButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1594506252661295648
 GameObject:
   m_ObjectHideFlags: 0
@@ -6227,8 +6221,8 @@ MonoBehaviour:
   onTimerEnd:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1241072548}
-        m_TargetAssemblyTypeName: GamePanelController, Assembly-CSharp
+      - m_Target: {fileID: 8187064390167965545}
+        m_TargetAssemblyTypeName: Timer, Assembly-CSharp
         m_MethodName: OnTimerEnd
         m_Mode: 1
         m_Arguments:

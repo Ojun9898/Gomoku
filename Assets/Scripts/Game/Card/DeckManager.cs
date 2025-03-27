@@ -102,7 +102,7 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     /// <param name="pieceType"></param>
     /// <param name="position"></param>
-    public void PlayCard(Piece.PieceType pieceType, Vector3 position, Piece.Owner owner)
+    public void PlayCard(Piece.PieceType pieceType, Piece.Owner owner)
     {
         GameObject piecePrefab = null;
 

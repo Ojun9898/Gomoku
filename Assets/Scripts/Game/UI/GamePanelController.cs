@@ -14,21 +14,19 @@ public class GamePanelController : MonoBehaviour
     private CanvasGroup canvasGroup;
     private GameObject pausePanel;
 
-    private void Awake()
+    public void InitTimer()
     {
         timer = timerObject.GetComponent<Timer>();
     }
-
     public void OnClickPauseButton()
     {
-        //GameManager.Instance.PauseGame();
+       // GameManager.Instance.PauseGame();
         ShowPausePanel();
     }
 
     public void OnClickTurnButton()
     {
-        Debug.Log("Turn Button Clicked");
-        //GameManager.Instance.OnButtonClickFinishMyTurn();
+        GameManager.Instance.OnButtonClickFinishMyTurn();
     }
 
     public void StartTimer() {
@@ -38,27 +36,18 @@ public class GamePanelController : MonoBehaviour
     public void StopTimer() {
         timer.StopTimer();
     }
-    public void OnTimerEnd()
-    {
-        if (GameManager.Instance.GetIsAlReadySetPiece() == false) {
-            //Todo: 피스 생성 메소드 시작
-
-        }
-        GameManager.Instance.OnButtonClickFinishMyTurn();
-    } 
-
-
-
+   
     public void ShowPausePanel()
     {
-        pausePanel = Instantiate(PausePanel, canvasTransform);
-
+        if (pausePanel == null) { 
+            pausePanel = Instantiate(PausePanel, canvasTransform);
+        }
+        pausePanel.SetActive(true);
         canvasGroup = pausePanel.GetComponent<CanvasGroup>();
 
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-
         canvasGroup.DOFade(1f, 0.5f).OnComplete(() =>
         {
             canvasGroup.interactable = true;
