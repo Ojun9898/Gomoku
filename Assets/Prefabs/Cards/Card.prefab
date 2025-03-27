@@ -215,9 +215,11 @@ MonoBehaviour:
     warriorWhite: {fileID: 21300000, guid: a8e742e27e293b548ac4745a472473a4, type: 3}
     archerWhite: {fileID: 21300000, guid: d159d42d0f880924788981b07b5615b0, type: 3}
     magicianWhite: {fileID: 21300000, guid: d97d10f5e78a8c5479e4a5eddac76329, type: 3}
+    healerWhite: {fileID: 21300000, guid: 73042e5d3e7822845aa487aaa6a0f2c4, type: 3}
     lancerWhite: {fileID: 21300000, guid: ebb4259f8128ef94a8c6a42b64e7dfc4, type: 3}
   playerB:
     warriorBlack: {fileID: 21300000, guid: 0f246f686ceb3f744876e1ac46b4ceaf, type: 3}
     archerBlack: {fileID: 21300000, guid: e3741beee73fc68498b94fe10bdf60a1, type: 3}
     magicianBlack: {fileID: 21300000, guid: cea047bab8d7cd645a5ab2e5f6a822d5, type: 3}
+    healerBlack: {fileID: 21300000, guid: 10ac1889781ca934585276a80851a747, type: 3}
     lancerBlack: {fileID: 21300000, guid: a964a84394c84a54c95cd65508a4ca2b, type: 3}

@@ -280,6 +280,8 @@ public class GameManager : Singleton<GameManager>
                         {
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
+                            _attackingPiece.animator.Play("ATTACK");
+                            _damagedPiece.animator.Play("BUFF");
                             MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
                         }
                     }
@@ -338,14 +340,24 @@ public class GameManager : Singleton<GameManager>
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
-
+                            _attackingPiece.animator.Play("ATTACK");
+                            _damagedPiece.animator.Play("DAMAGED");
+                            if (_damagedPiece.hp <= 0)
+                            {
+                                _damagedPiece.animator.Play("DEATH");
+                            }
                         }
                         else if (_attackingPiece.attackType == AttackType.RANGE_ATTACK)
                         {
                             //attackingPiece.RangeAttack(currentClickedTileIndex);
                             UseCost(Costs, _attackingPiece);
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
-
+                            _attackingPiece.animator.Play("ATTACK");
+                            _damagedPiece.animator.Play("DAMAGED");
+                            if (_damagedPiece.hp <= 0)
+                            {
+                                _damagedPiece.animator.Play("DEATH");
+                            }
                         }
                         else if (_attackingPiece.attackType == AttackType.BUFF)
                         {

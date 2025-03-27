@@ -203,11 +203,10 @@ public class AITurnState : MonoBehaviour, IState
 
     IEnumerator AttackandHealThenPutPiece(Piece.Owner owner)
     {
-
         MessageManager.Instance.ShowMessagePanel("AI의 턴 입니다");
         yield return new WaitForSeconds(1.6f);
         int randomTime = GetRandomValue();
-
+        yield return new WaitForSeconds(1.6f);
         yield return AttackAndHeal(owner);
 
 
@@ -263,6 +262,7 @@ public class AITurnState : MonoBehaviour, IState
                     yield return new WaitForSeconds(1.2f);
                     //회복 받는 타일 선택
                     int selectedHealTile = GameManager.Instance.ruleManager.FindWeakestConsecutiveAllyInRange(attackPriority[i], owner);
+                    if (selectedDamagedTile == -1) { continue; }
                     GameManager.Instance.Mc.tiles[selectedHealTile].OnClickTileButton();
                     yield return new WaitForSeconds(1.2f);
                 }
