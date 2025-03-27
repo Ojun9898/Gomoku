@@ -4245,7 +4245,7 @@ Animator:
   m_GameObject: {fileID: 4629685190155955362}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 673cdeebe56af964584a849114f3485c, type: 2}
+  m_Controller: {fileID: 9100000, guid: 87250caa4eec27040bc5650f38894ee7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -6576,7 +6576,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4504046839762797942}
   - component: {fileID: 150705331976650411}
-  - component: {fileID: -3026436010784265022}
   m_Layer: 5
   m_Name: RancerBlack
   m_TagString: Untagged
@@ -6591,8 +6590,8 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8568504448694882771}
-  m_LocalRotation: {x: 0, y: 0.008726558, z: 0, w: 0.999962}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.008726557, z: -0, w: 0.9999619}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00015256465}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6601,7 +6600,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 1, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -170}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &150705331976650411
@@ -9740,27 +9739,6 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 95bc898d1e9bdc0428109504a3fa80a0, type: 2}
   - {fileID: 7400000, guid: 4fe865043f99d8d488336f5c75256b8f, type: 2}
   - {fileID: 7400000, guid: b5b99dfcf045f484fbc5959057ff85b3, type: 2}
---- !u!114 &-3026436010784265022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8568504448694882771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b70eb50488d6cdd44a088161e29fd700, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hp: 5
-  attackType: 1
-  isAlreadyAttack: 0
-  rangeAttackRange: 
-  cost: 4
-  attackPower: 2
-  attackRange: 1
-  animator: {fileID: 0}
-  pieceOwner: 2
 --- !u!1 &8649827891395288027
 GameObject:
   m_ObjectHideFlags: 0

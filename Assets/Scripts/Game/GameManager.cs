@@ -244,9 +244,7 @@ public class GameManager : Singleton<GameManager>
                 { // 공격턴에 아군 선택 상황
                     _damagedPiece = _currentChoosingPiece;
                     _attackingPiece = mc.tiles[_lastClickedTileIndex].Piece;
-
                     
-
                     if (_currentPieceCanAttackRange.Contains(CurrentClickedTileIndex))
                     {
 
@@ -261,6 +259,8 @@ public class GameManager : Singleton<GameManager>
                         else if (_attackingPiece.attackType == AttackType.BUFF)
                         {
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
+                            _attackingPiece.animator.Play("ATTACK");
+                            _damagedPiece.animator.Play("BUFF");
                             MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
                         }
                     }
@@ -283,7 +283,19 @@ public class GameManager : Singleton<GameManager>
                     FinishedAttack();
                     return (true, 0);
                 }
+                
+                if (_handManager.playerAHandPanel.activeInHierarchy)
+                {
+                    _handManager.playerAHandPanel.SetActive(false);
+                }
+                    
+                else if (_handManager.playerBHandPanel.activeInHierarchy)
+                {
+                    _handManager.playerBHandPanel.SetActive(false);
+                }
+                
                 MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
+                
             }
             else
             {
@@ -298,6 +310,12 @@ public class GameManager : Singleton<GameManager>
                         if (_attackingPiece.attackType == AttackType.CHOOSE_ATTACK)
                         {
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
+                            _attackingPiece.animator.Play("ATTACK");
+                            _damagedPiece.animator.Play("DAMAGED");
+                            if (_damagedPiece.hp <= 0)
+                            {
+                                _damagedPiece.animator.Play("DEATH");
+                            }
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다"+ "남은 HP : " + _damagedPiece.Hp);
 
                         }
@@ -473,6 +491,7 @@ public class GameManager : Singleton<GameManager>
                 return;
             }
             
+            
             switch (_playerType)
             {
                 case Owner.PLAYER_A:
@@ -488,7 +507,8 @@ public class GameManager : Singleton<GameManager>
                     _handManager.playerBHandPanel.SetActive(false);
                     break;
             }
-
+            FinishedAttack();
+            
             for (int i = 0; i < mc.tiles.Count; i++)
             {
                 if (mc.tiles[i].Piece != null)
@@ -497,8 +517,6 @@ public class GameManager : Singleton<GameManager>
                 }
             }
             
-            
-            FinishedAttack();
             //AI 로 가정
             //일단 버튼은 둘다 누를 수 있게 해둠
             if (_playerType == Owner.PLAYER_B)

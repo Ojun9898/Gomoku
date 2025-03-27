@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Piece : HaveHp
@@ -25,8 +26,15 @@ public class Piece : HaveHp
     
     [SerializeField] private int attackPower=1;
     [SerializeField] private int attackRange = 1;
+    public Animator animator;
+    
+    private SPUM_Prefabs _prefab;
 
-   
+    private void Start()
+    {
+        _prefab = GetComponent<SPUM_Prefabs>();
+        animator = _prefab._anim;
+    }
 
     public enum Owner
     {
