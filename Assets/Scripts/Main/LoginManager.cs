@@ -35,7 +35,7 @@ public class LoginManager : Singleton<LoginManager>
         {
             string[] userData = line.Split(',');
 
-            if (userData.Length == 5)
+            if (userData.Length == 7)
             {
                 string storedUsername = userData[1].Trim();
                 string storedPassword = userData[2].Trim();
@@ -102,10 +102,10 @@ public class LoginManager : Singleton<LoginManager>
     public string CheckFile()
     {
         if (!File.Exists(userInfoFilepath))
-            {
-                Debug.LogError("로그인 파일이 없습니다.");
-                return null;
-            }
+        {
+            Debug.LogError("로그인 파일이 없습니다.");
+            return null;
+        }
         return userInfoFilepath;
     }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -23,6 +24,9 @@ public class GameManager : Singleton<GameManager>
     public Action RangeAttackResetVisualizeEvent;
     public RuleManager ruleManager;
     public int currentClickedTileIndex;
+    
+    public string userInfoFilepath = Path.Combine(Application.dataPath, "Data", "UserInfo.csv");
+    public Owner userType;
     
     private Owner _playerType;
     private HandManager _handManager;
@@ -499,12 +503,34 @@ public class GameManager : Singleton<GameManager>
                     _handManager.playerOwner = _playerType;
                     _handManager.isAlreadySetPiece = false;
                     _handManager.playerAHandPanel.SetActive(false);
+                    
+                    if (_handManager.playerAHandCards != null)
+                    {
+                        DeckManager.Card card = _deckManager.PopCard(_handManager.GetPlayerDeck(_deckManager.playerACards));
+                        if (card != null)
+                        {
+                            _handManager.playerAHandCards.Add(card);
+                            _handManager.CreateCardUI(card, Owner.PLAYER_A);
+                        }
+                    } 
+                    
                     break;
                 case Owner.PLAYER_B:
                     _playerType = Owner.PLAYER_A;
                     _handManager.playerOwner = _playerType;
                     _handManager.isAlreadySetPiece = false;
                     _handManager.playerBHandPanel.SetActive(false);
+                    
+                    if (_handManager.playerBHandCards != null)
+                    {
+                        DeckManager.Card card = _deckManager.PopCard(_handManager.GetPlayerDeck(_deckManager.playerBCards));
+                        if (card != null)
+                        {
+                            _handManager.playerBHandCards.Add(card);
+                            _handManager.CreateCardUI(card, Owner.PLAYER_B);
+                        }
+                    } 
+                    
                     break;
             }
             FinishedAttack();

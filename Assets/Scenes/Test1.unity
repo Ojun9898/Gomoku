@@ -1626,6 +1626,7 @@ MonoBehaviour:
   playerBHandPanel: {fileID: 1584126311}
   handSize: 5
   playerOwner: 1
+  isAlreadySetPiece: 0
 --- !u!1 &2044067655
 GameObject:
   m_ObjectHideFlags: 0

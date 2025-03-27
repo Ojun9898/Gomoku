@@ -523,21 +523,21 @@ public class RuleManager : MonoBehaviour
                 }
             }
 
-        if (APoint > BPoint)
-        {
-            gameOver = true;
-            winner = Piece.Owner.PLAYER_A;
-            return winner;
-        }
-        else if (APoint < BPoint)
-        {
-            gameOver = true;
-            winner = Piece.Owner.PLAYER_B;
-            return winner;
-        }
-        else { 
-            return Piece.Owner.NONE;
-        }
+            if (APoint > BPoint)
+            {
+                gameOver = true;
+                winner = Piece.Owner.PLAYER_A;
+                return winner;
+            }
+            else if (APoint < BPoint)
+            {
+                gameOver = true;
+                winner = Piece.Owner.PLAYER_B;
+                return winner;
+            }
+            else { 
+                return Piece.Owner.NONE;
+            }
         
     }
 
