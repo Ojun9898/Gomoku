@@ -91,8 +91,18 @@ public class HandManager : MonoBehaviour
                 }
             }
 
-            // 타일 선택 시 활성화했던 표시를 해제
-            _selectedTile.clickedImageObj.SetActive(false);
+            // 카드 선택 시 선택한 이미지, 카드 패널 비활성화
+            if (playerOwner == Piece.Owner.PLAYER_A)
+            {
+                playerAHandPanel.SetActive(false);
+                _selectedTile.clickedImageObj.SetActive(false);
+            }
+
+            if (playerOwner == Piece.Owner.PLAYER_B)
+            {
+                playerBHandPanel.SetActive(false);
+                _selectedTile.clickedImageObj.SetActive(false);
+            }
 
             // 손패에서 해당 카드를 제거하고 UI를 갱신합니다.
             if (playerOwner == Piece.Owner.PLAYER_A)
