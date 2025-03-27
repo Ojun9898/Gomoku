@@ -68,6 +68,10 @@ public class AITurnState : MonoBehaviour, IState
         //더이상 공격할 수 없거나(코스트 부족),공격할 게 없을 때 (모든 piece범위에 적 없음 or 공격 남은 말이 없음)
         //턴 변경
 
+        //턴 텍스트 설정
+        string playerType = owner.ToString();
+        TurnPanelController tp = FindObjectOfType<TurnPanelController>();
+        tp.ShowTurnText(playerType);
     }
 
     public void Exit(Piece.Owner owner)

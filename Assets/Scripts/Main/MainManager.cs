@@ -9,76 +9,53 @@ using UnityEngine.SceneManagement;
 public class MainManager : Singleton<MainManager>
 {
     [SerializeField] private GameObject MainPanel;
-    [SerializeField] private GameObject SigninPanel;
-    [SerializeField] private GameObject SignupPanel;
     [SerializeField] private Transform Canvas;
     [SerializeField] private GameObject ErrorPanel;
+    [SerializeField] private GameObject LogoutPanel;
+    [SerializeField] private GameObject EndGamePanel;
 
+    private GameObject mainPanel;
     private GameObject errorPanel;
     private RectTransform errorPanelRect;
-    private GameObject signinPanel;
-    private GameObject signupPanel;
+    private GameObject logoutPanel;
+    private RectTransform logoutPanelRect;
+    private GameObject endGamePanel;
+    private RectTransform endGamePanelRect;
     private float fadeDuration = 0.1f;
 
-   void Start()
+    void Start()
     {
-        ShowSigninPanel();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    public void ShowSigninPanel()
+    public void CloseMainPanel()
     {
-        if (signinPanel == null)
+        if (MainPanel.activeSelf)
         {
-            signinPanel = Instantiate(SigninPanel, Canvas);
-        }
-        if (!signinPanel.activeSelf)
-        {
-            signinPanel.SetActive(true);
-            signinPanel.GetComponent<CanvasGroup>().DOFade(1, fadeDuration);
-        }
-    }
-
-    public void ShowSignupPanel()
-    {
-        if (signupPanel == null)
-        {
-            signupPanel = Instantiate(SignupPanel, Canvas);
-        }
-        if (!signupPanel.activeSelf)
-        {
-            signupPanel.SetActive(true);
-            signupPanel.GetComponent<CanvasGroup>().DOFade(1, fadeDuration);
-        }
-    }
-
-    public void CloseSigninPanel()
-    {
-        if (signinPanel != null && signinPanel.activeSelf)
-        {
-            signinPanel.GetComponent<CanvasGroup>().DOFade(0, fadeDuration).OnComplete(() =>
+            MainPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
             {
-                signinPanel.SetActive(false);
-            });
-        }
-    }
-
-    public void CloseSignupPanel()
-    {
-        if (signupPanel != null && signupPanel.activeSelf)
-        {
-            signupPanel.GetComponent<CanvasGroup>().DOFade(0, fadeDuration).OnComplete(() =>
-            {
-                signupPanel.SetActive(false);
+                MainPanel.SetActive(false);
             });
         }
     }
 
     public void ShowMainPanel()
     {
-        if (!MainPanel.activeSelf)
+        if (SceneManager.GetActiveScene().name == "Login" || 
+            SceneManager.GetActiveScene().name == "Game")
         {
-            MainPanel.SetActive(true);
-            MainPanel.GetComponent<CanvasGroup>().DOFade(1, fadeDuration);
+            return;
+        }
+
+        if (mainPanel == null)
+        {
+            mainPanel = Instantiate(MainPanel, Canvas);
+        }
+
+        if (!mainPanel.activeSelf)
+        {
+            mainPanel.SetActive(true);
+            mainPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
         }
     }
     
@@ -90,12 +67,71 @@ public class MainManager : Singleton<MainManager>
             errorPanelRect = errorPanel.GetComponent<RectTransform>();
             errorPanelRect.anchoredPosition = new Vector2(-500f, 0f);
         }
+
+        errorPanel.transform.SetAsLastSibling();
         errorPanel.GetComponentInChildren<TMP_Text>().text = message;
         errorPanel.SetActive(true);
         errorPanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
+    public void ShowLogoutPanel()
+    {
+        if (logoutPanel == null)
+        {
+            logoutPanel = Instantiate(LogoutPanel, Canvas);
+            logoutPanelRect = logoutPanel.GetComponent<RectTransform>();
+            logoutPanelRect.anchoredPosition = new Vector2(-500f, 0f);
+        }
+
+        logoutPanel.transform.SetAsLastSibling();
+        logoutPanel.SetActive(true);
+        logoutPanelRect.DOLocalMoveX(0f, 0.3f);
+    }
+
+    public void ShowEndGamePanel()
+    {
+        if (endGamePanel == null)
+        {
+            endGamePanel = Instantiate(EndGamePanel, Canvas);
+            endGamePanelRect = endGamePanel.GetComponent<RectTransform>();
+            endGamePanelRect.anchoredPosition = new Vector2(-500f, 0f);
+        }
+
+        endGamePanel.transform.SetAsLastSibling();
+        endGamePanel.SetActive(true);
+        endGamePanelRect.DOLocalMoveX(0f, 0.3f);
+    }
+
+    public void Logout()
+    {
+        CloseMainPanel();
+        SceneManager.LoadScene("Login");
+    }
+
+    public void EndGame()
+    {
+        SceneManager.LoadScene("Main");
+    }
+
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name == "Main" || scene.name == "Game")
+        {
+            DOTween.KillAll();
+            Canvas = GameObject.Find("Canvas")?.transform;
+
+            if (Canvas == null)
+            {
+                Debug.LogError("Canvas를 찾을 수 없습니다!");
+                return;
+            }
+
+            ShowMainPanel();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

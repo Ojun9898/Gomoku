@@ -410,6 +410,9 @@ public class GameManager : Singleton<GameManager>
         {
             costs[i] = false;
         }
+
+        CostPanelController cp = FindObjectOfType<CostPanelController>();
+        cp.SetCost(costs);
     }
 
 

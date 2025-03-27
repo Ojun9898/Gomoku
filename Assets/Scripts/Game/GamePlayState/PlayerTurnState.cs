@@ -32,8 +32,11 @@ public class PlayerTurnState : MonoBehaviour, IState
         //카드 뽑기
         //코스트 증가
 
-        MessageManager.Instance.ShowMessagePanel(owner + "의 턴 입니다");
-    }
+        //턴 텍스트 설정
+        string playerType = owner.ToString();
+        TurnPanelController tp = FindObjectOfType<TurnPanelController>();
+        tp.ShowTurnText(playerType);
+     }
 
     public void Exit(Piece.Owner owner)
     {

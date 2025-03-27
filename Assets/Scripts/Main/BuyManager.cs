@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class BuyManager : Singleton<BuyManager>
 {
     private string filePath = Path.Combine(Application.dataPath, "Data", "UserPurchases.csv");
+
 
     public string[] SetData()
     {
@@ -50,7 +52,7 @@ public class BuyManager : Singleton<BuyManager>
         string newEntry = $"{currentUsername},0,,\n";
         File.AppendAllText(filePath, newEntry);
 
-        return buyInfo.ToArray(); 
+        return new string[] { currentUsername, "0", "", "" };
     }
 
     public void UpdateTotalCoin(int coin)

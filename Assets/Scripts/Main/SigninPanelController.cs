@@ -1,6 +1,8 @@
 using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SigninPanelController : MonoBehaviour
 {
@@ -14,7 +16,7 @@ public class SigninPanelController : MonoBehaviour
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
-            MainManager.Instance.ShowErrorPanel("모든 항목을\n입력해주세요.");
+            LoginManager.Instance.ShowErrorPanel("모든 항목을\n입력해주세요.");
             return;
         }
 
@@ -23,8 +25,8 @@ public class SigninPanelController : MonoBehaviour
 
     public void OnClickSignupButton()
     {
-        MainManager.Instance.CloseSigninPanel();
-        MainManager.Instance.ShowSignupPanel();
+        LoginManager.Instance.CloseSigninPanel();
+        LoginManager.Instance.ShowSignupPanel();
     }
 
     public void LoginUser(string username, string password)
@@ -34,14 +36,13 @@ public class SigninPanelController : MonoBehaviour
         {
             if (result == 0)
             {
-                MainManager.Instance.ShowErrorPanel("아이디 또는 비밀번호가\n일치하지 않습니다.");
+                LoginManager.Instance.ShowErrorPanel("아이디 또는 비밀번호가\n일치하지 않습니다.");
                 return;
             }
             else
             {
-                MainManager.Instance.CloseSigninPanel();
-                MainManager.Instance.ShowErrorPanel("로그인 성공했습니다.");
-                MainManager.Instance.ShowMainPanel();
+                LoginManager.Instance.CloseSigninPanel();
+                SceneManager.LoadScene("Main");
             }
         });
     }
