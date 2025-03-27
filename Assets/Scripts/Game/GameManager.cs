@@ -27,8 +27,8 @@ public class GameManager : Singleton<GameManager>
     public HandManager _handManager;
     public List<bool> Costs;
     public int PlayerLevel;
-
-   
+    public CostPanelController cp;
+    
     private Owner _playerType;
     private DeckManager _deckManager;
     private int _lastClickedTileIndex = -1;
@@ -96,6 +96,8 @@ public class GameManager : Singleton<GameManager>
         //게임패널컨트롤러 가져오기
         gamePanelController = FindAnyObjectByType<GamePanelController>();
         gamePanelController.InitTimer();
+        // 코스트 불러오기
+        cp = FindObjectOfType<CostPanelController>();
         //RuleManager 초기화
         ruleManager.Init(mc.tiles, _playerType);
 
@@ -410,8 +412,7 @@ public class GameManager : Singleton<GameManager>
         {
             costs[i] = false;
         }
-
-        CostPanelController cp = FindObjectOfType<CostPanelController>();
+        
         cp.SetCost(costs);
     }
 
@@ -537,7 +538,7 @@ public class GameManager : Singleton<GameManager>
     {
         foreach (var index in attackRange)
         {
-            mc.tiles[index].GetComponent<SpriteRenderer>().color = Color.red;
+            mc.tiles[index].rangeImageObj.SetActive(true);
         }
     }
     /// <summary>
@@ -548,7 +549,7 @@ public class GameManager : Singleton<GameManager>
     {
         foreach (var index in attackRange)
         {
-            mc.tiles[index].GetComponent<SpriteRenderer>().color = Color.white;
+            mc.tiles[index].rangeImageObj.SetActive(false);
         }
         attackRange = null;
     }

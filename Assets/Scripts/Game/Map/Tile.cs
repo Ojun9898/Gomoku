@@ -7,6 +7,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 {
     [SerializeField] private GameObject cursorImageObj;
     public GameObject clickedImageObj;
+    public GameObject rangeImageObj;
     private int _tileClickCount;
     private bool _isNeedOneClick;
     public int tileNumber;

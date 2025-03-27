@@ -25,6 +25,7 @@ public class AITurnState : MonoBehaviour, IState
             AICosts[i] = true;
         }
         Debug.Log("현재 코스트: " + AICosts.Count);
+        GameManager.Instance.cp.SetCost(AICosts);
 
         GameManager.Instance.Costs = AICosts;
 
@@ -69,9 +70,8 @@ public class AITurnState : MonoBehaviour, IState
         //턴 변경
 
         //턴 텍스트 설정
-        string playerType = owner.ToString();
         TurnPanelController tp = FindObjectOfType<TurnPanelController>();
-        tp.ShowTurnText(playerType);
+        tp.ShowTurnText(owner);
     }
 
     public void Exit(Piece.Owner owner)

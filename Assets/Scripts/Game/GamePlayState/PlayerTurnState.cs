@@ -18,7 +18,8 @@ public class PlayerTurnState : MonoBehaviour, IState
             PlayerCosts[i] = true;
         }
         Debug.Log("현재 코스트: " + PlayerCosts.Count);
-
+        GameManager.Instance.cp.SetCost(PlayerCosts);
+        
         GameManager.Instance.Costs = PlayerCosts;
         //렌주룰
         GameManager.Instance.ruleManager.UpdateForbiddenMoves(owner);
@@ -33,9 +34,8 @@ public class PlayerTurnState : MonoBehaviour, IState
         //코스트 증가
 
         //턴 텍스트 설정
-        string playerType = owner.ToString();
         TurnPanelController tp = FindObjectOfType<TurnPanelController>();
-        tp.ShowTurnText(playerType);
+        tp.ShowTurnText(owner);
      }
 
     public void Exit(Piece.Owner owner)
