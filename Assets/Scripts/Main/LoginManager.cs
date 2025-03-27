@@ -117,16 +117,13 @@ public class LoginManager : Singleton<LoginManager>
         {
             string[] userData = line.Split(',');
 
-            if (userData.Length == 5)
-            {
-                string storedUsername = userData[1].Trim();
-                string storedPassword = userData[2].Trim();
+            string storedUsername = userData[1].Trim();
+            string storedPassword = userData[2].Trim();
 
-                if (storedUsername == username && storedPassword == password)
-                {
-                    currentUsername = username;
-                    return 1; // 로그인 성공
-                }
+            if (storedUsername == username && storedPassword == password)
+            {
+                currentUsername = username;
+                return 1; // 로그인 성공
             }
         }
 
@@ -144,11 +141,7 @@ public class LoginManager : Singleton<LoginManager>
         foreach (string line in lines)
         {
             string[] userData = line.Split(',');
-
-            if (userData.Length == 5)
-            {
-                allUserInfo.Add(userData);
-            }
+            allUserInfo.Add(userData);
         }
 
         return allUserInfo;
@@ -162,14 +155,11 @@ public class LoginManager : Singleton<LoginManager>
         foreach (string line in lines)
         {
             string[] userData = line.Split(',');
+            string storedUsername = userData[1].Trim();
 
-            if (userData.Length == 5)
+            if (storedUsername == currentUsername)
             {
-                string storedUsername = userData[1].Trim();
-                if (storedUsername == currentUsername)
-                {
-                    return userData;
-                }
+                return userData;
             }
         }
 

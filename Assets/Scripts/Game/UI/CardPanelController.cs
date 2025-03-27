@@ -10,10 +10,12 @@ public class CardPanel : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
    [SerializeField] private Sprite w_worrior;
    [SerializeField] private Sprite w_magician;
    [SerializeField] private Sprite w_rancer;
+   [SerializeField] private Sprite w_healer;
    [SerializeField] private Sprite b_archer;
    [SerializeField] private Sprite b_worrior;
    [SerializeField] private Sprite b_magician;
    [SerializeField] private Sprite b_rancer;
+   [SerializeField] private Sprite b_healer;
    [SerializeField] private int cardCount;
 
     public Action OnEnter;  // CardsController에서 처리할 이벤트

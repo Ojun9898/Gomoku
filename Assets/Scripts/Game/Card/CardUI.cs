@@ -14,6 +14,7 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         public Sprite warriorWhite;
         public Sprite archerWhite;
         public Sprite magicianWhite;
+        public Sprite healerWhite;
         public Sprite lancerWhite;
     }
     
@@ -24,6 +25,7 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         public Sprite warriorBlack;
         public Sprite archerBlack;
         public Sprite magicianBlack;
+        public Sprite healerBlack;
         public Sprite lancerBlack;
     }
     
@@ -60,11 +62,14 @@ public class CardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
             case Piece.PieceType.WARRIOR:
                 cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.warriorWhite : playerB.warriorBlack;
                 break;
-            case Piece.PieceType.MAGE:
+            case Piece.PieceType.MAGICIAN:
                 cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.magicianWhite : playerB.magicianBlack;
                 break;
             case Piece.PieceType.ARCHER:
                 cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.archerWhite : playerB.archerBlack;
+                break;
+            case Piece.PieceType.HEALER:
+                cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.healerWhite : playerB.healerBlack;
                 break;
             case Piece.PieceType.RANCER:
                 cardImage.sprite = (_owner == Piece.Owner.PLAYER_A) ? playerA.lancerWhite : playerB.lancerBlack;

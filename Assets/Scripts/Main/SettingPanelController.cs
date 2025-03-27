@@ -9,17 +9,26 @@ using UnityEngine.UI;
 public class SettingPanelController : MonoBehaviour
 {
    
-    [SerializeField] private Slider musicSlider;
-    [SerializeField] private Slider effectSlider;
+    [SerializeField] private Slider bgmSlider;
+    [SerializeField] private Slider sfxSlider;
 
-    public void OnValueChangedMusicSlider()
+    private AudioSource bgmSource;
+    private AudioSource sfxSource;
+
+    void Start()
     {
-       // music volume 조절
+        bgmSource = GameObject.FindWithTag("BGMSource")?.GetComponent<AudioSource>();
+        sfxSource = GameObject.FindWithTag("SFXSource")?.GetComponent<AudioSource>();
     }
 
-    public void OnValueChangedEffectSlider()
+    public void OnValueChangedBgmSlider()
     {
-        // effect volume 조절
+       SoundManager.Instance.SetVolume(bgmSource, bgmSlider.value);
+    }
+
+    public void OnValueChangedSfxSlider()
+    {
+        SoundManager.Instance.SetVolume(sfxSource, sfxSlider.value);
     }
 
     public void OnClickCloseButton()

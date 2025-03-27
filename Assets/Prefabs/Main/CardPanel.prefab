@@ -114,14 +114,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4db38fc5e1a0f84c9270253cc308441, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  w_archer: {fileID: 21300000, guid: 12f43c4c2f9994545900f8f8086d52f6, type: 3}
-  w_worrior: {fileID: 21300000, guid: 88a7ec3c3e392214cba3b768436a6ce0, type: 3}
-  w_magician: {fileID: 21300000, guid: e74b0ff239a6e2b4cb41423fda7527ce, type: 3}
+  w_archer: {fileID: 21300000, guid: bfb0bbffee9bb6c40b99cec69a9e5f6f, type: 3}
+  w_worrior: {fileID: 21300000, guid: 879e3a9e1d0de2e41aa666de41bf93a8, type: 3}
+  w_magician: {fileID: 21300000, guid: 226aebb0c5b1b5c468ed03d8832380af, type: 3}
   w_rancer: {fileID: 21300000, guid: d570b95058cbb0a4498f9b4e1724fd40, type: 3}
-  b_archer: {fileID: 21300000, guid: ba7035609346ca544808f8a3734b0619, type: 3}
-  b_worrior: {fileID: 21300000, guid: 64bcd7e8544c61343ad47e4c32f797c4, type: 3}
-  b_magician: {fileID: 21300000, guid: e7ca407b413d70f4e978f4c2f43d112a, type: 3}
-  b_rancer: {fileID: 21300000, guid: bbbaee864b05880428f0736363a8b06b, type: 3}
+  w_healer: {fileID: 21300000, guid: 087c273422b89ab43a2ebf836ddb5c5c, type: 3}
+  b_archer: {fileID: 21300000, guid: 57dcd00ac502d9a4a93f1c4108733577, type: 3}
+  b_worrior: {fileID: 21300000, guid: 541478744aefc3a499d6037bdf65925a, type: 3}
+  b_magician: {fileID: 21300000, guid: ef6c94d9e0e0a804d982c3aedfa075ec, type: 3}
+  b_rancer: {fileID: 21300000, guid: a3866c9d6ce7f324088762fd09a24949, type: 3}
+  b_healer: {fileID: 21300000, guid: 087c273422b89ab43a2ebf836ddb5c5c, type: 3}
   cardCount: 15
 --- !u!225 &6485532299523189812
 CanvasGroup:

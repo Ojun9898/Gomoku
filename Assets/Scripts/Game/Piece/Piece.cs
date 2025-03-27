@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Piece : HaveHp
 {
@@ -9,7 +6,8 @@ public class Piece : HaveHp
     {
         WARRIOR,
         RANCER,
-        MAGE,
+        MAGICIAN,
+        HEALER,
         ARCHER
     }
     
@@ -19,14 +17,16 @@ public class Piece : HaveHp
         RANGE_ATTACK,
         BUFF
     }
-    
-    public PieceType pieceType;
+
     public AttackType attackType;
-    public int[] RangeAttackRange;
+    public bool isAlreadyAttack;
+    public int[] rangeAttackRange;
+    public int cost;
     
-    [SerializeField] private int pieceCost;
-    [SerializeField] private int attackPower = 1;
+    [SerializeField] private int attackPower=1;
     [SerializeField] private int attackRange = 1;
+
+   
 
     public enum Owner
     {
@@ -41,9 +41,9 @@ public class Piece : HaveHp
         return pieceOwner;
     }
 
-    public void SetPieceOwner(Owner pieceOwner)
+    public void SetPieceOwner(Owner pieceOwners)
     {
-        this.pieceOwner = pieceOwner;
+        this.pieceOwner = pieceOwners;
     }
 
 
@@ -51,9 +51,9 @@ public class Piece : HaveHp
     {
         return attackRange;
     }
-    public void SetAttackRange(int attackRange)
+    public void SetAttackRange(int attackRanges)
     {
-        this.attackRange = attackRange;
+        this.attackRange = attackRanges;
     }
 
 
@@ -61,34 +61,29 @@ public class Piece : HaveHp
     {
         return attackPower;
     }
-    public void SetAttackPower(int attackPower)
+    public void SetAttackPower(int attackPowers)
     {
-        this.attackPower = attackPower;
+        this.attackPower = attackPowers;
     }
 
-    public int GetPieceCost()
+
+
+
+
+
+    public void ChoseAttack(Piece piece,int attackPowers) { 
+        piece.Hp -= attackPowers;
+        isAlreadyAttack = true;
+    }
+    public void Buff(Piece piece, int attackPowers) {
+        piece.Hp += attackPowers;
+        isAlreadyAttack = true;
+    }
+    public void ChoseAttack(Obstacle oc, int attackPowers)
     {
-        return pieceCost;
-    }
-
-    public void SetPieceCost(int pieceCost)
-    {
-        this.pieceCost = pieceCost;
+        oc.Hp -= attackPowers;
+        isAlreadyAttack = true;
     }
 
 
-
-
-
-
-    public void ChoseAttack(Piece pc,int attackPower) { 
-        pc.Hp -= attackPower;
-    }
-    public void Buff(Piece pc, int attackPower) { 
-        pc.Hp += attackPower;
-    }
-    public void ChoseAttack(Obstacle oc, int attackPower)
-    {
-        oc.Hp -= attackPower;
-    }
 }

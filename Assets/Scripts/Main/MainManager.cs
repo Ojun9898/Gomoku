@@ -12,12 +12,15 @@ public class MainManager : Singleton<MainManager>
     [SerializeField] private Transform Canvas;
     [SerializeField] private GameObject ErrorPanel;
     [SerializeField] private GameObject LogoutPanel;
+    [SerializeField] private GameObject EndGamePanel;
 
     private GameObject mainPanel;
     private GameObject errorPanel;
     private RectTransform errorPanelRect;
     private GameObject logoutPanel;
     private RectTransform logoutPanelRect;
+    private GameObject endGamePanel;
+    private RectTransform endGamePanelRect;
     private float fadeDuration = 0.1f;
 
     void Start()
@@ -38,6 +41,12 @@ public class MainManager : Singleton<MainManager>
 
     public void ShowMainPanel()
     {
+        if (SceneManager.GetActiveScene().name == "Login" || 
+            SceneManager.GetActiveScene().name == "Game")
+        {
+            return;
+        }
+
         if (mainPanel == null)
         {
             mainPanel = Instantiate(MainPanel, Canvas);
@@ -79,15 +88,34 @@ public class MainManager : Singleton<MainManager>
         logoutPanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
+    public void ShowEndGamePanel()
+    {
+        if (endGamePanel == null)
+        {
+            endGamePanel = Instantiate(EndGamePanel, Canvas);
+            endGamePanelRect = endGamePanel.GetComponent<RectTransform>();
+            endGamePanelRect.anchoredPosition = new Vector2(-500f, 0f);
+        }
+
+        endGamePanel.transform.SetAsLastSibling();
+        endGamePanel.SetActive(true);
+        endGamePanelRect.DOLocalMoveX(0f, 0.3f);
+    }
+
     public void Logout()
     {
         CloseMainPanel();
         SceneManager.LoadScene("Login");
     }
 
+    public void EndGame()
+    {
+        SceneManager.LoadScene("Main");
+    }
+
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Main")
+        if (scene.name == "Main" || scene.name == "Game")
         {
             DOTween.KillAll();
             Canvas = GameObject.Find("Canvas")?.transform;

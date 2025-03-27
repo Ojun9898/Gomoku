@@ -1,98 +1,164 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class HandManager : MonoBehaviour
 {
-    [SerializeField] private Transform handPanel;      // 카드 UI가 표시될 부모 오브젝트 (예: Canvas 하위 패널)
     [SerializeField] private GameObject cardUIPrefab;    // CardUI 프리팹 (CardUI 스크립트가 붙어 있음)
-    [SerializeField] private int handSize = 5;           // 초기 손패 개수
-    private List<DeckManager.Card> _handCards = new List<DeckManager.Card>();
+    public GameObject playerAHandPanel;      // 카드 UI가 표시될 부모 오브젝트 (예: Canvas 하위 패널)
+    public GameObject playerBHandPanel;      // 카드 UI가 표시될 부모 오브젝트 (예: Canvas 하위 패널)
+    
+    [SerializeField] private int handSize = 5; // 초기 손패 개수
+    private List<DeckManager.Card> _playerAHandCards = new List<DeckManager.Card>();
+    private List<DeckManager.Card> _playerBHandCards = new List<DeckManager.Card>();
 
     // 플레이어의 Owner 타입을 지정 (인스펙터에서 바인딩 가능)
-    public Piece.Owner playerOwner = Piece.Owner.PLAYER_A;
+    public Piece.Owner playerOwner;
 
     private DeckManager _deckManager;
     private Tile _selectedTile;
-
-    private void Awake()
-    {
-        _deckManager = FindObjectOfType<DeckManager>();
-    }
-
-    private void Start()
-    {
-        // 게임 시작 시 플레이어의 손패 초기화 (예: handSize만큼 Pop)
-        InitializeHand();
-    }
+    public bool isAlreadySetPiece;
 
     // 플레이어 덱에서 handSize만큼 카드를 Pop하여 손패에 추가 후 UI 생성
-    private void InitializeHand()
+    public void InitializeHand(DeckManager deckManager)
     {
+        _deckManager = deckManager;
+        
         for (int i = 0; i < handSize; i++)
         {
-            DeckManager.Card card = _deckManager.PopCard(GetPlayerDeck());
+            // Player A의 덱에서 카드 Pop
+            DeckManager.Card card = _deckManager.PopCard(GetPlayerDeck(_deckManager.playerACards));
             if (card != null)
             {
-                _handCards.Add(card);
-                CreateCardUI(card);
+                _playerAHandCards.Add(card);
+                CreateCardUI(card, Piece.Owner.PLAYER_A);
+            }
+
+            // Player B의 덱에서 카드 Pop
+            card = _deckManager.PopCard(GetPlayerDeck(_deckManager.playerBCards));
+            if (card != null)
+            {
+                _playerBHandCards.Add(card);
+                CreateCardUI(card, Piece.Owner.PLAYER_B);
             }
         }
     }
 
-    // 예시: 플레이어 A의 덱을 사용 (원하는 덱으로 수정 가능)
-    private List<DeckManager.Card> GetPlayerDeck()
+    // 매개변수로 deck을 받아와 원하는 덱을 가져온다.
+    private List<DeckManager.Card> GetPlayerDeck(List<DeckManager.Card> deck)
     {
-        // playerACards는 private이지만, 필요한 경우 public 접근자를 추가하거나 여기서 처리합니다.
-        // 이 예제에서는 단순히 deckManager 내부의 playerACards를 반환한다고 가정합니다.
-        return _deckManager.playerACards;
+        return deck;
     }
 
     // 카드 UI를 동적으로 생성하여 handPanel에 추가
-    private void CreateCardUI(DeckManager.Card card)
+    // 카드 UI를 동적으로 생성하여 해당 플레이어의 Hand Panel에 추가하는 메소드
+    private void CreateCardUI(DeckManager.Card card, Piece.Owner owner)
     {
-        GameObject cardUIObj = Instantiate(cardUIPrefab, handPanel);
+        GameObject parentPanel = (owner == Piece.Owner.PLAYER_A) ? playerAHandPanel : playerBHandPanel;
+        GameObject cardUIObj = Instantiate(cardUIPrefab, parentPanel.transform);
         CardUI cardUIScript = cardUIObj.GetComponent<CardUI>();
         // 플레이어의 Owner 타입을 함께 전달하여 올바른 Sprite가 할당되도록 합니다.
-        cardUIScript.SetCard(card, playerOwner);
+        cardUIScript.SetCard(card, owner);
     }
 
-    // HandManager가 CardUI에서 호출하는 메소드: 카드가 선택되었을 때 호출됨
+    // 카드가 선택되었을 때 호출됨 (카드 클릭 → 타일 선택 후 말 생성)
     public void OnCardSelected(DeckManager.Card selectedCard)
     {
         if (_selectedTile == null)
         {
-            Debug.Log("먼저 타일을 선택하세요.");
+            MessageManager.Instance.ShowMessagePanel("먼저 타일을 선택하세요.");
             return;
         }
+        
+        if (isAlreadySetPiece == false)
+        {
+            // GameManager의 SetPieceAtTile 메소드를 사용하여 선택된 타일에 말을 생성합니다.
+            _deckManager.PlayCard(selectedCard.pieceType, playerOwner);
+            GameObject pieceInstance = GameManager.Instance.SetPieceAtTile(_selectedTile.tileNumber);
+            isAlreadySetPiece = true;
+            Piece pieceComponent = pieceInstance.GetComponent<Piece>();
+            _selectedTile.Piece = pieceComponent;
+            if (pieceComponent != null)
+            {
+                // 카드에 따른 말의 속성(예: 소유자 설정)을 지정합니다.
+                pieceComponent.SetPieceOwner(playerOwner);
+                // (필요 시 카드 데이터(selectedCard) 기반 추가 설정 가능)
 
-        // 선택된 카드에 따른 유닛 생성: 선택된 타일의 위치에 생성
-        _deckManager.PlayCard(selectedCard.pieceType, _selectedTile.transform.position, playerOwner);
+                // 타일에 버프가 있을 경우 적용합니다.
+                if (_selectedTile.GetBuff() != null)
+                {
+                    _selectedTile.GetBuff().On(pieceComponent);
+                }
+            }
 
-        // 손패에서 해당 카드를 제거하고 UI 갱신
-        _handCards.Remove(selectedCard);
-        RefreshHandUI();
+            // 타일 선택 시 활성화했던 표시를 해제
+            _selectedTile.clickedImageObj.SetActive(false);
 
-        // 선택한 타일 초기화 (원한다면)
-        _selectedTile = null;
+            // 손패에서 해당 카드를 제거하고 UI를 갱신합니다.
+            if (playerOwner == Piece.Owner.PLAYER_A)
+            {
+                _playerAHandCards.Remove(selectedCard);
+            }
+            else if (playerOwner == Piece.Owner.PLAYER_B)
+            {
+                _playerBHandCards.Remove(selectedCard);
+            }
+
+            RefreshHandUI(playerOwner);
+
+            // 선택된 타일 초기화
+            _selectedTile = null;
+        }
     }
 
+
     // 타일 클릭 시 HandManager에서 호출: 선택된 타일 저장
+    
     public void SetSelectedTile(Tile tile)
     {
         _selectedTile = tile;
+        if(_selectedTile.isForbiddenMove)
+        {
+            MessageManager.Instance.ShowMessagePanel("금수 입니다.");
+            _selectedTile = null;
+            return;
+        }
+        else if (_selectedTile.GetObstacle() != null)
+        {
+            MessageManager.Instance.ShowMessagePanel("장애물이 있습니다.");
+            _selectedTile = null;
+            return;
+        }
         Debug.Log("타일 선택됨: " + tile.tileNumber);
     }
 
     // 현재 손패 UI를 갱신하는 메소드 (간단하게 모든 자식을 제거하고 다시 생성)
-    private void RefreshHandUI()
+    private void RefreshHandUI(Piece.Owner owner)
     {
-        foreach (Transform child in handPanel)
+        if (owner == Piece.Owner.PLAYER_A)
         {
-            Destroy(child.gameObject);
+            foreach (Transform child in playerAHandPanel.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (var card in _playerAHandCards)
+            {
+                CreateCardUI(card, playerOwner);
+            }
         }
-        foreach (var card in _handCards)
+        else if (owner == Piece.Owner.PLAYER_B)
         {
-            CreateCardUI(card);
+            foreach (Transform child in playerBHandPanel.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (var card in _playerBHandCards)
+            {
+                CreateCardUI(card, playerOwner);
+            }
         }
     }
+
 }

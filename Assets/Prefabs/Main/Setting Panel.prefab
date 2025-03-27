@@ -85,7 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8763815747971494984}
   m_Layer: 5
-  m_Name: Music
+  m_Name: BGM
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,10 +220,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2db1cb8ae03e3d43a333c2a8f986608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicSlider: {fileID: 6307616787245225603}
-  effectSlider: {fileID: 1646102531497228113}
-  LogoutPanel: {fileID: 6412832676752804061, guid: f867bb76b5f47284b9f62d65de9be07d, type: 3}
-  Canvas: {fileID: 0}
+  bgmSlider: {fileID: 6307616787245225603}
+  sfxSlider: {fileID: 1646102531497228113}
 --- !u!1 &2002506292692319319
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,7 +391,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5503369, y: 0.5}
-  m_AnchoredPosition: {x: 636.85223, y: 484.21057}
+  m_AnchoredPosition: {x: 628.141, y: 393.68427}
   m_SizeDelta: {x: 171.01744, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5359747681339828338
@@ -687,7 +685,7 @@ GameObject:
   - component: {fileID: 6982651475364018942}
   - component: {fileID: 6307616787245225603}
   m_Layer: 5
-  m_Name: MusicSlider
+  m_Name: BGMSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -762,13 +760,13 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.7
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: -6965886716451181727}
         m_TargetAssemblyTypeName: SettingPanelController, Assembly-CSharp
-        m_MethodName: OnValueChangedMusicSlider
+        m_MethodName: OnValueChangedBgmSlider
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1013,7 +1011,7 @@ GameObject:
   - component: {fileID: 8109913598188477074}
   - component: {fileID: 1646102531497228113}
   m_Layer: 5
-  m_Name: EffectSlider
+  m_Name: SFXSlider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1088,13 +1086,13 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 0.7
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: -6965886716451181727}
         m_TargetAssemblyTypeName: SettingPanelController, Assembly-CSharp
-        m_MethodName: OnValueChangedEffectSlider
+        m_MethodName: OnValueChangedSfxSlider
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1114,7 +1112,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3047360820649508268}
   m_Layer: 5
-  m_Name: Effect
+  m_Name: SFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
