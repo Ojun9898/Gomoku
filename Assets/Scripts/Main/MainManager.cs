@@ -26,6 +26,7 @@ public class MainManager : Singleton<MainManager>
     void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        ShowMainPanel();
     }
 
     public void CloseMainPanel()

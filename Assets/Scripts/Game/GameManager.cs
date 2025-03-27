@@ -577,6 +577,7 @@ public class GameManager : Singleton<GameManager>
                 GetFSM().ChangeState<FinishDirectionState>(CheckSome.Item2);
             });
             finishTurnButton.onClick.Invoke();
+            return;
         }
 
         if (_handManager.isAlreadySetPiece)

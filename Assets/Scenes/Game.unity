@@ -1777,9 +1777,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 1381441257}
     m_Modifications:
     - target: {fileID: 1561088234775643268, guid: 3860031c9c87c1a4dbf5bf2db8bf3b40, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1561088234775643268, guid: 3860031c9c87c1a4dbf5bf2db8bf3b40, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1241072548}
+      objectReference: {fileID: 0}
+    - target: {fileID: 1561088234775643268, guid: 3860031c9c87c1a4dbf5bf2db8bf3b40, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7470481464215455793, guid: 3860031c9c87c1a4dbf5bf2db8bf3b40, type: 3}
       propertyPath: m_Name
       value: Turn Button
