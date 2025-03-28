@@ -150,7 +150,8 @@ public class AITurnState : MonoBehaviour, IState
         {
 
             Piece pc = GameManager.Instance.Mc.tiles[attackPriority[i]].Piece;
-            if (pc.attackType == AttackType.BUFF) { continue; }
+            if (pc == null) continue;
+            if (pc.attackType == AttackType.BUFF)  continue; 
 
             if (pc.cost <= AICosts.Count(x => x))
             {
@@ -164,7 +165,10 @@ public class AITurnState : MonoBehaviour, IState
                 if (!RANGE.Contains(selectedDamagedTile)) {
                     selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
                 }
-                if (selectedDamagedTile == -1) { continue; }
+                if (selectedDamagedTile < 0) {
+                    GameManager.Instance.Mc.tiles[selectedDamagedTile].ResetClick();
+                    continue; 
+                }
                 GameManager.Instance.Mc.tiles[selectedDamagedTile].OnClickTileButton();
                 yield return new WaitForSeconds(1.2f);
             }
@@ -207,6 +211,7 @@ public class AITurnState : MonoBehaviour, IState
         yield return new WaitForSeconds(1.6f);
         int randomTime = GetRandomValue();
         yield return new WaitForSeconds(1.6f);
+
         yield return AttackAndHeal(owner);
 
 
@@ -248,11 +253,14 @@ public class AITurnState : MonoBehaviour, IState
         for (int i = 0; i < attackPriority.Count; i++)
         {
             Piece pc = GameManager.Instance.Mc.tiles[attackPriority[i]].Piece;
-            if (pc.isAlreadyAttack == true) { continue; }
+            if(pc == null)  continue; 
+            if (pc.isAlreadyAttack == true) continue; 
             if (pc.cost <= AICosts.Count(x => x))
             {
 
                 int selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
+
+
                 if (pc.attackType == AttackType.BUFF)
                 {
                     //공격자 선택
@@ -262,7 +270,10 @@ public class AITurnState : MonoBehaviour, IState
                     yield return new WaitForSeconds(1.2f);
                     //회복 받는 타일 선택
                     int selectedHealTile = GameManager.Instance.ruleManager.FindWeakestConsecutiveAllyInRange(attackPriority[i], owner);
-                    if (selectedDamagedTile == -1) { continue; }
+                    if (selectedHealTile < 0) {
+                        GameManager.Instance.Mc.tiles[selectedHealTile].ResetClick();
+                        continue; 
+                    }
                     GameManager.Instance.Mc.tiles[selectedHealTile].OnClickTileButton();
                     yield return new WaitForSeconds(1.2f);
                 }
@@ -281,7 +292,10 @@ public class AITurnState : MonoBehaviour, IState
                     {
                         selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
                     }
-                    if (selectedDamagedTile == -1) { continue; }
+                    if (selectedDamagedTile < 0) {
+                        GameManager.Instance.Mc.tiles[selectedDamagedTile].ResetClick();
+                        continue; 
+                    }
                     GameManager.Instance.Mc.tiles[selectedDamagedTile].OnClickTileButton();
                     yield return new WaitForSeconds(1.2f);
                 }

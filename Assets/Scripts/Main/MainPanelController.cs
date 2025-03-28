@@ -47,7 +47,7 @@ public class MainPanelController : MonoBehaviour
 
         FadePanel.GetComponent<CanvasGroup>().alpha = 0f;
 
-        FadePanel.GetComponent<CanvasGroup>().DOFade(1f, 1.5f).OnComplete(() =>
+        FadePanel.GetComponent<CanvasGroup>().DOFade(1f, 1f).OnComplete(() =>
         {
             SceneManager.LoadScene("Game");
         });

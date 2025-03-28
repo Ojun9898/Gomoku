@@ -284,9 +284,9 @@ public class Timer : MonoBehaviour
     }
     public void StartTimer()
     {
+        ResetTimer();
         if (!timerRunning && !timerPaused)
         {
-            ResetTimer();
             timerRunning = true;
             if (countMethod == CountMethod.CountDown)
             {
@@ -439,6 +439,11 @@ public class Timer : MonoBehaviour
             GameManager.Instance.OnButtonClickFinishMyTurn();
         }
     }
+
+    public void SetSliderColor() {
+        dialSlider.color = new Color32(159, 241, 65, 255);
+    }
+
     IEnumerator PutPiece(Piece.Owner owner)
     {
         MessageManager.Instance.ShowMessagePanel("타이머가 종료되어 자동으로 말이 배치됩니다");

@@ -26,10 +26,12 @@ public class GamePanelController : MonoBehaviour
     }
 
     public void StartTimer() {
+        timer.SetSliderColor();
         timer.StartTimer();
     }
 
     public void StopTimer() {
+        timer.SetSliderColor();
         timer.StopTimer();
     }
    

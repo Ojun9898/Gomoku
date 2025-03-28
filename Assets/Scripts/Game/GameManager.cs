@@ -6,12 +6,14 @@ using UnityEngine.UI;
 using static Piece;
 using System.Linq;
 using UnityEngine.Serialization;
+using DG.Tweening;
 
 
 [RequireComponent(typeof(StateMachine))]
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private MapController mc;
+    public GameObject BlackPanel;
     public GameObject BlockPanelPrefab;
     public GameObject forbiddenMoveObject;
     public GameObject piece;
@@ -74,8 +76,7 @@ public class GameManager : Singleton<GameManager>
     /// 게임 메니저 초기화
     /// </summary>
     private void InitGameManager()
-    {   // 카드 생성 메소드 
-
+    {   
         // Map에서 타일 생성후 가져오는 메소드
         SetMapController();
         // 턴 넘김 횟수 초기화 
@@ -301,6 +302,7 @@ public class GameManager : Singleton<GameManager>
                 if (_currentChoosingPiece.isAlreadyAttack)
                 {
                     MessageManager.Instance.ShowMessagePanel("이미 공격한 말 입니다");
+                    FadeCardandResetClick();
                     FinishedAttack();
                     return (true, 0);
                 }
@@ -313,7 +315,14 @@ public class GameManager : Singleton<GameManager>
                 {
                     _handManager.playerBHandPanel.SetActive(false);
                 }
-                MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
+
+                if (Mc.tiles[CurrentClickedTileIndex].Piece.attackType == AttackType.BUFF)
+                {
+                    MessageManager.Instance.ShowMessagePanel("체력을 회복할 말을 선택하세요");
+                }
+                else {
+                    MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
+                }
             }
             else
             {
@@ -374,6 +383,7 @@ public class GameManager : Singleton<GameManager>
                 else
                 {
                     MessageManager.Instance.ShowMessagePanel("상대의 말입니다");
+                    FadeCardandResetClick();
                     return (true, 0);
                 }
             }
@@ -582,7 +592,7 @@ public class GameManager : Singleton<GameManager>
 
         if (_handManager.isAlreadySetPiece)
         {
-            GameManager.Instance.gamePanelController.StopTimer();
+            gamePanelController.StopTimer();
             _changeTurnCount++;
             Debug.Log("턴 진행 횟수 : " + _changeTurnCount);
             if (_changeTurnCount >= 30)
@@ -680,6 +690,11 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void FadeCardandResetClick() {
+        Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
+        _handManager.playerAHandPanel.SetActive(false);
+        _handManager.playerBHandPanel.SetActive(false);
+    }
     public Owner GetCurrentPlayerType()
     {
         return _playerType;
