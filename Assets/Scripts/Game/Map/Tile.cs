@@ -7,6 +7,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 {
     [SerializeField] private GameObject cursorImageObj;
     public GameObject clickedImageObj;
+    public GameObject rangeImageObj;
     private int _tileClickCount;
     private bool _isNeedOneClick;
     public int tileNumber;
@@ -40,6 +41,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                 {
                         _handManager.playerAHandPanel.SetActive(false);
                         _handManager.playerBHandPanel.SetActive(false);
+                        clickedImageObj.SetActive(false);
                 }
                 else
                 {
@@ -48,6 +50,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                     {
                         _handManager.playerAHandPanel.SetActive(false);
                         _handManager.playerBHandPanel.SetActive(false);
+                        clickedImageObj.SetActive(false);
                     }
                 }
             }
@@ -85,6 +88,13 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void OnClickTileButton() {
         _tileClickCount++;
+        // 추가: 타일 클릭 시 HandManager에 선택된 타일 정보 전달
+        HandManager hm = FindObjectOfType<HandManager>();
+        if (hm != null)
+        {
+            hm.SetSelectedTile(this);
+        }
+
         if (JustBeforeDestroyObstacle == null)
         {
             JustBeforeDestroyPiece = () => { this.obstacle = null; };
@@ -123,14 +133,6 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                 if (Piece == null)
                 {
                     Piece = pieceAndCaseValue.Value.piece?.GetComponent<Piece>();
-                    (bool, Piece.Owner) CheckSome = GameManager.Instance.ruleManager.CheckGameOver();
-                    if (CheckSome.Item1)
-                    {
-                        GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
-                        GameManager.Instance.finishTurnButton.onClick.AddListener(() => {
-                            GameManager.Instance.GetFSM().ChangeState<FinishDirectionState>(CheckSome.Item2);
-                        });
-                    }
                 }
 
                 switch (caseValue)
@@ -179,14 +181,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public void OnPointerClick(PointerEventData eventData)
     {
         if (GameManager.Instance.FirstTimeTileClickEvent == null && GameManager.Instance.SecondTimeTileClickEvent == null) return;
-        OnClickTileButton();
-        // 추가: 타일 클릭 시 HandManager에 선택된 타일 정보 전달
-        HandManager hm = FindObjectOfType<HandManager>();
-        if (hm != null)
-        {
-            hm.SetSelectedTile(this);        
-        }
-        
+        OnClickTileButton(); 
     }
 
     public void ResetTile() {

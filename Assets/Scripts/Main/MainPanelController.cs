@@ -12,6 +12,7 @@ public class MainPanelController : MonoBehaviour
     [SerializeField] private GameObject RankingPanel;
     [SerializeField] private GameObject ProfilePanel;
     [SerializeField] private Transform canvasTransform;
+    [SerializeField] private GameObject FadePanel;
 
     private GameObject settingPanel;
     private RectTransform settingPanelRect;
@@ -23,15 +24,36 @@ public class MainPanelController : MonoBehaviour
     private RectTransform rankingPanelRect;
     private GameObject profilePanel;
     private RectTransform profilePanelRect;
-
-    public void OnClick1pButton()
+    
+    void Awake()
     {
-        SceneManager.LoadSceneAsync("Game");
+        FindCanvas();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    public void OnClick2pButton()
+    private void FindCanvas()
     {
-        SceneManager.LoadSceneAsync("Game");
+        // Canvas를 다시 찾음
+        GameObject canvasObj = GameObject.Find("Canvas");
+        if (canvasObj != null)
+        {
+            canvasTransform = canvasObj.transform;
+        }
+        else
+        {
+            Debug.LogError("Canvas를 찾을 수 없습니다!");
+        }
+    }
+    public void OnClickPlayButton()
+    {
+        FadePanel = Instantiate(FadePanel, canvasTransform);
+
+        FadePanel.GetComponent<CanvasGroup>().alpha = 0f;
+
+        FadePanel.GetComponent<CanvasGroup>().DOFade(1f, 1.5f).OnComplete(() =>
+        {
+            SceneManager.LoadScene("Game");
+        });
     }
 
     public void OnClickExitButton()
@@ -98,7 +120,7 @@ public class MainPanelController : MonoBehaviour
        {
             profilePanel = Instantiate(ProfilePanel, canvasTransform);
             profilePanelRect = profilePanel.GetComponent<RectTransform>();
-            profilePanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
+            profilePanelRect.anchoredPosition = new Vector2(-500f, 515f); // 초기 위치 설정
         }
         else
         {
@@ -107,5 +129,15 @@ public class MainPanelController : MonoBehaviour
 
         profilePanelRect.DOLocalMoveX(0f, 0.3f);
        
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        FindCanvas();
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }

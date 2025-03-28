@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
 public class RuleManager : MonoBehaviour
 {
-    public AI ai;
     private int BOARD_SIZE;
     private List<Tile> board;
     private Piece.Owner EMPTY = Piece.Owner.NONE;
-    private Piece.Owner BLACK ;
-    private Piece.Owner WHITE ;
+    private Piece.Owner BLACK;
+    private Piece.Owner WHITE;
     private Piece.Owner currentPlayer;
     private bool gameOver;
     private Piece.Owner winner;
@@ -17,16 +18,18 @@ public class RuleManager : MonoBehaviour
     readonly int[] dx = { 0, 1, 1, 1 };
     readonly int[] dy = { 1, 1, 0, -1 };
 
-
-    public void Init(List<Tile> mapTiles,  Piece.Owner firstTurnPlayer)
+    #region forbiddenMoves and win
+    public void Init(List<Tile> mapTiles, Piece.Owner firstTurnPlayer)
     {
+        // 보드 크기가 8x8라고 가정
         BOARD_SIZE = 8;
-        //ai = new AI(mapTiles);
         board = mapTiles;
         BLACK = firstTurnPlayer;
-        if (firstTurnPlayer == Piece.Owner.PLAYER_A) { 
-           WHITE = Piece.Owner.PLAYER_B;
-        }else if(firstTurnPlayer == Piece.Owner.PLAYER_B)
+        if (firstTurnPlayer == Piece.Owner.PLAYER_A)
+        {
+            WHITE = Piece.Owner.PLAYER_B;
+        }
+        else if (firstTurnPlayer == Piece.Owner.PLAYER_B)
         {
             WHITE = Piece.Owner.PLAYER_A;
         }
@@ -35,35 +38,29 @@ public class RuleManager : MonoBehaviour
         forbiddenMoves = new List<(int, int)>();
     }
 
-
-
     /// <summary>
     /// 선공만 금수 계산
     /// </summary>
     public void UpdateForbiddenMoves(Piece.Owner currentPlayer)
     {
         if (currentPlayer != BLACK) return;
-        if (currentPlayer == BLACK)
+        forbiddenMoves.Clear();
+        for (int y = 0; y < BOARD_SIZE; y++)
         {
-            forbiddenMoves.Clear();
-            for (int y = 0; y < BOARD_SIZE; y++)
+            for (int x = 0; x < BOARD_SIZE; x++)
             {
-                for (int x = 0; x < BOARD_SIZE; x++)
+                int index = y * BOARD_SIZE + x;
+                if (board[index].Piece == null && IsForbiddenMove(x, y))
                 {
-                    int index = y * BOARD_SIZE + x; // 1차원 인덱스 계산
-                    if (board[index].Piece == null && IsForbiddenMove(x, y))
-                    {
-                        forbiddenMoves.Add((x, y));
-                    }
+                    forbiddenMoves.Add((x, y));
                 }
             }
-            if(forbiddenMoves != null)
-            {
-                ForviddensOnMap();
-            }
+        }
+        if (forbiddenMoves.Count > 0)
+        {
+            ForviddensOnMap();
         }
     }
-
 
     private void ForviddensOnMap()
     {
@@ -71,185 +68,118 @@ public class RuleManager : MonoBehaviour
         {
             int x = move.Item1;
             int y = move.Item2;
-
-            // 1D 인덱스 계산 (여기서 BOARD_SIZE는 예시로 8, 8x8 보드인 경우)
             int index = y * BOARD_SIZE + x;
-
             board[index].isForbiddenMove = true;
+            // Instantiate forbidden marker as child of 해당 타일
             forbiddenMovesOnMap.Add(Instantiate(GameManager.Instance.forbiddenMoveObject, board[index].transform));
         }
     }
 
-    public void DeleteForviddensOnMap() {
+    public void DeleteForviddensOnMap()
+    {
         foreach (var move in forbiddenMoves)
         {
             int x = move.Item1;
             int y = move.Item2;
-            // 1D 인덱스 계산 (여기서 BOARD_SIZE는 예시로 8, 8x8 보드인 경우)
             int index = y * BOARD_SIZE + x;
             board[index].isForbiddenMove = false;
         }
-        if (forbiddenMovesOnMap != null) {
+        if (forbiddenMovesOnMap != null)
+        {
             foreach (var forbidden in forbiddenMovesOnMap)
             {
                 Destroy(forbidden);
             }
+            forbiddenMovesOnMap.Clear();
         }
     }
 
-
-
-
-
     /// <summary>
-    /// 금수 체크
+    /// 금수 체크 (임시 돌을 놓은 후 해당 위치가 금수라면 true)
     /// </summary>
-    /// <param name="x">x좌표</param>
-    /// <param name="y">y좌표</param>
-    /// <returns>해당 위치의 금수 유무</returns>
     private bool IsForbiddenMove(int x, int y)
     {
-        int index = y * BOARD_SIZE + x; // 1차원 인덱스 계산
-        // 이미 돌이 있는 경우
+        int index = y * BOARD_SIZE + x;
         if (board[index].Piece != null)
             return false;
-        else { 
+        else
+        {
             // 임시로 흑돌 놓기
             board[index].SetPiece(GameManager.Instance.SetTemporaryPiece(index, BLACK));
 
-            // 장목(6목 이상), 4-4, 3-3 체크
-            var a = IsOverline(x, y);
-            var b = IsDoubleFour(x, y);
-            var c = IsDoubleThree(x, y);
-            var d =  CheckWin(x, y);
-            bool isForbidden = (a||b||c)&&(!d);
-
+            bool isOver = IsOverline(x, y);
+            bool isDoubleFour = IsDoubleFour(x, y);
+            bool isDoubleThree = IsDoubleThree(x, y);
+            bool canWin = CheckWin(x, y);
+            bool isForbidden = (isOver || isDoubleFour || isDoubleThree) && (!canWin);
 
             // 임시 돌 제거
-            Destroy(board[index].Piece.gameObject);
+            if (board[index].Piece != null)
+            {
+                Destroy(board[index].Piece.gameObject);
+            }
             board[index].SetPiece(null);
 
             return isForbidden;
         }
     }
 
-
-
-
-    /// <summary>
-    /// 게임판 경계를 넘지 않았나 확인
-    /// </summary>
-    /// <param name="x">확인하려는 오브젝트의 x좌표</param>
-    /// <param name="y">확인하려는 오브젝트의 y좌표</param>
-    /// <returns></returns>
     private bool IsInBoard(int x, int y)
     {
         return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
     }
 
-
-
-
-
-    /// <summary>
-    /// 연속된 돌의 개수 세기
-    /// </summary>
-    /// <param name="x">시작 X 좌표</param>
-    /// <param name="y">시작 y 좌표</param>
-    /// <param name="dx">x좌표 진행 방향</param>
-    /// <param name="dy">y좌표 진행 방향</param>
-    /// <returns>해당 방향으로 연속돈 돌의 개수</returns>
     private int CountStonesInDirection(int x, int y, int dx, int dy)
     {
         int count = 0;
         int nx = x + dx;
         int ny = y + dy;
-
         while (IsInBoard(nx, ny))
         {
-            int index = ny * BOARD_SIZE + nx; // 1차원 인덱스 계산
-            if (board[index].Piece?.pieceOwner == BLACK)
+            int idx = ny * BOARD_SIZE + nx;
+            if (board[idx].Piece?.pieceOwner == BLACK)
             {
                 count++;
                 nx += dx;
                 ny += dy;
             }
-            else {
+            else
+            {
                 break;
             }
         }
-        
         return count;
     }
 
-
-
-
-    /// <summary>
-    /// 장목 체크 (6목 이상)
-    /// </summary>
-    /// <param name="x">체크 x좌표</param>
-    /// <param name="y">체크 y좌표</param>
-    /// <returns>해당  좌표 장목 금수의 유무</returns>
     private bool IsOverline(int x, int y)
     {
-
         for (int dir = 0; dir < 4; dir++)
         {
             int _count = 1;
-
-            // 양방향으로 같은 색 돌 세기
             _count += CountStonesInDirection(x, y, dx[dir], dy[dir]);
             _count += CountStonesInDirection(x, y, -dx[dir], -dy[dir]);
-
             if (_count >= 6)
                 return true;
         }
-
         return false;
     }
 
-
-
-
-    /// <summary>
-    /// 44 금수 체크 
-    /// </summary>
-    /// <param name="x">체크 x좌표</param>
-    /// <param name="y">체크 y좌표</param>
-    /// <returns>해당  좌표 44 금수의 유무</returns>
     private bool IsDoubleFour(int x, int y)
     {
-       
         int fourCount = 0;
-
         for (int dir = 0; dir < 4; dir++)
         {
             if (HasFour(x, y, dx[dir], dy[dir]))
                 fourCount++;
-
             if (fourCount >= 2)
                 return true;
         }
-
         return false;
     }
 
-
-
-    /// <summary>
-    /// 연속된 4개의 돌 체크
-    /// 체크하는 곳 기준  -4 만큼의 크기를 잡아 그 안에서 4가  만들어 질 수 있는 경우를 모두 확인함
-    /// </summary>
-    /// <param name="x">체크할x좌표</param>
-    /// <param name="y">체크할y좌표</param>
-    /// <param name="dx">진행 방향</param>
-    /// <param name="dy">진행 방향</param>
-    /// <returns>해당 방향으로 빈칸 1개와  흑돌 4개가 있는지 유무</returns>
     private bool HasFour(int x, int y, int dx, int dy)
     {
         int index = y * BOARD_SIZE + x;
-        // 돌을 놓기 전 상태로 되돌림
         Piece originalValue = board[index].Piece;
         board[index].SetPiece(null);
 
@@ -263,134 +193,84 @@ public class RuleManager : MonoBehaviour
             {
                 int nx = x + (i + j) * dx;
                 int ny = y + (i + j) * dy;
-                int index2 = ny * BOARD_SIZE + nx;
-
                 if (!IsInBoard(nx, ny))
                 {
                     valid = false;
                     break;
                 }
-
+                int idx2 = ny * BOARD_SIZE + nx;
                 if (nx == x && ny == y)
                 {
                     blackCount++;
                 }
-                else if (board[index2].Piece != null)
+                else if (board[idx2].Piece != null)
                 {
-                    if (board[index2].Piece.pieceOwner == BLACK) { 
-                    
+                    if (board[idx2].Piece.pieceOwner == BLACK)
                         blackCount++;
-                    }
-                }
-                else if (board[index2].Piece == null)
-                {
-                    emptyCount++;
                 }
                 else
                 {
-                    valid = false;
-                    break;
+                    emptyCount++;
                 }
             }
 
-            // 돌 복원
-            board[index].SetPiece(originalValue);
-
-            // 4는 흑돌 4개와 빈칸 1개로 구성
             if (valid && blackCount == 4 && emptyCount == 1)
             {
+                board[index].SetPiece(originalValue);
                 return true;
             }
         }
-
+        board[index].SetPiece(originalValue);
         return false;
     }
 
-    /// <summary>
-    /// 33 금수 체크
-    /// </summary>
-    /// <param name="x">체크 x좌표</param>
-    /// <param name="y">체크 y좌표</param>
-    /// <returns>해당  좌표 33 금수의 유무</returns>
     private bool IsDoubleThree(int x, int y)
     {
         int openThreeCount = 0;
-
         for (int dir = 0; dir < 4; dir++)
         {
             if (HasOpenThree(x, y, dx[dir], dy[dir]))
                 openThreeCount++;
-
             if (openThreeCount >= 2)
                 return true;
         }
-
         return false;
     }
 
-
-    /// <summary>
-    /// 열린 3 체크
-    /// </summary>
-    /// <param name="x">체크할x좌표</param>
-    /// <param name="y">체크할y좌표</param>
-    /// <param name="dx">진행 방향</param>
-    /// <param name="dy">진행 방향</param>
-    /// <returns>해당 방향으로 열린 3이 만들어지는지 유무</returns>
     private bool HasOpenThree(int x, int y, int dx, int dy)
     {
         int index = y * BOARD_SIZE + x;
-        // 돌을 놓기 전 상태로 되돌림
         Piece originalValue = board[index].Piece;
         board[index].SetPiece(null);
 
-        // 열린 3 패턴 예시: _OOO_, _OO_O_, _O_OO_
         bool isOpenThree = CheckOpenThreePattern(x, y, dx, dy, "_OOO_") ||
-                          CheckOpenThreePattern(x, y, dx, dy, "_OO_O_") ||
-                          CheckOpenThreePattern(x, y, dx, dy, "_O_OO_");
+                             CheckOpenThreePattern(x, y, dx, dy, "_OO_O_") ||
+                             CheckOpenThreePattern(x, y, dx, dy, "_O_OO_");
 
-        // 돌 복원
         board[index].SetPiece(originalValue);
-
         return isOpenThree;
     }
 
-    /// <summary>
-    /// 열린 3 패턴 체크
-    /// </summary>
-    /// <param name="x">체크할x좌표</param>
-    /// <param name="y">체크할y좌표</param>
-    /// <param name="dx">진행 방향</param>
-    /// <param name="dy">진행 방향</param>
-    /// <param name="pattern">3 패턴</param>
-    /// <returns>패턴에 맞는 경우의 유무</returns>
     private bool CheckOpenThreePattern(int x, int y, int dx, int dy, string pattern)
     {
         int patternLength = pattern.Length;
-      
-
-        // 패턴의 길이에 따라 시작 위치 조정
         for (int start = -(patternLength - 1); start <= 0; start++)
         {
             bool valid = true;
-
             for (int i = 0; i < patternLength; i++)
             {
                 int nx = x + (start + i) * dx;
                 int ny = y + (start + i) * dy;
-
-                int index2 = ny * BOARD_SIZE + nx;
                 if (!IsInBoard(nx, ny))
                 {
                     valid = false;
                     break;
                 }
-
+                int idx2 = ny * BOARD_SIZE + nx;
                 char expected = pattern[i];
-
                 if (expected == '_')
                 {
-                    if (board[index2].Piece != null)
+                    if (board[idx2].Piece != null)
                     {
                         valid = false;
                         break;
@@ -398,35 +278,21 @@ public class RuleManager : MonoBehaviour
                 }
                 else if (expected == 'O')
                 {
-                    if (nx == x && ny == y)
-                    {
-                        // 현재 위치는 흑돌로 간주
-                    }
-                    else if (board[index2].Piece?.pieceOwner != BLACK)
+                    if (!(nx == x && ny == y) && board[idx2].Piece?.pieceOwner != BLACK)
                     {
                         valid = false;
                         break;
                     }
                 }
             }
-
             if (valid)
-            {
                 return true;
-            }
         }
-
         return false;
     }
 
-    /// <summary>
-    /// 게임판 위에 오목이 있는지 체크
-    /// </summary>
-    /// <returns>우승자의 타입을 반환,None이면 게속 진행</returns>
-    public (bool,Piece.Owner) CheckGameOver()
+    public (bool, Piece.Owner) CheckGameOver()
     {
-      
-        // 승리 조건: 5개 연속
         for (int y = 0; y < BOARD_SIZE; y++)
         {
             for (int x = 0; x < BOARD_SIZE; x++)
@@ -438,137 +304,442 @@ public class RuleManager : MonoBehaviour
                     {
                         gameOver = true;
                         winner = board[index].Piece.pieceOwner;
-                        return (true,winner);
+                        return (true, winner);
                     }
                 }
             }
         }
-        //결판이 나지 않았을 때
-        return (false,EMPTY);
+        return (false, EMPTY);
     }
 
-
-    // 5개 연속 돌 확인 (새로운 함수)
     private bool CheckFiveInARow(int x, int y)
     {
         int index = y * BOARD_SIZE + x;
-        Piece.Owner stone = Piece.Owner.NONE;
-        if (board[index].Piece != null) { 
-            stone = board[index].Piece.pieceOwner;
-        }
+        Piece.Owner stone = board[index].Piece.pieceOwner;
         for (int dir = 0; dir < 4; dir++)
         {
-            int count = 1; // 현재 위치의 돌 포함
-
-            // 한쪽 방향으로 같은 색 돌 세기
+            int count = 1;
+            bool continuousLine = true;
             for (int i = 1; i < 5; i++)
             {
                 int nx = x + dx[dir] * i;
                 int ny = y + dy[dir] * i;
-
-                int index2 = ny * BOARD_SIZE + nx;
-                if (IsInBoard(nx, ny)) {
-                    if (board[index2].Piece?.pieceOwner == stone) { 
-                        count++;
-                    }
-                }
-                else
-                    break;
-            }
-
-            // 반대 방향으로 같은 색 돌 세기
-            for (int i = 1; i < 5; i++)
-            {
-                int nx = x - dx[dir] * i;
-                int ny = y - dy[dir] * i;
-
-                int index2 = ny * BOARD_SIZE + nx;
-                if (IsInBoard(nx, ny))
+                if (!IsInBoard(nx, ny) || board[ny * BOARD_SIZE + nx].Piece?.pieceOwner != stone)
                 {
-                    if (board[index2].Piece?.pieceOwner == stone)
-                    {
-                        count++;
-                    }
-                }
-                else
+                    continuousLine = false;
                     break;
+                }
+                count++;
             }
-
-            // 흑돌은 정확히 5개, 백돌은 5개 이상일 때 승리
-            if ((stone == BLACK && count == 5) || (stone == WHITE && count >= 5))
+            if (continuousLine && count == 5)
                 return true;
         }
         return false;
     }
 
-
-
-    /// <summary>
-    /// 양측 모든 말을 다 낸 후 게임이 끝나지 않았다면  점수 합계 후 우승자 가리기
-    /// </summary>
-    /// <returns>우승자의 타입을 보냄 , 무승부시 None</returns>
-    public Piece.Owner NotFinishedOnPlayingGame() {
-      
-            int APoint = 0;
-            int BPoint = 0;
-            foreach (var tile in board)
-            {
-                if (tile.Piece?.pieceOwner == Piece.Owner.PLAYER_A)
-                {
-                    APoint += tile.Piece.cost;
-                }
-                else if (tile.Piece?.pieceOwner == Piece.Owner.PLAYER_B)
-                {
-                    BPoint += tile.Piece.cost;
-                }
-            }
-
-            if (APoint > BPoint)
-            {
-                gameOver = true;
-                winner = Piece.Owner.PLAYER_A;
-                return winner;
-            }
-            else if (APoint < BPoint)
-            {
-                gameOver = true;
-                winner = Piece.Owner.PLAYER_B;
-                return winner;
-            }
-            else { 
-                return Piece.Owner.NONE;
-            }
+    public Piece.Owner NotFinishedOnPlayingGame()
+    {
+        int APoint = 0;
+        int BPoint = 0;
+        foreach (var tile in board)
+        {
+            if (tile.Piece?.pieceOwner == Piece.Owner.PLAYER_A)
+                APoint += tile.Piece.cost;
+            else if (tile.Piece?.pieceOwner == Piece.Owner.PLAYER_B)
+                BPoint += tile.Piece.cost;
+        }
         
+        Debug.Log("A:"+APoint +"점, B:"+BPoint+ "점");
+
+        if (APoint > BPoint)
+        {
+            gameOver = true;
+            winner = Piece.Owner.PLAYER_A;
+            return winner;
+        }
+        else if (APoint < BPoint)
+        {
+            gameOver = true;
+            winner = Piece.Owner.PLAYER_B;
+            return winner;
+        }
+        else
+        {
+            return Piece.Owner.NONE;
+        }
     }
 
-
-    /// <summary>
-    /// 예측수를 뒀을 때 흑돌이 이길 수 있는지 확인하는 메소드
-    /// </summary>
-    /// <param name="x"></param>
-    /// <param name="y"></param>
-    /// <returns></returns>
     private bool CheckWin(int x, int y)
     {
-
         int index = y * BOARD_SIZE + x;
         Piece stone = board[index].Piece;
-        int[] dx = { 0, 1, 1, 1 };
-        int[] dy = { 1, 1, 0, -1 };
-
         for (int dir = 0; dir < 4; dir++)
         {
-            int _count = 1; // 현재 위치의 돌 포함
-
-            // 양방향으로 같은 색 돌 세기
+            int _count = 1;
             _count += CountStonesInDirection(x, y, dx[dir], dy[dir]);
             _count += CountStonesInDirection(x, y, -dx[dir], -dy[dir]);
-
-            
             if (stone?.pieceOwner == BLACK && _count == 5)
                 return true;
         }
-
         return false;
     }
+    #endregion
+
+
+
+    #region SetPieceAI
+    // FindOptimalMove 와 평가 함수 (오목에서 최적의 수를 찾음)
+    public (int, int) FindOptimalMove(Piece.Owner currentPlayer)
+    {
+        List<(int, int, double)> candidateMoves = new List<(int, int, double)>();
+
+        // 모든 빈 타일 순회
+        for (int y = 0; y < BOARD_SIZE; y++)
+        {
+            for (int x = 0; x < BOARD_SIZE; x++)
+            {
+                int index = y * BOARD_SIZE + x;
+                if (board[index].Piece != null)
+                    continue;
+                // 흑인 경우 금수 건너뛰기
+                if (BLACK == currentPlayer && IsForbiddenMove(x, y))
+                    continue;
+
+                double moveScore = EvaluateMove(x, y, currentPlayer);
+                candidateMoves.Add((x, y, moveScore));
+            }
+        }
+
+        if (candidateMoves.Count == 0)
+            return (BOARD_SIZE / 2, BOARD_SIZE / 2);
+
+        candidateMoves.Sort((a, b) => b.Item3.CompareTo(a.Item3));
+        return (candidateMoves[0].Item1, candidateMoves[0].Item2);
+    }
+
+    private double EvaluateMove(int x, int y, Piece.Owner currentPlayer)
+    {
+        double score = 0;
+        int index = y * BOARD_SIZE + x;
+        try
+        {
+            // 1. 승리 가능성
+            if (CheckWin(x, y))
+                score += 1000; // 승리하면 최고 점수
+
+            // 2. 상대 승리 차단 가능성 (여기서 3개 이상의 위협부터 고려)
+            score += EvaluateBlockingPotential(x, y, currentPlayer);
+
+
+            // 임시 돌 놓기
+            board[index].SetPiece(GameManager.Instance.SetTemporaryPiece(index, currentPlayer));
+
+            // 3. 공격적 기회
+            score += EvaluateOffensivePotential(x, y, currentPlayer);
+
+            // 4. 위치적 이점 (중앙 제어)
+            score += EvaluatePositionalAdvantage(x, y, BOARD_SIZE);
+        }
+        finally
+        {
+            if (board[index].Piece != null)
+            {
+                Destroy(board[index].Piece.gameObject);
+            }
+            board[index].SetPiece(null);
+        }
+
+        return score;
+    }
+
+    // 상대의 위협(threat)이 3개 이상 연속될 경우 차단 점수를 부여하도록 수정
+    private double EvaluateBlockingPotential(int x, int y, Piece.Owner currentPlayer)
+    {
+        Piece.Owner opponent = (currentPlayer == Piece.Owner.PLAYER_A) ? Piece.Owner.PLAYER_B : Piece.Owner.PLAYER_A;
+
+        double blockScore = 0;
+        int index = y * BOARD_SIZE + x;
+        board[index].SetPiece(GameManager.Instance.SetTemporaryPiece(index, opponent));
+        try
+        {
+            int maxConsecutive = 0;
+            for (int dir = 0; dir < 4; dir++)
+            {
+                int count1 = CountConsecutiveStonesInDirectionForPlayer(x, y, opponent, dx[dir], dy[dir]);
+                int count2 = CountConsecutiveStonesInDirectionForPlayer(x, y, opponent, -dx[dir], -dy[dir]);
+                int total = count1 + count2 + 1; // 현재 돌 포함
+                if (total > maxConsecutive)
+                    maxConsecutive = total;
+            }
+            // 만약 3개 이상의 연속 돌이 있다면 블록 필요 (점수는 위협 정도에 따라 조정)
+            if (maxConsecutive >= 3)
+            {
+                if (maxConsecutive == 3)
+                    blockScore += 300;
+                else if (maxConsecutive == 4)
+                    blockScore += 500;
+                else if (maxConsecutive >= 5)
+                    blockScore += 1000;
+            }
+        }
+        finally
+        {
+            Destroy(board[index].Piece.gameObject);
+            board[index].SetPiece(null);
+        }
+        return blockScore;
+    }
+
+    // 임의 플레이어에 대해 연속 돌 수를 계산하는 헬퍼 함수
+    private int CountConsecutiveStonesInDirectionForPlayer(int x, int y, Piece.Owner player, int dx, int dy)
+    {
+        int count = 0;
+        int nx = x + dx;
+        int ny = y + dy;
+        while (IsInBoard(nx, ny))
+        {
+            int idx = ny * BOARD_SIZE + nx;
+            if (board[idx].Piece?.pieceOwner == player)
+            {
+                count++;
+                nx += dx;
+                ny += dy;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return count;
+    }
+
+    private double EvaluateOffensivePotential(int x, int y, Piece.Owner currentPlayer)
+    {
+        double offenseScore = 0;
+        for (int dir = 0; dir < 4; dir++)
+        {
+            int consecutiveStones = 1;
+            consecutiveStones += CountConsecutiveStonesInDirectionForPlayer(x, y, currentPlayer, dx[dir], dy[dir]);
+            consecutiveStones += CountConsecutiveStonesInDirectionForPlayer(x, y, currentPlayer, -dx[dir], -dy[dir]);
+            switch (consecutiveStones)
+            {
+                case 2: offenseScore += 10; break;
+                case 3: offenseScore += 50; break;
+                case 4: offenseScore += 200; break;
+            }
+        }
+        return offenseScore;
+    }
+
+    private double EvaluatePositionalAdvantage(int x, int y, int boardSize)
+    {
+        int centerX = boardSize / 2;
+        int centerY = boardSize / 2;
+        double distanceFromCenter = Mathf.Sqrt(Mathf.Pow(x - centerX, 2) + Mathf.Pow(y - centerY, 2));
+        return 20 / (distanceFromCenter + 1);
+    }
+    #endregion
+
+
+    #region AttackAI
+    public List<int> FindPiecesWithAttackRange(Piece.Owner currentPlayer)
+    {
+        List<(int index, int cost, int attackableOpponentCount)> attackablePieces = new List<(int, int, int)>();
+
+        // 모든 보드를 순회
+        for (int y = 0; y < BOARD_SIZE; y++)
+        {
+            for (int x = 0; x < BOARD_SIZE; x++)
+            {
+                int index = y * BOARD_SIZE + x;
+                Tile currentTile = board[index];
+
+                // 현재 플레이어의 Piece인지 확인
+                if (currentTile.Piece?.pieceOwner == currentPlayer)
+                {
+                    // 공격 가능 범위 계산
+                    List<int> attackRange = GameManager.Instance.CanAttackRangeCalculate(index, currentTile.Piece.GetAttackRange());
+
+                    // 공격 범위 내 적 Piece 수 계산
+                    int opponentCount = CountOpponentPiecesInRange(attackRange, currentPlayer);
+
+                    // 적 Piece가 있으면 리스트에 추가
+                    if (opponentCount > 0)
+                    {
+                        attackablePieces.Add((index, currentTile.Piece.cost, opponentCount));
+                    }
+                }
+            }
+        }
+
+        // 정렬 조건: 
+        // 1. 기본적으로 Piece의 cost가 높은 순
+        // 2. cost가 같다면 공격 가능한 적 Piece 수가 많은 순
+        attackablePieces.Sort((a, b) =>
+        {
+            int costComparison = b.cost.CompareTo(a.cost);
+            if (costComparison != 0) return costComparison;
+            return b.attackableOpponentCount.CompareTo(a.attackableOpponentCount);
+        });
+
+        // 인덱스만 반환
+        return attackablePieces.Select(x => x.index).ToList();
+    }
+
+    private int CountOpponentPiecesInRange(List<int> attackRange, Piece.Owner currentPlayer)
+    {
+        Piece.Owner opponentPlayer = (currentPlayer == Piece.Owner.PLAYER_A) ? Piece.Owner.PLAYER_B : Piece.Owner.PLAYER_A;
+        int opponentCount = 0;
+
+        foreach (int rangeIndex in attackRange)
+        {
+            if (board[rangeIndex].Piece?.pieceOwner == opponentPlayer)
+            {
+                opponentCount++;
+            }
+        }
+
+        return opponentCount;
+    }
+
+    /// <summary>
+    /// 아군 Piece 인덱스 가져오기 
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="currentPlayer"></param>
+    /// <returns></returns>
+    public int FindWeakestConsecutiveAllyInRange(int index, Piece.Owner currentPlayer)
+    {
+        // 공격 가능 범위 계산 (현재 말의 공격 범위)
+        Piece piece = board[index].Piece;
+        List<int> attackRange = GameManager.Instance.CanAttackRangeCalculate(index, piece.GetAttackRange());
+        Piece.Owner opponentPlayer = (currentPlayer == Piece.Owner.PLAYER_A) ? Piece.Owner.PLAYER_B : Piece.Owner.PLAYER_A;
+
+
+        for (int dir = 0; dir < 4; dir++)
+        {
+            List<int> consecutiveAllyIndices = FindConsecutiveAlliesInDirection(index, currentPlayer, dx[dir], dy[dir], attackRange);
+
+            if (consecutiveAllyIndices.Count > 0)
+            {
+                // 가장 낮은 cost의 아군 돌 찾기
+                int weakestAllyIndex = consecutiveAllyIndices.OrderBy(idx => board[idx].Piece.cost).First();
+                return weakestAllyIndex;
+            }
+        }
+
+        // 연속된 아군 돌이 없으면 범위 내 아군 중 가장 낮은 cost의 돌 찾기
+        List<int> allAlliesInRange = attackRange
+            .Where(idx => board[idx].Piece?.pieceOwner == currentPlayer)
+            .ToList();
+
+        if (allAlliesInRange.Count > 0)
+        {
+            // 범위 내 아군 중 가장 낮은 cost의 돌 반환
+            return allAlliesInRange.OrderBy(idx => board[idx].Piece.cost).First();
+        }
+
+        // 아군 돌이 아예 없으면 -1 반환
+        return -1;
+    }
+
+    private List<int> FindConsecutiveAlliesInDirection(int startIndex, Piece.Owner currentPlayer, int dx, int dy, List<int> attackRange)
+    {
+        List<int> consecutiveAllyIndices = new List<int>();
+        int width = 8; // 보드 크기에 맞게 조정 필요
+        int startY = startIndex / width;
+        int startX = startIndex % width;
+
+        // 시작 방향으로 연속된 아군 돌 찾기
+        for (int step = 1; step <= 2; step++) // 최대 2칸 연속 확인
+        {
+            int nx = startX + dx * step;
+            int ny = startY + dy * step;
+            int nextIndex = ny * width + nx;
+
+            // 공격 가능 범위 내이고 아군 돌인지 확인
+            if (attackRange.Contains(nextIndex) &&
+                IsInBoard(nx, ny) &&
+                board[nextIndex].Piece?.pieceOwner == currentPlayer)
+            {
+                consecutiveAllyIndices.Add(nextIndex);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return consecutiveAllyIndices;
+    }
+
+
+    public int FindBestAttackTarget(int index, Piece.Owner currentPlayer)
+    {
+        // 공격 가능 범위 계산 (현재 말의 공격 범위)
+        Piece piece = board[index].Piece;
+        List<int> attackRange = GameManager.Instance.CanAttackRangeCalculate(index, piece.GetAttackRange());
+        Piece.Owner opponentPlayer = (currentPlayer == Piece.Owner.PLAYER_A) ? Piece.Owner.PLAYER_B : Piece.Owner.PLAYER_A;
+
+        // 연속된 적 말 찾기
+        for (int dir = 0; dir < 4; dir++)
+        {
+            List<int> consecutiveEnemyIndices = FindConsecutiveEnemiesInDirection(index, opponentPlayer, dx[dir], dy[dir], attackRange);
+
+            if (consecutiveEnemyIndices.Count > 0)
+            {
+                // 연속된 적 말 중 체력이 가장 적고 cost가 높은 순으로 정렬
+                return consecutiveEnemyIndices
+                .OrderBy(idx => board[idx].Piece.hp)
+                .ThenBy(idx => board[idx].Piece.cost)
+                .ThenByDescending(idx => board[idx].Piece.cost)
+                .First();
+            }
+        }
+
+        // 연속된 적 말이 없는 경우, 공격 가능 범위 내 적 말 중 체력이 가장 적고 cost가 높은 순으로 선택
+        List<int> allEnemiesInRange = attackRange
+            .Where(idx => board[idx].Piece?.pieceOwner == opponentPlayer)
+            .ToList();
+
+        if (allEnemiesInRange.Count > 0)
+        {
+            return allEnemiesInRange
+                .OrderBy(idx => board[idx].Piece.cost)
+                .ThenByDescending(idx => board[idx].Piece.cost)
+                .First();
+        }
+
+        // 적 말이 없으면 -1 반환
+        return -1;
+    }
+
+    private List<int> FindConsecutiveEnemiesInDirection(int startIndex, Piece.Owner opponentPlayer, int dx, int dy, List<int> attackRange)
+    {
+        List<int> consecutiveEnemyIndices = new List<int>();
+        int startY = startIndex / BOARD_SIZE;
+        int startX = startIndex % BOARD_SIZE;
+
+        // 시작 방향으로 연속된 적 말 찾기
+        for (int step = 1; step <= 2; step++) // 최대 2칸 연속 확인
+        {
+            int nx = startX + dx * step;
+            int ny = startY + dy * step;
+            int nextIndex = ny * BOARD_SIZE + nx;
+
+            // 공격 가능 범위 내이고 적 말인지 확인
+            if (attackRange.Contains(nextIndex) &&
+                IsInBoard(nx, ny) &&
+                board[nextIndex].Piece?.pieceOwner == opponentPlayer)
+            {
+                consecutiveEnemyIndices.Add(nextIndex);
+            }
+            else
+            {
+                break;
+            }
+        }
+        return consecutiveEnemyIndices;
+    }
+    #endregion
 }

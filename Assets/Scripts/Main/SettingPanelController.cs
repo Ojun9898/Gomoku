@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,23 +9,36 @@ using UnityEngine.UI;
 public class SettingPanelController : MonoBehaviour
 {
    
-    [SerializeField] private Slider musicSlider;
-    [SerializeField] private Slider effectSlider;
-    [SerializeField] private Button closeButton;
+    [SerializeField] private Slider bgmSlider;
+    [SerializeField] private Slider sfxSlider;
 
-    public void OnValueChangedMusicSlider()
+    private AudioSource bgmSource;
+    private AudioSource sfxSource;
+
+    void Start()
     {
-       // music volume 조절
+        bgmSource = GameObject.FindWithTag("BGMSource")?.GetComponent<AudioSource>();
+        sfxSource = GameObject.FindWithTag("SFXSource")?.GetComponent<AudioSource>();
     }
 
-    public void OnValueChangedEffectSlider()
+    public void OnValueChangedBgmSlider()
     {
-        // effect volume 조절
+       SoundManager.Instance.SetVolume(bgmSource, bgmSlider.value);
+    }
+
+    public void OnValueChangedSfxSlider()
+    {
+        SoundManager.Instance.SetVolume(sfxSource, sfxSlider.value);
     }
 
     public void OnClickCloseButton()
     {
         this.GetComponent<RectTransform>().DOLocalMoveX(-600f, 0.3f)
             .OnComplete(() => this.gameObject.SetActive(false)); 
+    }
+
+    public void OnClickLogoutButton()
+    {
+        MainManager.Instance.ShowLogoutPanel();
     }
 }

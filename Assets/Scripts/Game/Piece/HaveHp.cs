@@ -16,7 +16,7 @@ public class HaveHp : MonoBehaviour
             {
                 GameManager.Instance.Mc.tiles[GameManager.Instance.CurrentClickedTileIndex].JustBeforeDestroyPiece?.Invoke();
                 GameManager.Instance.Mc.tiles[GameManager.Instance.CurrentClickedTileIndex].JustBeforeDestroyObstacle?.Invoke();
-                Destroy(gameObject, 0.5f);
+                Destroy(gameObject);
             }
         }
     }

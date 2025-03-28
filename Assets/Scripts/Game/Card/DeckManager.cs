@@ -50,6 +50,7 @@ public class DeckManager : MonoBehaviour
                 case 3:
                     deck.Add(new Card { pieceType = Piece.PieceType.HEALER, pieceCost = 3, cardSprite = null });
                     break;
+                
                 case 4:
                     deck.Add(new Card { pieceType = Piece.PieceType.RANCER, pieceCost = 4, cardSprite = null });
                     break;

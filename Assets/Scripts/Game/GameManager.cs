@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,9 +12,10 @@ using UnityEngine.Serialization;
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private MapController mc;
+    public GameObject BlockPanelPrefab;
     public GameObject forbiddenMoveObject;
     public GameObject piece;
-
+    public Transform canvasTransform;
     public Button finishTurnButton;
     public GamePanelController gamePanelController;
     public Func<int, int, (GameObject piece, int caseValue)> FirstTimeTileClickEvent;
@@ -24,12 +24,12 @@ public class GameManager : Singleton<GameManager>
     public Action RangeAttackResetVisualizeEvent;
     public RuleManager ruleManager;
     public int currentClickedTileIndex;
-    
-    public string userInfoFilepath = Path.Combine(Application.dataPath, "Data", "UserInfo.csv");
-    public Owner userType;
+    public HandManager _handManager;
+    public List<bool> Costs;
+    public int PlayerLevel;
+    public CostPanelController cp;
     
     private Owner _playerType;
-    private HandManager _handManager;
     private DeckManager _deckManager;
     private int _lastClickedTileIndex = -1;
     private Piece _damagedPiece;
@@ -62,7 +62,7 @@ public class GameManager : Singleton<GameManager>
     private void Awake()
     {
         InitGameManager();
-  
+
         StartGame();
     }
 
@@ -83,19 +83,23 @@ public class GameManager : Singleton<GameManager>
         //턴 넘김 버튼 이벤트 추가
         finishTurnButton.onClick.AddListener(OnButtonClickFinishMyTurn);
         // 선공 정하기
-        _playerType =  SetFirstAttackPlayer();
+        _playerType = SetFirstAttackPlayer();
         // 플레이어 손패 지급
         _handManager = FindObjectOfType<HandManager>();
         _deckManager = FindObjectOfType<DeckManager>();
         _handManager.playerOwner = _playerType;
+
         _deckManager.InitializeDeck();
         _handManager.InitializeHand(_deckManager);
         //RuleManager 가져오기
         ruleManager = FindAnyObjectByType<RuleManager>();
         //게임패널컨트롤러 가져오기
-        gamePanelController  = FindAnyObjectByType<GamePanelController>();
+        gamePanelController = FindAnyObjectByType<GamePanelController>();
+        gamePanelController.InitTimer();
+        // 코스트 불러오기
+        cp = FindObjectOfType<CostPanelController>();
         //RuleManager 초기화
-        ruleManager.Init(mc.tiles,_playerType);
+        ruleManager.Init(mc.tiles, _playerType);
 
         // 상태 머신 가져오기 
         SetFSM();
@@ -110,7 +114,8 @@ public class GameManager : Singleton<GameManager>
     /// 선공 정하기 메소드
     /// </summary>
     /// <returns></returns>
-    public Owner SetFirstAttackPlayer() {
+    public Owner SetFirstAttackPlayer()
+    {
         System.Random random = new System.Random();
         int randomIndex = random.Next(1, 3);
         Owner owner = (Owner)1;
@@ -122,7 +127,8 @@ public class GameManager : Singleton<GameManager>
         return owner;
     }
 
-    public void SetMapController() {
+    public void SetMapController()
+    {
         mc = FindAnyObjectByType<MapController>();
         mc.CreateMap();
     }
@@ -142,14 +148,15 @@ public class GameManager : Singleton<GameManager>
     public void SetTileClickEvent()
     {
         FirstTimeTileClickEvent = (tileNumber, tileClickCount) =>
-        {       
+        {
             CurrentClickedTileIndex = tileNumber;
             //처음 클릭 후 
             // 클릭 카운트 2번으로 조건을 두었는데
             // 카드 내기까지 구현이 된다면 클릭 카운트를 1번으로 했을 때 조건에 들어가 카드 내기를 대기하도록
 
-            if (mc.tiles[CurrentClickedTileIndex].isForbiddenMove) {
-               //금수일때
+            if (mc.tiles[CurrentClickedTileIndex].isForbiddenMove)
+            {
+                //금수일때
                 return (null, 2);
             }
 
@@ -167,16 +174,17 @@ public class GameManager : Singleton<GameManager>
                 // 기존에는 tileClickCount == 2일 때 말을 생성했으나, 이제 카드를 통해 생성하므로 안내 메시지만 보여줍니다.
                 if (tileClickCount == 2)
                 {
-                    if (_handManager.isAlreadySetPiece) {
+                    if (_handManager.isAlreadySetPiece)
+                    {
                         MessageManager.Instance.ShowMessagePanel("이미 말이 존재합니다");
                         Debug.Log(mc.tiles[CurrentClickedTileIndex].Piece);
                         return (null, 3);
                     }
-                    
+
                     MessageManager.Instance.ShowMessagePanel("카드를 선택해 주세요.");
                     return (null, 0);
                 }
-                
+
                 return (null, 0);
             }
 
@@ -226,7 +234,7 @@ public class GameManager : Singleton<GameManager>
 
             if (mc.tiles[CurrentClickedTileIndex].Piece.GetPieceOwner() == _playerType)
             {
-                
+
                 if (_currentPieceCanAttackRange == null)
                 {
                     _currentPieceCanAttackRange = CanAttackRangeCalculate(CurrentClickedTileIndex, mc.tiles[CurrentClickedTileIndex].Piece.GetAttackRange());
@@ -234,10 +242,10 @@ public class GameManager : Singleton<GameManager>
                 }
                 _currentChoosingPiece = mc.tiles[CurrentClickedTileIndex].Piece;
 
-    
 
 
-                    if (tileClickCount >= 2 && _lastClickedTileIndex == CurrentClickedTileIndex)
+
+                if (tileClickCount >= 2 && _lastClickedTileIndex == CurrentClickedTileIndex)
                 {
                     MessageManager.Instance.ShowMessagePanel("플레이어의 말 입니다");
                     FinishedAttack();
@@ -248,7 +256,15 @@ public class GameManager : Singleton<GameManager>
                 { // 공격턴에 아군 선택 상황
                     _damagedPiece = _currentChoosingPiece;
                     _attackingPiece = mc.tiles[_lastClickedTileIndex].Piece;
-                    
+
+                    bool CanAttack = CheckIsLeftCost(Costs,_attackingPiece);
+
+                    if (!CanAttack) {
+                        MessageManager.Instance.ShowMessagePanel("코스트가 부족합니다");
+                        FinishedAttack();
+                        return (true, 0);
+                    }
+
                     if (_currentPieceCanAttackRange.Contains(CurrentClickedTileIndex))
                     {
 
@@ -263,6 +279,7 @@ public class GameManager : Singleton<GameManager>
                         else if (_attackingPiece.attackType == AttackType.BUFF)
                         {
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
+                            UseCost(Costs, _attackingPiece);
                             _attackingPiece.animator.Play("ATTACK");
                             _damagedPiece.animator.Play("BUFF");
                             MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
@@ -283,23 +300,20 @@ public class GameManager : Singleton<GameManager>
                 _lastClickedTileIndex = CurrentClickedTileIndex;
                 if (_currentChoosingPiece.isAlreadyAttack)
                 {
-                    MessageManager.Instance.ShowMessagePanel("이미 공격이 시작됐습니다");
+                    MessageManager.Instance.ShowMessagePanel("이미 공격한 말 입니다");
                     FinishedAttack();
                     return (true, 0);
                 }
-                
                 if (_handManager.playerAHandPanel.activeInHierarchy)
                 {
                     _handManager.playerAHandPanel.SetActive(false);
                 }
-                    
+
                 else if (_handManager.playerBHandPanel.activeInHierarchy)
                 {
                     _handManager.playerBHandPanel.SetActive(false);
                 }
-                
                 MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
-                
             }
             else
             {
@@ -309,25 +323,41 @@ public class GameManager : Singleton<GameManager>
                 { // 공격턴에 적 선택 상황
                     _damagedPiece = mc.tiles[CurrentClickedTileIndex].Piece;
                     _attackingPiece = mc.tiles[_lastClickedTileIndex].Piece;
+
+                    bool CanAttack = CheckIsLeftCost(Costs, _attackingPiece);
+
+                    if (!CanAttack)
+                    {
+                        MessageManager.Instance.ShowMessagePanel("코스트가 부족합니다");
+                        FinishedAttack();
+                        return (true, 0);
+                    }
+
                     if (_currentPieceCanAttackRange.Contains(CurrentClickedTileIndex))
                     {
                         if (_attackingPiece.attackType == AttackType.CHOOSE_ATTACK)
                         {
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
+                            UseCost(Costs, _attackingPiece);
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
                             _attackingPiece.animator.Play("ATTACK");
                             _damagedPiece.animator.Play("DAMAGED");
                             if (_damagedPiece.hp <= 0)
                             {
                                 _damagedPiece.animator.Play("DEATH");
                             }
-                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다"+ "남은 HP : " + _damagedPiece.Hp);
-
                         }
                         else if (_attackingPiece.attackType == AttackType.RANGE_ATTACK)
                         {
                             //attackingPiece.RangeAttack(currentClickedTileIndex);
-                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다"+ "남은 HP : " + _damagedPiece.Hp);
-
+                            UseCost(Costs, _attackingPiece);
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
+                            _attackingPiece.animator.Play("ATTACK");
+                            _damagedPiece.animator.Play("DAMAGED");
+                            if (_damagedPiece.hp <= 0)
+                            {
+                                _damagedPiece.animator.Play("DEATH");
+                            }
                         }
                         else if (_attackingPiece.attackType == AttackType.BUFF)
                         {
@@ -351,20 +381,72 @@ public class GameManager : Singleton<GameManager>
         };
     }
 
+    private bool CheckIsLeftCost(List<bool> costs,Piece comparedPiece) { 
+
+        int trueCount = 0;
+        int attackCost = comparedPiece.cost;
+
+        for (int i = 0; i < costs.Count; i++)
+        {
+            if (costs[i] == true)
+            {
+                trueCount++;
+            }
+        }
+        PrintBoolList(costs);
+        if (attackCost <= trueCount)
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public static void PrintBoolList(List<bool> boolList)
+    {
+        // 1. 리스트의 내용을 0(false)과 1(true)로 변환하여 출력
+        Debug.Log("리스트 상태: " + string.Join(" ", boolList.ConvertAll(b => b ? "1" : "0")));
+    }
+
+    private void UseCost(List<bool> costs, Piece comparedPiece) {
+        int attackCost = comparedPiece.cost;
+        int firstTrueIndex = 0;
+        for (int i = 0; i < costs.Count; i++)
+        {
+            if (costs[i]) {
+                firstTrueIndex = i;
+                break;
+            }
+        }
+
+        for (int i = firstTrueIndex; i < firstTrueIndex + attackCost; i++)
+        {
+            costs[i] = false;
+        }
+        
+        cp.SetCost(costs);
+    }
+
+
+
+
     /// <summary>
     /// Ai 턴에 공격을 하지 못하도록 타일 입력을 막는 메소드
     /// </summary>
-    public void SetTileClickEventOff() {
+    public void SetTileClickEventOff()
+    {
         FinishedAttack();
         FirstTimeTileClickEvent = null;
-         SecondTimeTileClickEvent = null;
+        SecondTimeTileClickEvent = null;
     }
 
 
     /// <summary>
     /// 턴이 끝나면 부를 메소드 피스를 하나라도 두었는지의 유무를 초기화합니다
     /// </summary>
-    public void SetFalseIsAlreadySetPiece() {
+    public void SetFalseIsAlreadySetPiece()
+    {
         _handManager.isAlreadySetPiece = false;
     }
 
@@ -377,7 +459,7 @@ public class GameManager : Singleton<GameManager>
         _attackingPiece = null;
         RangeAttackVisualizeEvent = null;
         _lastClickedTileIndex = -1;
-        mc.tiles[currentClickedTileIndex]?.ResetTile(); 
+        mc.tiles[currentClickedTileIndex]?.ResetTile();
         if (_currentPieceCanAttackRange != null)
         {
             ResetVisualizeAttackRange(ref _currentPieceCanAttackRange);
@@ -389,8 +471,10 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     /// <param name="tileIndex">타일 인덱스 </param>
     /// <returns></returns>
-    public GameObject SetPieceAtTile(int tileIndex) {
-       var pieceInstance =  Instantiate(this.piece, mc.tiles[tileIndex].transform);
+    public GameObject SetPieceAtTile(int tileIndex)
+    {
+        var pieceInstance = Instantiate(this.piece, mc.tiles[tileIndex].transform);
+        pieceInstance.transform.position += Vector3.down * 0.31f;
         return pieceInstance;
     }
 
@@ -405,11 +489,11 @@ public class GameManager : Singleton<GameManager>
     {
 
         Piece pieceInstance = Instantiate(this.piece).GetComponent<Piece>();
-        if(currentPlayer == Owner.PLAYER_B)
+        if (currentPlayer == Owner.PLAYER_B)
         {
             pieceInstance.pieceOwner = Owner.PLAYER_B;
         }
-        else if(currentPlayer == Owner.PLAYER_A)
+        else if (currentPlayer == Owner.PLAYER_A)
         {
             pieceInstance.pieceOwner = Owner.PLAYER_A;
         }
@@ -466,7 +550,7 @@ public class GameManager : Singleton<GameManager>
     {
         foreach (var index in attackRange)
         {
-            mc.tiles[index].GetComponent<SpriteRenderer>().color = Color.red;
+            mc.tiles[index].rangeImageObj.SetActive(true);
         }
     }
     /// <summary>
@@ -477,25 +561,37 @@ public class GameManager : Singleton<GameManager>
     {
         foreach (var index in attackRange)
         {
-            mc.tiles[index].GetComponent<SpriteRenderer>().color = Color.white;
+            mc.tiles[index].rangeImageObj.SetActive(false);
         }
         attackRange = null;
     }
 
-    public void OnButtonClickFinishMyTurn() {
-  
+    public void OnButtonClickFinishMyTurn()
+    {
+        (bool, Piece.Owner) CheckSome = GameManager.Instance.ruleManager.CheckGameOver();
+        if (CheckSome.Item1)
+        {
+            finishTurnButton.onClick.RemoveAllListeners();
+            finishTurnButton.onClick.AddListener(() =>
+            {
+                GetFSM().ChangeState<FinishDirectionState>(CheckSome.Item2);
+            });
+            finishTurnButton.onClick.Invoke();
+            return;
+        }
+
         if (_handManager.isAlreadySetPiece)
         {
             GameManager.Instance.gamePanelController.StopTimer();
             _changeTurnCount++;
-            MessageManager.Instance.ShowMessagePanel("턴 진행 횟수 : "+ _changeTurnCount);
-            if (_changeTurnCount >= 30) { 
+            Debug.Log("턴 진행 횟수 : " + _changeTurnCount);
+            if (_changeTurnCount >= 30)
+            {
                 //우승자 넘기기
                 _fsm.ChangeState<FinishDirectionState>(ruleManager.NotFinishedOnPlayingGame());
                 return;
             }
-            
-            
+
             switch (_playerType)
             {
                 case Owner.PLAYER_A:
@@ -533,8 +629,7 @@ public class GameManager : Singleton<GameManager>
                     
                     break;
             }
-            FinishedAttack();
-            
+
             for (int i = 0; i < mc.tiles.Count; i++)
             {
                 if (mc.tiles[i].Piece != null)
@@ -542,13 +637,12 @@ public class GameManager : Singleton<GameManager>
                     mc.tiles[i].Piece.isAlreadyAttack = false;
                 }
             }
-            
-            //AI 로 가정
-            //일단 버튼은 둘다 누를 수 있게 해둠
+
+
+            FinishedAttack();
+           
             if (_playerType == Owner.PLAYER_B)
             {
-                //타일 off
-                Instance.SetTileClickEventOff();
                 _fsm.ChangeState<AITurnState>(_playerType);
             }
             else
@@ -556,7 +650,8 @@ public class GameManager : Singleton<GameManager>
                 _fsm.ChangeState<PlayerTurnState>(_playerType);
             }
         }
-        else { 
+        else
+        {
             MessageManager.Instance.ShowMessagePanel("말을 놓아주세요");
         }
     }
@@ -571,30 +666,34 @@ public class GameManager : Singleton<GameManager>
            .Select(x => x.Index)  // 인덱스만 추출
            .ToList();  // 결과를 리스트로 반환
 
-        foreach (var index in indices) { 
-                mc.tiles[index].Piece.isAlreadyAttack = false;
+        foreach (var index in indices)
+        {
+            mc.tiles[index].Piece.isAlreadyAttack = false;
         }
     }
 
-    public void AllTileClickCountSetZero() { 
-        for(int i = 0; i < mc.tiles.Count; i++)
+    public void AllTileClickCountSetZero()
+    {
+        for (int i = 0; i < mc.tiles.Count; i++)
         {
             mc.tiles[i].ResetClick();
         }
     }
 
-    public Owner GetCurrentPlayerType() {
+    public Owner GetCurrentPlayerType()
+    {
         return _playerType;
     }
-    
-    public bool GetIsAlReadySetPiece() {
+
+    public bool GetIsAlReadySetPiece()
+    {
         return _handManager.isAlreadySetPiece;
     }
     public void SetIsAlReadySetPiece(bool isAlreadySetPiece)
     {
         _handManager.isAlreadySetPiece = isAlreadySetPiece;
     }
-    
+
     public StateMachine GetFSM()
     {
         return _fsm;

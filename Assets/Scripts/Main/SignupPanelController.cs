@@ -30,13 +30,13 @@ public class SignupPanelController : MonoBehaviour
         // CSV 파일이 없으면 헤더 추가
         if (!File.Exists(filePath))
         {
-            File.WriteAllText(filePath, "Date,Username,Password,Nickname,Score,Coin,PlayerLevel,PlayerPoint\n");
+            File.WriteAllText(filePath, "Date,Username,Password,Nickname,Score,PlayerLevel,LevelPoint\n");
         }
     }
     public void OnClickSigninButton()
     {
-        MainManager.Instance.CloseSignupPanel();
-        MainManager.Instance.ShowSigninPanel();
+        LoginManager.Instance.CloseSignupPanel();
+        LoginManager.Instance.ShowSigninPanel();
     }
 
     public void OnClickSignupButton()
@@ -56,21 +56,18 @@ public class SignupPanelController : MonoBehaviour
     public void RegisterUser(string nickname, string username, string password)
     {
         float score = 0;
-        float playerLevel = 18;
-        float playerPoint = 0;
-        
 
         // 글자수 제한
         if (nickname.Length < 3 || username.Length < 3 || password.Length < 3)
         {
-            MainManager.Instance.ShowErrorPanel("3자 이상 입력해주세요.");
+            LoginManager.Instance.ShowErrorPanel("3자 이상 입력해주세요.");
             return;
         }
         
         // 기존에 동일한 ID가 있는지 확인
         if (IsUsernameExists(username))
         {
-            MainManager.Instance.ShowErrorPanel("이미 존재하는\nID입니다.");
+            LoginManager.Instance.ShowErrorPanel("이미 존재하는\nID입니다.");
             return;
         }
 
@@ -79,7 +76,7 @@ public class SignupPanelController : MonoBehaviour
         {
             if (password.Contains(bannedChar))
             {
-                MainManager.Instance.ShowErrorPanel("비밀번호에 사용할 수 없는\n문자가 포함되어있습니다.");
+                LoginManager.Instance.ShowErrorPanel("비밀번호에 사용할 수 없는\n문자가 포함되어있습니다.");
                 return;
             }
         }   
@@ -87,18 +84,24 @@ public class SignupPanelController : MonoBehaviour
         // 기존에 동일한 닉네임이 있는지 확인
         if (IsNicknameExists(nickname))
         {
-            MainManager.Instance.ShowErrorPanel("이미 존재하는\n닉네임입니다.");
+            LoginManager.Instance.ShowErrorPanel("이미 존재하는\n닉네임입니다.");
             return;
         }
 
         // 현재 날짜 가져오기
         string date = DateTime.Now.ToString("yyyy-MM-dd");
+        int playerLevel = 18;
+        int levelPoint = 0;
 
         // 새로운 유저 데이터 추가
-        string newEntry = $"{date},{username},{password},{nickname},{score},{playerLevel},{playerPoint}\n";
+        string newEntry = $"{date},{username},{password},{nickname},{score},{playerLevel}, {levelPoint}\n";
         File.AppendAllText(filePath, newEntry);
 
-        MainManager.Instance.ShowErrorPanel("회원가입이\n완료되었습니다.");
+        LoginManager.Instance.ShowErrorPanel("회원가입이\n완료되었습니다.");
+
+        LoginManager.Instance.CloseSignupPanel();
+        LoginManager.Instance.ShowSigninPanel();
+
     }
 
      private bool IsUsernameExists(string username)

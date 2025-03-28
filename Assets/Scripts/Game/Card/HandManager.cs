@@ -91,8 +91,18 @@ public class HandManager : MonoBehaviour
                 }
             }
 
-            // 타일 선택 시 활성화했던 표시를 해제
-            _selectedTile.clickedImageObj.SetActive(false);
+            // 카드 선택 시 선택한 이미지, 카드 패널 비활성화
+            if (playerOwner == Piece.Owner.PLAYER_A)
+            {
+                playerAHandPanel.SetActive(false);
+                _selectedTile.clickedImageObj.SetActive(false);
+            }
+
+            if (playerOwner == Piece.Owner.PLAYER_B)
+            {
+                playerBHandPanel.SetActive(false);
+                _selectedTile.clickedImageObj.SetActive(false);
+            }
 
             // 손패에서 해당 카드를 제거하고 UI를 갱신합니다.
             if (playerOwner == Piece.Owner.PLAYER_A)
@@ -116,6 +126,18 @@ public class HandManager : MonoBehaviour
     public void SetSelectedTile(Tile tile)
     {
         _selectedTile = tile;
+        if(_selectedTile.isForbiddenMove)
+        {
+            MessageManager.Instance.ShowMessagePanel("금수 입니다.");
+            _selectedTile = null;
+            return;
+        }
+        else if (_selectedTile.GetObstacle() != null)
+        {
+            MessageManager.Instance.ShowMessagePanel("장애물이 있습니다.");
+            _selectedTile = null;
+            return;
+        }
         Debug.Log("타일 선택됨: " + tile.tileNumber);
     }
 
@@ -147,4 +169,15 @@ public class HandManager : MonoBehaviour
             }
         }
     }
+
+    public List<DeckManager.Card> GetPlayerAorBHandCards(Piece.Owner owner) {
+        if (owner == Piece.Owner.PLAYER_B) { 
+            return playerBHandCards;
+        }else if(owner == Piece.Owner.PLAYER_A)
+        {
+            return playerAHandCards;
+        }
+        return null;
+    }
+ 
 }

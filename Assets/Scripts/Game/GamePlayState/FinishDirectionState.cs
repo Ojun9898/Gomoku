@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FinishDirectionState : MonoBehaviour, IState
 {
@@ -11,33 +12,34 @@ public class FinishDirectionState : MonoBehaviour, IState
     {   //끝내기 연출
         //owner에는 우승자 정보가 들어감 여기서 요걸로 판별하거나 아님 먼저 하거나
         //패널하나  열어서  보여주는 것도 ㄱㅊ을듯?
-        var userInfoFilepath = GameManager.Instance.userInfoFilepath;
-        LoginManager.Instance.CheckFile();
-        
-        string[] lines = File.ReadAllLines(userInfoFilepath);
-        
-        foreach (var line in lines)
+        GameManager.Instance.gamePanelController.StopTimer();
+        MessageManager.Instance.ShowMessagePanel($"{owner}의 승리입니다!");
+
+        // 플레이어 승리 여부에 따라 levelPoint를 업데이트
+        if (owner == Piece.Owner.PLAYER_A)
         {
-            string[] userData = line.Split(',');
-
-            if (userData.Length == 7)
-            {
-                string storedPlayerLevel = userData[5].Trim();
-                string storedPlayerPoint = userData[6].Trim();
-
-                if (owner == Piece.Owner.PLAYER_A)
-                {
-                    
-                }
-            }
+            // 플레이어 A가 이기면 CSV 파일의 로그인 정보에 대해 levelPoint를 +1 증가시킴
+            LoginManager.Instance.UpdatePlayerLevelAndPoint(1);
+        }
+        else if (owner == Piece.Owner.PLAYER_B)
+        {
+            // 플레이어 B가 이기면 levelPoint를 -1 감소시킴
+            LoginManager.Instance.UpdatePlayerLevelAndPoint(-1);
         }
         
-        Debug.Log(owner + "의 승리입니다.");
+        StartCoroutine(WaitFinishGame());
         Debug.Log("FinishDirectionState입니다");
     }
 
     public void Exit(Piece.Owner owner)
     {
         Debug.Log("FinishDirectionState 나갔습니다");
+    }
+
+    IEnumerator WaitFinishGame()
+    {
+        yield return new WaitForSeconds(2f);
+
+        SceneManager.LoadScene("Main");
     }
 }

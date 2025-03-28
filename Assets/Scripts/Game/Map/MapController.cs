@@ -29,8 +29,8 @@ public class MapController : MonoBehaviour
         {
             for (int j = 0; j <= width - 1; j++)
             {
-                Vector2 tilePos = new Vector2(j * 1.25f, -i * 1.25f);
-                tilePos = new Vector2(tilePos.x -4.375f, tilePos.y +4.375f);
+                Vector2 tilePos = new Vector2(j, -i);
+                tilePos = new Vector2(tilePos.x -3.5f, tilePos.y +3.5f);
                 var tileInstance = Instantiate(tilePrefab, tilePos, Quaternion.identity, tilesParent);
                
                 Tile tileComponent = tileInstance.GetComponent<Tile>();
