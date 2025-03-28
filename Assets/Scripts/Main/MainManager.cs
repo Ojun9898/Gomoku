@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -21,7 +18,7 @@ public class MainManager : Singleton<MainManager>
     private RectTransform logoutPanelRect;
     private GameObject endGamePanel;
     private RectTransform endGamePanelRect;
-    private float fadeDuration = 0.1f;
+    private float fadeDuration = 0.5f;
 
     void Start()
     {
@@ -30,18 +27,16 @@ public class MainManager : Singleton<MainManager>
 
     public void CloseMainPanel()
     {
+        
         if (MainPanel.activeSelf)
         {
-            MainPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
-            {
-                MainPanel.SetActive(false);
-            });
+            MainPanel.SetActive(false);
         }
     }
 
     public void ShowMainPanel()
     {
-        if (SceneManager.GetActiveScene().name == "Login" || 
+        if (SceneManager.GetActiveScene().name == "Login" ||
             SceneManager.GetActiveScene().name == "Game")
         {
             return;
@@ -55,10 +50,9 @@ public class MainManager : Singleton<MainManager>
         if (!mainPanel.activeSelf)
         {
             mainPanel.SetActive(true);
-            mainPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
         }
     }
-    
+
     public void ShowErrorPanel(string message)
     {
         if (errorPanel == null)
@@ -115,19 +109,15 @@ public class MainManager : Singleton<MainManager>
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Main" || scene.name == "Game")
+        Canvas = GameObject.Find("Canvas")?.transform;
+
+        if (Canvas == null)
         {
-            DOTween.KillAll();
-            Canvas = GameObject.Find("Canvas")?.transform;
-
-            if (Canvas == null)
-            {
-                Debug.LogError("Canvas를 찾을 수 없습니다!");
-                return;
-            }
-
-            ShowMainPanel();
+            Debug.LogError("Canvas를 찾을 수 없습니다!");
+            return;
         }
+
+        ShowMainPanel();
     }
 
     private void OnDestroy()

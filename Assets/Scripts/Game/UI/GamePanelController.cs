@@ -1,34 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
-using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class GamePanelController : MonoBehaviour
 {
-     [SerializeField] private GameObject timerObject;
+    [SerializeField] private GameObject timerObject;
     [SerializeField] private GameObject PausePanel;
     [SerializeField] private Transform canvasTransform;
     private Timer timer;
     private CanvasGroup canvasGroup;
     private GameObject pausePanel;
 
-    private void Awake()
+    public void InitTimer()
     {
         timer = timerObject.GetComponent<Timer>();
     }
-
     public void OnClickPauseButton()
     {
-        //GameManager.Instance.PauseGame();
+       // GameManager.Instance.PauseGame();
         ShowPausePanel();
     }
 
     public void OnClickTurnButton()
     {
-        Debug.Log("Turn Button Clicked");
-        //GameManager.Instance.OnButtonClickFinishMyTurn();
+        GameManager.Instance.OnButtonClickFinishMyTurn();
     }
 
     public void StartTimer() {
@@ -38,31 +32,19 @@ public class GamePanelController : MonoBehaviour
     public void StopTimer() {
         timer.StopTimer();
     }
-    public void OnTimerEnd()
-    {
-        if (GameManager.Instance.GetIsAlReadySetPiece() == false) {
-            //Todo: 피스 생성 메소드 시작
-
-        }
-        GameManager.Instance.OnButtonClickFinishMyTurn();
-    } 
-
+   
     public void ShowPausePanel()
     {
-        if (pausePanel == null)
-        {
+        if (pausePanel == null) { 
             pausePanel = Instantiate(PausePanel, canvasTransform);
         }
-
         pausePanel.SetActive(true);
-
         canvasGroup = pausePanel.GetComponent<CanvasGroup>();
 
-        canvasGroup.alpha = 0f;
+        canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-
-        canvasGroup.DOFade(1f, 0.5f).OnComplete(() =>
+        canvasGroup.DOFade(1, 0.5f).OnComplete(() =>
         {
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;

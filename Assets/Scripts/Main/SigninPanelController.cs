@@ -13,13 +13,13 @@ public class SigninPanelController : MonoBehaviour
     {
         string username = Username.text;
         string password = Password.text;
-
+        
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             LoginManager.Instance.ShowErrorPanel("모든 항목을\n입력해주세요.");
             return;
         }
-
+        
         LoginUser(username, password);
     }
 

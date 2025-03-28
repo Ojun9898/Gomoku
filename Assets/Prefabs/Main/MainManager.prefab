@@ -44,7 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9c8ea23d428ed443aeca449ec637e5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MainPanel: {fileID: 3689431321415849350, guid: 105cd265f31425647aff89978ea8cabb, type: 3}
+  MainPanel: {fileID: 11054824779653245, guid: 105cd265f31425647aff89978ea8cabb, type: 3}
   Canvas: {fileID: 0}
   ErrorPanel: {fileID: 6412832676752804061, guid: 3aefd2915d2460749a162883ea79b50e, type: 3}
   LogoutPanel: {fileID: 6412832676752804061, guid: f867bb76b5f47284b9f62d65de9be07d, type: 3}
+  EndGamePanel: {fileID: 6412832676752804061, guid: c10680724496d9d46a71a6ae55598ced, type: 3}

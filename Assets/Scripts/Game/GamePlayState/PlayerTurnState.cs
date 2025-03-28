@@ -1,12 +1,26 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerTurnState : MonoBehaviour, IState
 {
     public StateMachine Fsm { get; set; }
+    public List<bool> PlayerCosts = new List<bool>();
 
     public void Enter(Piece.Owner owner)
-    {   
- 
+    {
+        if (PlayerCosts.Count < 10)
+        {
+            PlayerCosts.Add(true);
+        }
+        // 코스트 활성화
+        for (int i = 0; i < PlayerCosts.Count; i++)
+        {
+            PlayerCosts[i] = true;
+        }
+        Debug.Log("현재 코스트: " + PlayerCosts.Count);
+        GameManager.Instance.cp.SetCost(PlayerCosts);
+        
+        GameManager.Instance.Costs = PlayerCosts;
         //렌주룰
         GameManager.Instance.ruleManager.UpdateForbiddenMoves(owner);
     
@@ -20,10 +34,9 @@ public class PlayerTurnState : MonoBehaviour, IState
         //코스트 증가
 
         //턴 텍스트 설정
-        string playerType = owner.ToString();
         TurnPanelController tp = FindObjectOfType<TurnPanelController>();
-        tp.ShowTurnText(playerType);
-    }
+        tp.ShowTurnText(owner);
+     }
 
     public void Exit(Piece.Owner owner)
     {

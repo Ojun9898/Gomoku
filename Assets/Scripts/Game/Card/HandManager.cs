@@ -9,8 +9,8 @@ public class HandManager : MonoBehaviour
     public GameObject playerBHandPanel;      // 카드 UI가 표시될 부모 오브젝트 (예: Canvas 하위 패널)
     
     [SerializeField] private int handSize = 5; // 초기 손패 개수
-    private List<DeckManager.Card> _playerAHandCards = new List<DeckManager.Card>();
-    private List<DeckManager.Card> _playerBHandCards = new List<DeckManager.Card>();
+    public List<DeckManager.Card> playerAHandCards = new List<DeckManager.Card>();
+    public List<DeckManager.Card> playerBHandCards = new List<DeckManager.Card>();
 
     // 플레이어의 Owner 타입을 지정 (인스펙터에서 바인딩 가능)
     public Piece.Owner playerOwner;
@@ -30,7 +30,7 @@ public class HandManager : MonoBehaviour
             DeckManager.Card card = _deckManager.PopCard(GetPlayerDeck(_deckManager.playerACards));
             if (card != null)
             {
-                _playerAHandCards.Add(card);
+                playerAHandCards.Add(card);
                 CreateCardUI(card, Piece.Owner.PLAYER_A);
             }
 
@@ -38,21 +38,21 @@ public class HandManager : MonoBehaviour
             card = _deckManager.PopCard(GetPlayerDeck(_deckManager.playerBCards));
             if (card != null)
             {
-                _playerBHandCards.Add(card);
+                playerBHandCards.Add(card);
                 CreateCardUI(card, Piece.Owner.PLAYER_B);
             }
         }
     }
 
     // 매개변수로 deck을 받아와 원하는 덱을 가져온다.
-    private List<DeckManager.Card> GetPlayerDeck(List<DeckManager.Card> deck)
+    public List<DeckManager.Card> GetPlayerDeck(List<DeckManager.Card> deck)
     {
         return deck;
     }
 
     // 카드 UI를 동적으로 생성하여 handPanel에 추가
     // 카드 UI를 동적으로 생성하여 해당 플레이어의 Hand Panel에 추가하는 메소드
-    private void CreateCardUI(DeckManager.Card card, Piece.Owner owner)
+    public void CreateCardUI(DeckManager.Card card, Piece.Owner owner)
     {
         GameObject parentPanel = (owner == Piece.Owner.PLAYER_A) ? playerAHandPanel : playerBHandPanel;
         GameObject cardUIObj = Instantiate(cardUIPrefab, parentPanel.transform);
@@ -66,7 +66,7 @@ public class HandManager : MonoBehaviour
     {
         if (_selectedTile == null)
         {
-            MessageManager.Instance.ShowMessagePanel("먼저 타일을 선택하세요.");
+            Debug.Log("먼저 타일을 선택하세요.");
             return;
         }
         
@@ -91,17 +91,27 @@ public class HandManager : MonoBehaviour
                 }
             }
 
-            // 타일 선택 시 활성화했던 표시를 해제
-            _selectedTile.clickedImageObj.SetActive(false);
+            // 카드 선택 시 선택한 이미지, 카드 패널 비활성화
+            if (playerOwner == Piece.Owner.PLAYER_A)
+            {
+                playerAHandPanel.SetActive(false);
+                _selectedTile.clickedImageObj.SetActive(false);
+            }
+
+            if (playerOwner == Piece.Owner.PLAYER_B)
+            {
+                playerBHandPanel.SetActive(false);
+                _selectedTile.clickedImageObj.SetActive(false);
+            }
 
             // 손패에서 해당 카드를 제거하고 UI를 갱신합니다.
             if (playerOwner == Piece.Owner.PLAYER_A)
             {
-                _playerAHandCards.Remove(selectedCard);
+                playerAHandCards.Remove(selectedCard);
             }
             else if (playerOwner == Piece.Owner.PLAYER_B)
             {
-                _playerBHandCards.Remove(selectedCard);
+                playerBHandCards.Remove(selectedCard);
             }
 
             RefreshHandUI(playerOwner);
@@ -113,7 +123,6 @@ public class HandManager : MonoBehaviour
 
 
     // 타일 클릭 시 HandManager에서 호출: 선택된 타일 저장
-    
     public void SetSelectedTile(Tile tile)
     {
         _selectedTile = tile;
@@ -142,7 +151,7 @@ public class HandManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
 
-            foreach (var card in _playerAHandCards)
+            foreach (var card in playerAHandCards)
             {
                 CreateCardUI(card, playerOwner);
             }
@@ -154,11 +163,21 @@ public class HandManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
 
-            foreach (var card in _playerBHandCards)
+            foreach (var card in playerBHandCards)
             {
                 CreateCardUI(card, playerOwner);
             }
         }
     }
 
+    public List<DeckManager.Card> GetPlayerAorBHandCards(Piece.Owner owner) {
+        if (owner == Piece.Owner.PLAYER_B) { 
+            return playerBHandCards;
+        }else if(owner == Piece.Owner.PLAYER_A)
+        {
+            return playerAHandCards;
+        }
+        return null;
+    }
+ 
 }

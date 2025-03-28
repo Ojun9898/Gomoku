@@ -10,14 +10,14 @@ public class TurnPanelController : MonoBehaviour
     [SerializeField] private TMP_Text TurnText;
     private string turn;
 
-    public void ShowTurnText(string playerType)
+    public void ShowTurnText(Piece.Owner playerType)
     {
-        if (playerType=="PlayerA")
+        if (playerType == Piece.Owner.PLAYER_A)
         {
             turn = "YOU";
         }
 
-        else if (playerType=="PlayerB")
+        else if (playerType == Piece.Owner.PLAYER_B)
         {
             turn = "COM";
         }

@@ -12,14 +12,14 @@ public class FirstDirectionScript : MonoBehaviour, IState
         Debug.Log("FirstDirectionState입니다");
 
         // 5초 후에 AI턴으로 넘어갈지 플레이어 턴으로 넘어갈지 고름
-
-            if (owner == Piece.Owner.PLAYER_A)
-            {
-                Fsm.ChangeState<PlayerTurnState>(owner);
-            }
-            else {
-                Fsm.ChangeState<AITurnState>(owner);
-            }  
+        if (owner == Piece.Owner.PLAYER_A)
+        {
+            Fsm.ChangeState<PlayerTurnState>(owner);
+        }
+        else {
+            Fsm.ChangeState<AITurnState>(owner);
+        }
+      
     }
 
     public void Exit(Piece.Owner owner)
