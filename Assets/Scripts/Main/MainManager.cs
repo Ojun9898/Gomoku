@@ -1,5 +1,9 @@
 using DG.Tweening;
 using TMPro;
+<<<<<<< Updated upstream
+=======
+using Unity.VisualScripting;
+>>>>>>> Stashed changes
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,6 +14,10 @@ public class MainManager : Singleton<MainManager>
     [SerializeField] private GameObject ErrorPanel;
     [SerializeField] private GameObject LogoutPanel;
     [SerializeField] private GameObject EndGamePanel;
+<<<<<<< Updated upstream
+=======
+    [SerializeField] private GameObject GameOverPanel;
+>>>>>>> Stashed changes
 
     private GameObject mainPanel;
     private GameObject errorPanel;
@@ -18,7 +26,11 @@ public class MainManager : Singleton<MainManager>
     private RectTransform logoutPanelRect;
     private GameObject endGamePanel;
     private RectTransform endGamePanelRect;
+<<<<<<< Updated upstream
     private float fadeDuration = 0.5f;
+=======
+    private GameObject gameOverPanel;
+>>>>>>> Stashed changes
 
     void Start()
     {
@@ -27,7 +39,11 @@ public class MainManager : Singleton<MainManager>
 
     public void CloseMainPanel()
     {
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         if (MainPanel.activeSelf)
         {
             MainPanel.SetActive(false);
@@ -96,6 +112,7 @@ public class MainManager : Singleton<MainManager>
         endGamePanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
+<<<<<<< Updated upstream
     public void Logout()
     {
         CloseMainPanel();
@@ -105,6 +122,27 @@ public class MainManager : Singleton<MainManager>
     public void EndGame()
     {
         SceneManager.LoadScene("Main");
+=======
+    public void ShowGameOverPanel(Piece.Owner owner)
+    {
+        if (gameOverPanel == null)
+        {
+            gameOverPanel = Instantiate(GameOverPanel, Canvas);
+
+            var gameOverPanelController = gameOverPanel.GetComponent<GameOverPanelController>();
+
+            gameOverPanelController.SetGameOverPanel(owner);
+
+            var canvasGroup = gameOverPanel.GetComponent<CanvasGroup>();
+
+            if (canvasGroup == null)
+            {
+                canvasGroup = gameOverPanel.AddComponent<CanvasGroup>();
+                canvasGroup.alpha = 0;
+                canvasGroup.DOFade(1, 0.3f);
+            }
+        }
+>>>>>>> Stashed changes
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)

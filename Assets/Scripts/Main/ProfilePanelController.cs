@@ -9,7 +9,11 @@ public class ProfilePanelController : MonoBehaviour
     [SerializeField] private TMP_Text Username;
     [SerializeField] private TMP_Text Nickname;
     [SerializeField] private TMP_Text Date;
+<<<<<<< Updated upstream
     [SerializeField] private TMP_Text Score;
+=======
+    [SerializeField] private TMP_Text PlayerLevel;
+>>>>>>> Stashed changes
 
     private string[] UserInfo;
 
@@ -25,7 +29,11 @@ public class ProfilePanelController : MonoBehaviour
         Date.text = UserInfo[0];
         Username.text = UserInfo[1];
         Nickname.text = UserInfo[3];
+<<<<<<< Updated upstream
         Score.text = UserInfo[4];
+=======
+        PlayerLevel.text = UserInfo[5];
+>>>>>>> Stashed changes
     }
 
      public void OnClickCloseButton()

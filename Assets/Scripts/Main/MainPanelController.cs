@@ -112,7 +112,11 @@ public class MainPanelController : MonoBehaviour
        {
             profilePanel = Instantiate(ProfilePanel, canvasTransform);
             profilePanelRect = profilePanel.GetComponent<RectTransform>();
+<<<<<<< Updated upstream
             profilePanelRect.anchoredPosition = new Vector2(-500f, 515f); // 초기 위치 설정
+=======
+            profilePanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
+>>>>>>> Stashed changes
         }
         else
         {

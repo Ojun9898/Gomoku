@@ -1,5 +1,9 @@
 using DG.Tweening;
 using UnityEngine;
+<<<<<<< Updated upstream
+=======
+using UnityEngine.SceneManagement;
+>>>>>>> Stashed changes
 
 public class LogoutPanelController : MonoBehaviour
 {
@@ -10,7 +14,12 @@ public class LogoutPanelController : MonoBehaviour
         
         FindObjectOfType<SettingPanelController>().gameObject.SetActive(false);
         
+<<<<<<< Updated upstream
         MainManager.Instance.Logout();
+=======
+        MainManager.Instance.CloseMainPanel();
+        SceneManager.LoadScene("Login");
+>>>>>>> Stashed changes
     }
 
     public void OnClickNoButton()
