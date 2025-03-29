@@ -63,12 +63,11 @@ public class RankingPanelController : MonoBehaviour
             }
 
             // 배열 크기 확인 후 Rank 추가
-            if (RankingRankerInfo[i].Length < 6)
-            {
-                var tempArray = RankingRankerInfo[i];
-                Array.Resize(ref tempArray, 6);
-                RankingRankerInfo[i] = tempArray;
-            }
+
+            var tempArray = RankingRankerInfo[i];
+             Array.Resize(ref tempArray, 6);
+            RankingRankerInfo[i] = tempArray;
+
             RankingRankerInfo[i][5] = "Rank " + currentRank;
         }
     }
@@ -90,7 +89,7 @@ public class RankingPanelController : MonoBehaviour
         {
             Transform rankItem = RankerPanel.transform.GetChild(i);
 
-            if (rankItem == null || RankingRankerInfo[i].Length < 5) 
+            if (rankItem == null)
             {
                 continue;
             }

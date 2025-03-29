@@ -1,8 +1,7 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,6 +12,8 @@ public class MainManager : Singleton<MainManager>
     [SerializeField] private GameObject ErrorPanel;
     [SerializeField] private GameObject LogoutPanel;
     [SerializeField] private GameObject EndGamePanel;
+    [SerializeField] private GameObject GameOverPanel;
+    [SerializeField] private GameObject SelectPanel;
 
     private GameObject mainPanel;
     private GameObject errorPanel;
@@ -21,28 +22,27 @@ public class MainManager : Singleton<MainManager>
     private RectTransform logoutPanelRect;
     private GameObject endGamePanel;
     private RectTransform endGamePanelRect;
-    private float fadeDuration = 0.1f;
+    private GameObject gameOverPanel;
+    private GameObject selectPanel;
+    private RectTransform selectPanelRect;
 
     void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
-        ShowMainPanel();
     }
 
     public void CloseMainPanel()
     {
+
         if (MainPanel.activeSelf)
         {
-            MainPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
-            {
-                MainPanel.SetActive(false);
-            });
+            MainPanel.SetActive(false);
         }
     }
 
     public void ShowMainPanel()
     {
-        if (SceneManager.GetActiveScene().name == "Login" || 
+        if (SceneManager.GetActiveScene().name == "Login" ||
             SceneManager.GetActiveScene().name == "Game")
         {
             return;
@@ -56,10 +56,9 @@ public class MainManager : Singleton<MainManager>
         if (!mainPanel.activeSelf)
         {
             mainPanel.SetActive(true);
-            mainPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
         }
     }
-    
+
     public void ShowErrorPanel(string message)
     {
         if (errorPanel == null)
@@ -103,36 +102,62 @@ public class MainManager : Singleton<MainManager>
         endGamePanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
-    public void Logout()
+    public void ShowGameOverPanel(Piece.Owner owner)
     {
-        CloseMainPanel();
-        SceneManager.LoadScene("Login");
+        if (gameOverPanel == null)
+        {
+            gameOverPanel = Instantiate(GameOverPanel, Canvas);
+            
+            var gameOverPanelController = gameOverPanel.GetComponent<GameOverPanelController>();
+            gameOverPanelController.SetGameOverPanel(owner);
+            
+            var canvasGroup = gameOverPanel.GetComponent<CanvasGroup>();
+
+            if (canvasGroup == null)
+            {
+                canvasGroup = gameOverPanel.AddComponent<CanvasGroup>();
+                canvasGroup.alpha = 0;
+                canvasGroup.DOFade(1, 0.3f);
+            }
+        }
     }
 
-    public void EndGame()
+    public void ShowSelectPanel()
     {
-        SceneManager.LoadScene("Main");
+         if (selectPanel == null)
+         {
+             selectPanel = Instantiate(SelectPanel, Canvas);
+             selectPanelRect = selectPanel.GetComponent<RectTransform>();
+             selectPanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
+         }
+         else
+         {
+             selectPanel.SetActive(true);
+         }
+
+         selectPanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Main" || scene.name == "Game")
+        Canvas = GameObject.Find("Canvas")?.transform;
+
+        if (Canvas == null)
         {
-            DOTween.KillAll();
-            Canvas = GameObject.Find("Canvas")?.transform;
-
-            if (Canvas == null)
-            {
-                Debug.LogError("Canvas를 찾을 수 없습니다!");
-                return;
-            }
-
-            ShowMainPanel();
+            Debug.LogError("Canvas를 찾을 수 없습니다!");
+            return;
         }
+
+        ShowMainPanel();
     }
 
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    IEnumerator WaitOpenGameOverPanel()
+    {
+        yield return new WaitForSeconds(2f);
     }
 }

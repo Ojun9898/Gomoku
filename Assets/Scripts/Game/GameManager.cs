@@ -29,7 +29,9 @@ public class GameManager : Singleton<GameManager>
     public HandManager _handManager;
     public List<bool> Costs;
     public int PlayerLevel;
+    public int levelPoint;
     public CostPanelController cp;
+    public string[] playerInfo;
     
     private Owner _playerType;
     private DeckManager _deckManager;
@@ -101,7 +103,9 @@ public class GameManager : Singleton<GameManager>
         cp = FindObjectOfType<CostPanelController>();
         //RuleManager 초기화
         ruleManager.Init(mc.tiles, _playerType);
-
+        // AI 레벨 설정
+        playerInfo = LoginManager.Instance.GetUserInfo();
+        PlayerLevel = int.Parse(playerInfo[5]);
         // 상태 머신 가져오기 
         SetFSM();
     }
@@ -302,7 +306,7 @@ public class GameManager : Singleton<GameManager>
                 if (_currentChoosingPiece.isAlreadyAttack)
                 {
                     MessageManager.Instance.ShowMessagePanel("이미 공격한 말 입니다");
-                    FadeCardandResetClick();
+                    FadeCardAndResetClick();
                     FinishedAttack();
                     return (true, 0);
                 }
@@ -383,7 +387,7 @@ public class GameManager : Singleton<GameManager>
                 else
                 {
                     MessageManager.Instance.ShowMessagePanel("상대의 말입니다");
-                    FadeCardandResetClick();
+                    FadeCardAndResetClick();
                     return (true, 0);
                 }
             }
@@ -463,7 +467,7 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// 공격 상황이 끝났을 때를 가정하고 모든 상황을 초기화하는 메소드
     /// </summary>
-    private void FinishedAttack()
+    public void FinishedAttack()
     {
         _damagedPiece = null;
         _attackingPiece = null;
@@ -690,7 +694,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public void FadeCardandResetClick() {
+    public void FadeCardAndResetClick() {
         Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
         _handManager.playerAHandPanel.SetActive(false);
         _handManager.playerBHandPanel.SetActive(false);

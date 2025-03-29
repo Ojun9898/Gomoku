@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LogoutPanelController : MonoBehaviour
 {
@@ -12,7 +11,8 @@ public class LogoutPanelController : MonoBehaviour
         
         FindObjectOfType<SettingPanelController>().gameObject.SetActive(false);
         
-        MainManager.Instance.Logout();
+        MainManager.Instance.CloseMainPanel();
+        SceneManager.LoadScene("Login");
     }
 
     public void OnClickNoButton()

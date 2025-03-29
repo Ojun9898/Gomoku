@@ -33,9 +33,9 @@ public class MessageManager : Singleton<MessageManager>
         CanvasGroup canvasGroup = messagePanel.GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0;
 
-        canvasGroup.DOFade(1f, 0.3f);
+        canvasGroup.DOFade(1, 0.3f);
         
-        canvasGroup.DOFade(0f, 0.3f).SetDelay(1);
+        canvasGroup.DOFade(0, 0.3f).SetDelay(1);
 
     }
     public void ShowMessagePanel(string message, int time)
@@ -52,8 +52,8 @@ public class MessageManager : Singleton<MessageManager>
         CanvasGroup canvasGroup = messagePanel.GetComponent<CanvasGroup>();
         canvasGroup.alpha = 0;
 
-        canvasGroup.DOFade(1f, 0.3f);
-        canvasGroup.DOFade(0f, 0.3f).SetDelay(time);
+        canvasGroup.DOFade(1, 0.3f);
+        canvasGroup.DOFade(0, 0.3f).SetDelay(time);
 
     }
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
