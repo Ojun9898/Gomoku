@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
-using UnityEditor.Search;
 using UnityEngine;
 
 public class ProfilePanelController : MonoBehaviour

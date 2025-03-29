@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -467,7 +466,14 @@ public class Timer : MonoBehaviour
     }
     
     IEnumerator SetSliderGreen() {
-
+        if (colorTween != null)
+        {
+            if (colorTween.IsPlaying())
+            {
+                colorTween.Kill();
+                colorTween = null;
+            }
+        }
         dialSlider.color = new Color32(159, 241, 65, 255);
         yield return null;
     }
