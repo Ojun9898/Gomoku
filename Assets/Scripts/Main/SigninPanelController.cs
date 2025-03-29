@@ -47,12 +47,9 @@ public class SigninPanelController : MonoBehaviour
         });
     }
 
-<<<<<<< Updated upstream
-=======
     public void OnClickExitButton()
     {
         Application.Quit();
     }
 
->>>>>>> Stashed changes
 }

@@ -9,10 +9,7 @@ public class BuyManager : Singleton<BuyManager>
 {
     private string streamingPath;
     private string persistentPath;
-<<<<<<< Updated upstream
-=======
     private int coins = 0;
->>>>>>> Stashed changes
 
     private void Awake()
     {
@@ -73,8 +70,6 @@ public class BuyManager : Singleton<BuyManager>
         return new string[] { currentUsername, "0", "", "" };
     }
 
-<<<<<<< Updated upstream
-=======
     public int GetCoins()
     {
         string[] buyInfo = SetData();
@@ -88,7 +83,6 @@ public class BuyManager : Singleton<BuyManager>
         return int.TryParse(buyInfo[1], out int coins) ? coins : 0;
     }
 
->>>>>>> Stashed changes
     public void UpdateTotalCoin(int coin)
     {
         string currentUsername = LoginManager.Instance.GetUsername();
@@ -101,10 +95,7 @@ public class BuyManager : Singleton<BuyManager>
         }
 
         int totalCoin = 0;
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
         if (!int.TryParse(currentBuyInfo[1], out totalCoin))
         {
             totalCoin = 0;

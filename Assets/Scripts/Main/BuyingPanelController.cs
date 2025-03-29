@@ -9,10 +9,7 @@ public class BuyingPanelController : MonoBehaviour
 {
     [SerializeField] private TMP_Text totalCoinText;
     private string[] BuyInfo;
-<<<<<<< Updated upstream
-=======
     private int itemPrice = 50;
->>>>>>> Stashed changes
 
     void Start()
     {
@@ -33,28 +30,16 @@ public class BuyingPanelController : MonoBehaviour
     public void OnClickitem1Button()
     {
         // 아이템 구매 (50코인 충전)
-<<<<<<< Updated upstream
-        BuyManager.Instance.UpdateTotalCoin(50);
-        SettingBuyInfo();
-        SettingTotalCoin();
-=======
         itemPrice = 50;
         Buying(itemPrice);
 
->>>>>>> Stashed changes
     }
 
     public void OnClickitem2Button()
     {
         // 아이템 구매 (50코인 사용)
-<<<<<<< Updated upstream
-        BuyManager.Instance.UpdateTotalCoin(-50);
-        SettingBuyInfo();
-        SettingTotalCoin();
-=======
         itemPrice = -50;
         Buying(itemPrice);
->>>>>>> Stashed changes
     }
 
     public void OnClickitem3Button()
@@ -77,12 +62,6 @@ public class BuyingPanelController : MonoBehaviour
         // 아이템 구매
     }
 
-<<<<<<< Updated upstream
-   public void OnClickCloseButton()
-    {
-        this.GetComponent<RectTransform>().DOLocalMoveX(-600f, 0.3f)
-            .OnComplete(() => this.gameObject.SetActive(false)); 
-=======
     public void OnClickCloseButton()
     {
         this.GetComponent<RectTransform>().DOLocalMoveX(-600f, 0.3f)
@@ -112,6 +91,5 @@ public class BuyingPanelController : MonoBehaviour
             SettingBuyInfo();
             SettingTotalCoin();
         }
->>>>>>> Stashed changes
     }
 }
