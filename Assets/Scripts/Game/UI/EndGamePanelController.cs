@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EndGamePanelController : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class EndGamePanelController : MonoBehaviour
         this.GetComponent<RectTransform>().DOLocalMoveX(-600f, 0.3f)
             .OnComplete(() => this.gameObject.SetActive(false)); 
         
-        MainManager.Instance.EndGame();
+        SceneManager.LoadScene("Main");
     }
 
     public void OnClickNoButton()

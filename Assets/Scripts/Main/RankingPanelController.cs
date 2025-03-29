@@ -63,12 +63,11 @@ public class RankingPanelController : MonoBehaviour
             }
 
             // 배열 크기 확인 후 Rank 추가
-            if (RankingRankerInfo[i].Length < 6)
-            {
-                var tempArray = RankingRankerInfo[i];
-                Array.Resize(ref tempArray, 6);
-                RankingRankerInfo[i] = tempArray;
-            }
+
+            var tempArray = RankingRankerInfo[i];
+             Array.Resize(ref tempArray, 6);
+            RankingRankerInfo[i] = tempArray;
+
             RankingRankerInfo[i][5] = "Rank " + currentRank;
         }
     }
@@ -90,13 +89,14 @@ public class RankingPanelController : MonoBehaviour
         {
             Transform rankItem = RankerPanel.transform.GetChild(i);
 
-            if (rankItem == null || RankingRankerInfo[i].Length < 5) 
+            if (rankItem == null)
             {
                 continue;
             }
 
             rankItem.GetChild(0).GetComponent<TMP_Text>().text = RankingRankerInfo[i][3]; // 닉네임
             rankItem.GetChild(1).GetComponent<TMP_Text>().text = RankingRankerInfo[i][4]; // 점수
+            rankItem.GetChild(1).GetComponent<TMP_Text>().text += "승"; // 점수
             rankItem.GetChild(2).GetComponent<TMP_Text>().text = RankingRankerInfo[i][5]; // 랭크
         }
     }
@@ -117,6 +117,7 @@ public class RankingPanelController : MonoBehaviour
 
         PlayerPanel.transform.GetChild(0).GetComponent<TMP_Text>().text = updatedPlayerInfo[3] ?? "N/A"; // 닉네임
         PlayerPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = updatedPlayerInfo[4] ?? "0"; // 점수
+        PlayerPanel.transform.GetChild(1).GetComponent<TMP_Text>().text += "승"; // 점수
         PlayerPanel.transform.GetChild(2).GetComponent<TMP_Text>().text = updatedPlayerInfo[5]; // 랭크
     }
 

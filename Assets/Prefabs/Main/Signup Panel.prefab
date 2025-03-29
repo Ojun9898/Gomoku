@@ -2335,7 +2335,6 @@ MonoBehaviour:
   NicknameInputField: {fileID: 6699803320440617361}
   UsernameInputField: {fileID: 5988067520644983632}
   PasswordInputField: {fileID: 5540983641185603228}
-  filePath: 
 --- !u!225 &6573211824067775765
 CanvasGroup:
   m_ObjectHideFlags: 0

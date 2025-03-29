@@ -55,6 +55,7 @@ public class MapController : MonoBehaviour
                     GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
                     GameManager.Instance._handManager.playerAHandPanel.SetActive(false);
                     GameManager.Instance._handManager.playerBHandPanel.SetActive(false);
+                    GameManager.Instance.FinishedAttack();
                 }
                 else
                 {
@@ -64,6 +65,7 @@ public class MapController : MonoBehaviour
                         GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
                         GameManager.Instance._handManager.playerAHandPanel.SetActive(false);
                         GameManager.Instance._handManager.playerBHandPanel.SetActive(false);
+                        GameManager.Instance.FinishedAttack();
                     }
                 }
             }

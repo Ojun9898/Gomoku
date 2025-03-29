@@ -493,7 +493,7 @@ public class RuleManager : MonoBehaviour
             if (maxConsecutive > 3)
             {
                 if (maxConsecutive == 4)
-                    blockScore += 1410;
+                    blockScore += 2410;
                 else if (maxConsecutive >= 5)
                     blockScore += 4200;
             }

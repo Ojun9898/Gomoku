@@ -11,17 +11,16 @@ public class SigninPanelController : MonoBehaviour
     
     public void OnClickSigninButton()
     {
-        // string username = Username.text;
-        // string password = Password.text;
-        //
-        // if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-        // {
-        //     LoginManager.Instance.ShowErrorPanel("모든 항목을\n입력해주세요.");
-        //     return;
-        // }
-        //
-        // LoginUser(username, password);
-        SceneManager.LoadScene("Main");
+        string username = Username.text;
+        string password = Password.text;
+        
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            LoginManager.Instance.ShowErrorPanel("모든 항목을\n입력해주세요.");
+            return;
+        }
+        
+        LoginUser(username, password);
     }
 
     public void OnClickSignupButton()
@@ -46,6 +45,11 @@ public class SigninPanelController : MonoBehaviour
                 SceneManager.LoadScene("Main");
             }
         });
+    }
+
+    public void OnClickExitButton()
+    {
+        Application.Quit();
     }
 
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -316,9 +315,9 @@ public class Timer : MonoBehaviour
     private void ResetTimer()
     {
         timerPaused = false;
-        dialSlider.color = new Color32(159, 241, 65, 255);
-
-
+        
+        StartCoroutine(SetSliderGreen());
+        
         if (countMethod == CountMethod.CountDown)
         {
             timeRemaining = ReturnTotalSeconds();
@@ -440,8 +439,9 @@ public class Timer : MonoBehaviour
         }
     }
 
-    public void SetSliderColor() {
-        dialSlider.color = new Color32(159, 241, 65, 255);
+    public void SetSliderColor()
+    {
+        StartCoroutine(SetSliderGreen());
     }
 
     IEnumerator PutPiece(Piece.Owner owner)
@@ -463,6 +463,19 @@ public class Timer : MonoBehaviour
             yield return new WaitForSeconds(2);
             GameManager.Instance.OnButtonClickFinishMyTurn();
         }
+    }
+    
+    IEnumerator SetSliderGreen() {
+        if (colorTween != null)
+        {
+            if (colorTween.IsPlaying())
+            {
+                colorTween.Kill();
+                colorTween = null;
+            }
+        }
+        dialSlider.color = new Color32(159, 241, 65, 255);
+        yield return null;
     }
 
 }
