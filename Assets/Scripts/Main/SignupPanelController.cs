@@ -90,7 +90,7 @@ public class SignupPanelController : MonoBehaviour
 
         // 현재 날짜 가져오기
         string date = DateTime.Now.ToString("yyyy-MM-dd");
-        int playerLevel = 0;
+        int playerLevel = 18;
         int levelPoint = 0;
 
         // 새로운 유저 데이터 추가

@@ -13,6 +13,19 @@ public class FinishDirectionState : MonoBehaviour, IState
         //패널하나  열어서  보여주는 것도 ㄱㅊ을듯?
         GameManager.Instance.gamePanelController.StopTimer();
         MessageManager.Instance.ShowMessagePanel($"{owner}의 승리입니다!");
+
+        // 플레이어 승리 여부에 따라 levelPoint를 업데이트
+        if (owner == Piece.Owner.PLAYER_A)
+        {
+            // 플레이어 A가 이기면 CSV 파일의 로그인 정보에 대해 levelPoint를 +1 증가시킴
+            LoginManager.Instance.UpdatePlayerLevelAndPoint(1);
+        }
+        else if (owner == Piece.Owner.PLAYER_B)
+        {
+            // 플레이어 B가 이기면 levelPoint를 -1 감소시킴
+            LoginManager.Instance.UpdatePlayerLevelAndPoint(-1);
+        }
+        
         StartCoroutine(WaitFinishGame());
         Debug.Log("FinishDirectionState입니다");
     }

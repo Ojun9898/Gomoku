@@ -46,20 +46,19 @@ public class AITurnState : MonoBehaviour, IState
         GameManager.Instance.gamePanelController.StartTimer();
         int level = GameManager.Instance.PlayerLevel;
 
-        if (level <= 3)
+        if (level <= 5)
         {
-            StartCoroutine(PutPiece(owner));
+            StartCoroutine(AttackandHealThenPutPiece(owner));
         }
         else if (level <= 10) {
-
-            StartCoroutine(PutPieceAndOnlyAttack(owner));
+            StartCoroutine(PutPieceThenAttackandHeal(owner));
         } 
         else if(level <= 15) {
-            StartCoroutine(PutPieceThenAttackandHeal(owner));
+            StartCoroutine(PutPieceAndOnlyAttack(owner));
         }
         else
         {
-            StartCoroutine(AttackandHealThenPutPiece(owner));
+            StartCoroutine(PutPiece(owner));
         }
     
 

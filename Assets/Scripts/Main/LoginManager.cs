@@ -174,11 +174,95 @@ public class LoginManager : Singleton<LoginManager>
     public string CheckFile()
     {
         if (!File.Exists(userInfoFilepath))
-            {
-                Debug.LogError("로그인 파일이 없습니다.");
-                return null;
-            }
+        {
+            Debug.LogError("로그인 파일이 없습니다.");
+            return null;
+        }
         return userInfoFilepath;
+    }
+
+    /// <summary>
+    /// 현재 로그인한 유저의 CSV 데이터에서 PlayerLevel과 LevelPoint를 갱신하는 메서드.
+    /// levelPointDelta가 양수면 levelPoint에 더하고, 음수면 차감합니다.
+    /// levelPoint가 3 이상이면 playerLevel을 -1하고 levelPoint에서 3을 빼며,
+    /// levelPoint가 -3 이하이면 playerLevel을 +1하고 levelPoint에 3을 더합니다.
+    /// </summary>
+    public void UpdatePlayerLevelAndPoint(int levelPointDelta)
+    {
+        if (!File.Exists(userInfoFilepath))
+        {
+            Debug.LogError("CSV 파일이 존재하지 않습니다: " + userInfoFilepath);
+            return;
+        }
+
+        // CSV 파일의 모든 라인 읽기
+        string[] lines = File.ReadAllLines(userInfoFilepath);
+        List<string> newLines = new List<string>();
+
+        // 첫 번째 라인은 헤더이므로 그대로 추가
+        if (lines.Length > 0)
+        {
+            newLines.Add(lines[0]);
+        }
+
+        bool updated = false;
+
+        // 각 데이터 행을 순회 (헤더 제외)
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] tokens = lines[i].Split(',');
+            // CSV의 형식: Date, Username, Password, Nickname, Score, PlayerLevel, LevelPoint
+            if (tokens.Length < 7)
+            {
+                newLines.Add(lines[i]);
+                continue;
+            }
+
+            // 현재 로그인한 유저의 데이터 찾기 (username 비교)
+            if (tokens[1].Trim() == currentUsername)
+            {
+                int currentPlayerLevel = 0;
+                int currentLevelPoint = 0;
+                int.TryParse(tokens[5].Trim(), out currentPlayerLevel);
+                int.TryParse(tokens[6].Trim(), out currentLevelPoint);
+
+                // levelPoint에 변화량 적용
+                currentLevelPoint += levelPointDelta;
+
+                // levelPoint가 3 이상이면 playerLevel 업, 3씩 차감
+                while (currentLevelPoint >= 3)
+                {
+                    currentPlayerLevel--;
+                    currentLevelPoint -= 3;
+                }
+
+                // levelPoint가 -3 이하이면 playerLevel 다운, 3씩 보정
+                while (currentLevelPoint <= -3)
+                {
+                    currentPlayerLevel++;
+                    currentLevelPoint += 3;
+                }
+
+                // 갱신된 값을 문자열로 다시 할당
+                tokens[5] = currentPlayerLevel.ToString();
+                tokens[6] = currentLevelPoint.ToString();
+
+                updated = true;
+            }
+            // 수정(또는 그대로 유지)된 토큰들을 쉼표로 결합
+            newLines.Add(string.Join(",", tokens));
+        }
+
+        if (updated)
+        {
+            // CSV 파일에 변경된 내용 저장
+            File.WriteAllLines(userInfoFilepath, newLines.ToArray());
+            Debug.Log("플레이어 레벨과 포인트가 업데이트되었습니다.");
+        }
+        else
+        {
+            Debug.LogWarning("업데이트할 사용자를 찾을 수 없습니다: " + currentUsername);
+        }
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
