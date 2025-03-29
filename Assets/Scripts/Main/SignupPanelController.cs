@@ -103,7 +103,7 @@ public class SignupPanelController : MonoBehaviour
         }
 
         string date = DateTime.Now.ToString("yyyy-MM-dd");
-        int playerLevel = 18;
+        int playerLevel = 0;
         int levelPoint = 0;
         float score = 0;
 

@@ -1201,8 +1201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   winText: {fileID: 3073405124238961624}
-  loseText: {fileID: 0}
-  playerlevel: {fileID: 144164752155395035}
+  playerLevel: {fileID: 144164752155395035}
   levelPoint: {fileID: 565499911721874489}
 --- !u!1 &7842605220550933496
 GameObject:

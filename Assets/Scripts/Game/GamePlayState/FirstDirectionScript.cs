@@ -1,5 +1,8 @@
+using System.Collections;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
+using static Piece;
 
 public class FirstDirectionScript : MonoBehaviour, IState
 {
@@ -11,19 +14,27 @@ public class FirstDirectionScript : MonoBehaviour, IState
         // 시작 연출
         Debug.Log("FirstDirectionState입니다");
 
-        // 5초 후에 AI턴으로 넘어갈지 플레이어 턴으로 넘어갈지 고름
+        StartCoroutine(StartGame(owner));
+    }
+    IEnumerator StartGame(Piece.Owner owner) {
+      
+        yield return new WaitForSeconds(1);
         if (owner == Piece.Owner.PLAYER_A)
         {
             Fsm.ChangeState<PlayerTurnState>(owner);
         }
-        else {
+        else
+        {
             Fsm.ChangeState<AITurnState>(owner);
         }
-      
     }
 
     public void Exit(Piece.Owner owner)
     {
+        var blackPanel = GameManager.Instance.BlackPanel.GetComponent<Image>();
+        blackPanel.DOFade(0, 0.5F).OnComplete(() => {
+            GameManager.Instance.BlackPanel.SetActive(false);
+        });
         Debug.Log("FirstDirectionState 나갔습니다");
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 
@@ -110,7 +111,7 @@ public class RuleManager : MonoBehaviour
             bool isOver = IsOverline(x, y);
             bool isDoubleFour = IsDoubleFour(x, y);
             bool isDoubleThree = IsDoubleThree(x, y);
-            bool canWin = CheckWin(x, y);
+            bool canWin = CheckWinFORForbidden(x, y,BLACK);
             bool isForbidden = (isOver || isDoubleFour || isDoubleThree) && (!canWin);
 
             // 임시 돌 제거
@@ -129,7 +130,7 @@ public class RuleManager : MonoBehaviour
         return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
     }
 
-    private int CountStonesInDirection(int x, int y, int dx, int dy)
+    private int CountStonesInDirection(int x, int y, int dx, int dy,Piece.Owner owner)
     {
         int count = 0;
         int nx = x + dx;
@@ -137,7 +138,7 @@ public class RuleManager : MonoBehaviour
         while (IsInBoard(nx, ny))
         {
             int idx = ny * BOARD_SIZE + nx;
-            if (board[idx].Piece?.pieceOwner == BLACK)
+            if (board[idx].Piece?.pieceOwner == owner)
             {
                 count++;
                 nx += dx;
@@ -156,8 +157,8 @@ public class RuleManager : MonoBehaviour
         for (int dir = 0; dir < 4; dir++)
         {
             int _count = 1;
-            _count += CountStonesInDirection(x, y, dx[dir], dy[dir]);
-            _count += CountStonesInDirection(x, y, -dx[dir], -dy[dir]);
+            _count += CountStonesInDirection(x, y, dx[dir], dy[dir],BLACK);
+            _count += CountStonesInDirection(x, y, -dx[dir], -dy[dir], BLACK);
             if (_count >= 6)
                 return true;
         }
@@ -369,16 +370,30 @@ public class RuleManager : MonoBehaviour
         }
     }
 
-    private bool CheckWin(int x, int y)
+    private bool CheckWinFORForbidden(int x, int y,Piece.Owner owner)
     {
         int index = y * BOARD_SIZE + x;
         Piece stone = board[index].Piece;
         for (int dir = 0; dir < 4; dir++)
         {
             int _count = 1;
-            _count += CountStonesInDirection(x, y, dx[dir], dy[dir]);
-            _count += CountStonesInDirection(x, y, -dx[dir], -dy[dir]);
-            if (stone?.pieceOwner == BLACK && _count == 5)
+            _count += CountStonesInDirection(x, y, dx[dir], dy[dir],owner);
+            _count += CountStonesInDirection(x, y, -dx[dir], -dy[dir], owner);
+            if (stone?.pieceOwner == owner && _count == 5)
+                return true;
+        }
+        return false;
+    }
+
+    private bool CheckWinFORSetPiece(int x, int y, Piece.Owner owner)
+    {
+        int index = y * BOARD_SIZE + x;
+        for (int dir = 0; dir < 4; dir++)
+        {
+            int _count = 1;
+            _count += CountStonesInDirection(x, y, dx[dir], dy[dir], owner);
+            _count += CountStonesInDirection(x, y, -dx[dir], -dy[dir], owner);
+            if (_count == 5)
                 return true;
         }
         return false;
@@ -410,8 +425,12 @@ public class RuleManager : MonoBehaviour
             }
         }
 
-        if (candidateMoves.Count == 0)
-            return (BOARD_SIZE / 2, BOARD_SIZE / 2);
+        if (board.All(tile => tile.Piece == null)) {
+            System.Random random = new System.Random();
+            int x = random.Next(BOARD_SIZE / 2 - 2, BOARD_SIZE / 2 + 2);
+            int y = random.Next(BOARD_SIZE / 2 - 2, BOARD_SIZE / 2 + 2);
+            return (x, y);
+        }
 
         candidateMoves.Sort((a, b) => b.Item3.CompareTo(a.Item3));
         return (candidateMoves[0].Item1, candidateMoves[0].Item2);
@@ -424,8 +443,7 @@ public class RuleManager : MonoBehaviour
         try
         {
             // 1. 승리 가능성
-            if (CheckWin(x, y))
-                score += 1000; // 승리하면 최고 점수
+            if (CheckWinFORSetPiece(x, y,currentPlayer)) score += 10000; // 승리하면 최고 점수
 
             // 2. 상대 승리 차단 가능성 (여기서 3개 이상의 위협부터 고려)
             score += EvaluateBlockingPotential(x, y, currentPlayer);
@@ -465,21 +483,19 @@ public class RuleManager : MonoBehaviour
             int maxConsecutive = 0;
             for (int dir = 0; dir < 4; dir++)
             {
-                int count1 = CountConsecutiveStonesInDirectionForPlayer(x, y, opponent, dx[dir], dy[dir]);
-                int count2 = CountConsecutiveStonesInDirectionForPlayer(x, y, opponent, -dx[dir], -dy[dir]);
-                int total = count1 + count2 + 1; // 현재 돌 포함
-                if (total > maxConsecutive)
-                    maxConsecutive = total;
+                int consecutiveStones = 1;
+                consecutiveStones += CountStonesInDirection(x, y,  dx[dir], dy[dir], opponent);
+                consecutiveStones += CountStonesInDirection(x, y,  -dx[dir], -dy[dir], opponent);
+                if (consecutiveStones > maxConsecutive)
+                    maxConsecutive = consecutiveStones;
             }
-            // 만약 3개 이상의 연속 돌이 있다면 블록 필요 (점수는 위협 정도에 따라 조정)
-            if (maxConsecutive >= 3)
+            // 만약 4개 이상의 연속 돌이 있다면 블록 필요 (점수는 위협 정도에 따라 조정)
+            if (maxConsecutive > 3)
             {
-                if (maxConsecutive == 3)
-                    blockScore += 300;
-                else if (maxConsecutive == 4)
-                    blockScore += 500;
+                if (maxConsecutive == 4)
+                    blockScore += 2410;
                 else if (maxConsecutive >= 5)
-                    blockScore += 1000;
+                    blockScore += 4200;
             }
         }
         finally
@@ -490,42 +506,23 @@ public class RuleManager : MonoBehaviour
         return blockScore;
     }
 
-    // 임의 플레이어에 대해 연속 돌 수를 계산하는 헬퍼 함수
-    private int CountConsecutiveStonesInDirectionForPlayer(int x, int y, Piece.Owner player, int dx, int dy)
-    {
-        int count = 0;
-        int nx = x + dx;
-        int ny = y + dy;
-        while (IsInBoard(nx, ny))
-        {
-            int idx = ny * BOARD_SIZE + nx;
-            if (board[idx].Piece?.pieceOwner == player)
-            {
-                count++;
-                nx += dx;
-                ny += dy;
-            }
-            else
-            {
-                break;
-            }
-        }
-        return count;
-    }
-
     private double EvaluateOffensivePotential(int x, int y, Piece.Owner currentPlayer)
     {
         double offenseScore = 0;
         for (int dir = 0; dir < 4; dir++)
         {
             int consecutiveStones = 1;
-            consecutiveStones += CountConsecutiveStonesInDirectionForPlayer(x, y, currentPlayer, dx[dir], dy[dir]);
-            consecutiveStones += CountConsecutiveStonesInDirectionForPlayer(x, y, currentPlayer, -dx[dir], -dy[dir]);
-            switch (consecutiveStones)
-            {
-                case 2: offenseScore += 10; break;
-                case 3: offenseScore += 50; break;
-                case 4: offenseScore += 200; break;
+            int limitcount = 0;
+            consecutiveStones += CountStonesInDirection(x, y, dx[dir], dy[dir], currentPlayer);
+            consecutiveStones += CountStonesInDirection(x, y, -dx[dir], -dy[dir], currentPlayer);
+            if (limitcount < 2) {
+
+                switch (consecutiveStones)
+                {
+                    case 2: offenseScore += 200; { limitcount++; break; }
+                    case 3: offenseScore += 700; { limitcount++; break; }
+                    case 4: offenseScore += 2000; { limitcount++; break; }
+                }
             }
         }
         return offenseScore;
@@ -536,7 +533,7 @@ public class RuleManager : MonoBehaviour
         int centerX = boardSize / 2;
         int centerY = boardSize / 2;
         double distanceFromCenter = Mathf.Sqrt(Mathf.Pow(x - centerX, 2) + Mathf.Pow(y - centerY, 2));
-        return 20 / (distanceFromCenter + 1);
+        return 1 / (distanceFromCenter + 1);
     }
     #endregion
 
@@ -613,14 +610,13 @@ public class RuleManager : MonoBehaviour
         // 공격 가능 범위 계산 (현재 말의 공격 범위)
         Piece piece = board[index].Piece;
         List<int> attackRange = GameManager.Instance.CanAttackRangeCalculate(index, piece.GetAttackRange());
-        Piece.Owner opponentPlayer = (currentPlayer == Piece.Owner.PLAYER_A) ? Piece.Owner.PLAYER_B : Piece.Owner.PLAYER_A;
 
 
         for (int dir = 0; dir < 4; dir++)
         {
             List<int> consecutiveAllyIndices = FindConsecutiveAlliesInDirection(index, currentPlayer, dx[dir], dy[dir], attackRange);
 
-            if (consecutiveAllyIndices.Count > 0)
+            if (consecutiveAllyIndices?.Count > 0)
             {
                 // 가장 낮은 cost의 아군 돌 찾기
                 int weakestAllyIndex = consecutiveAllyIndices.OrderBy(idx => board[idx].Piece.cost).First();
@@ -633,7 +629,7 @@ public class RuleManager : MonoBehaviour
             .Where(idx => board[idx].Piece?.pieceOwner == currentPlayer)
             .ToList();
 
-        if (allAlliesInRange.Count > 0)
+        if (allAlliesInRange?.Count > 0)
         {
             // 범위 내 아군 중 가장 낮은 cost의 돌 반환
             return allAlliesInRange.OrderBy(idx => board[idx].Piece.cost).First();

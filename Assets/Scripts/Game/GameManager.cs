@@ -6,12 +6,14 @@ using UnityEngine.UI;
 using static Piece;
 using System.Linq;
 using UnityEngine.Serialization;
+using DG.Tweening;
 
 
 [RequireComponent(typeof(StateMachine))]
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private MapController mc;
+    public GameObject BlackPanel;
     public GameObject BlockPanelPrefab;
     public GameObject forbiddenMoveObject;
     public GameObject piece;
@@ -27,7 +29,9 @@ public class GameManager : Singleton<GameManager>
     public HandManager _handManager;
     public List<bool> Costs;
     public int PlayerLevel;
+    public int levelPoint;
     public CostPanelController cp;
+    public string[] playerInfo;
     
     private Owner _playerType;
     private DeckManager _deckManager;
@@ -74,8 +78,7 @@ public class GameManager : Singleton<GameManager>
     /// 게임 메니저 초기화
     /// </summary>
     private void InitGameManager()
-    {   // 카드 생성 메소드 
-
+    {   
         // Map에서 타일 생성후 가져오는 메소드
         SetMapController();
         // 턴 넘김 횟수 초기화 
@@ -100,7 +103,9 @@ public class GameManager : Singleton<GameManager>
         cp = FindObjectOfType<CostPanelController>();
         //RuleManager 초기화
         ruleManager.Init(mc.tiles, _playerType);
-
+        // AI 레벨 설정
+        playerInfo = LoginManager.Instance.GetUserInfo();
+        PlayerLevel = int.Parse(playerInfo[5]);
         // 상태 머신 가져오기 
         SetFSM();
     }
@@ -301,6 +306,7 @@ public class GameManager : Singleton<GameManager>
                 if (_currentChoosingPiece.isAlreadyAttack)
                 {
                     MessageManager.Instance.ShowMessagePanel("이미 공격한 말 입니다");
+                    FadeCardAndResetClick();
                     FinishedAttack();
                     return (true, 0);
                 }
@@ -313,7 +319,14 @@ public class GameManager : Singleton<GameManager>
                 {
                     _handManager.playerBHandPanel.SetActive(false);
                 }
-                MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
+
+                if (Mc.tiles[CurrentClickedTileIndex].Piece.attackType == AttackType.BUFF)
+                {
+                    MessageManager.Instance.ShowMessagePanel("체력을 회복할 말을 선택하세요");
+                }
+                else {
+                    MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
+                }
             }
             else
             {
@@ -374,6 +387,7 @@ public class GameManager : Singleton<GameManager>
                 else
                 {
                     MessageManager.Instance.ShowMessagePanel("상대의 말입니다");
+                    FadeCardAndResetClick();
                     return (true, 0);
                 }
             }
@@ -453,7 +467,7 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// 공격 상황이 끝났을 때를 가정하고 모든 상황을 초기화하는 메소드
     /// </summary>
-    private void FinishedAttack()
+    public void FinishedAttack()
     {
         _damagedPiece = null;
         _attackingPiece = null;
@@ -582,7 +596,7 @@ public class GameManager : Singleton<GameManager>
 
         if (_handManager.isAlreadySetPiece)
         {
-            GameManager.Instance.gamePanelController.StopTimer();
+            gamePanelController.StopTimer();
             _changeTurnCount++;
             Debug.Log("턴 진행 횟수 : " + _changeTurnCount);
             if (_changeTurnCount >= 30)
@@ -680,6 +694,11 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void FadeCardAndResetClick() {
+        Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
+        _handManager.playerAHandPanel.SetActive(false);
+        _handManager.playerBHandPanel.SetActive(false);
+    }
     public Owner GetCurrentPlayerType()
     {
         return _playerType;

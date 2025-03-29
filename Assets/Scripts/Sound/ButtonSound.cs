@@ -39,7 +39,6 @@ public class ButtonSoundManager : MonoBehaviour
         foreach (Button btn in buttons)
         {
             // 중복 추가 방지를 위해 기존 리스너 제거 후 추가
-            btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => PlayClickSound());
         }
     }

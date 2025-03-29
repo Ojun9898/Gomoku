@@ -1,3 +1,4 @@
+using System.Collections;
 using DG.Tweening;
 using TMPro;
 using Unity.VisualScripting;
@@ -106,11 +107,10 @@ public class MainManager : Singleton<MainManager>
         if (gameOverPanel == null)
         {
             gameOverPanel = Instantiate(GameOverPanel, Canvas);
-
+            
             var gameOverPanelController = gameOverPanel.GetComponent<GameOverPanelController>();
-
             gameOverPanelController.SetGameOverPanel(owner);
-
+            
             var canvasGroup = gameOverPanel.GetComponent<CanvasGroup>();
 
             if (canvasGroup == null)
@@ -125,17 +125,17 @@ public class MainManager : Singleton<MainManager>
     public void ShowSelectPanel()
     {
          if (selectPanel == null)
-        {
-            selectPanel = Instantiate(SelectPanel, Canvas);
-            selectPanelRect = selectPanel.GetComponent<RectTransform>();
-            selectPanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
-        }
-        else
-        {
-            selectPanel.SetActive(true);
-        }
+         {
+             selectPanel = Instantiate(SelectPanel, Canvas);
+             selectPanelRect = selectPanel.GetComponent<RectTransform>();
+             selectPanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
+         }
+         else
+         {
+             selectPanel.SetActive(true);
+         }
 
-        selectPanelRect.DOLocalMoveX(0f, 0.3f);
+         selectPanelRect.DOLocalMoveX(0f, 0.3f);
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -154,5 +154,10 @@ public class MainManager : Singleton<MainManager>
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    IEnumerator WaitOpenGameOverPanel()
+    {
+        yield return new WaitForSeconds(2f);
     }
 }

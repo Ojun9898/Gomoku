@@ -258,11 +258,18 @@ public class LoginManager : Singleton<LoginManager>
             {
                 int currentPlayerLevel = 0;
                 int currentLevelPoint = 0;
+                int currentScore = 0;
+                int.TryParse(tokens[4].Trim(), out currentScore);
                 int.TryParse(tokens[5].Trim(), out currentPlayerLevel);
                 int.TryParse(tokens[6].Trim(), out currentLevelPoint);
 
                 // levelPoint에 변화량 적용
                 currentLevelPoint += levelPointDelta;
+
+                if (levelPointDelta == 1)
+                {
+                    currentScore += 1;
+                }
 
                 // levelPoint가 3 이상이면 playerLevel 업, 3씩 차감
                 while (currentLevelPoint >= 3)
@@ -279,6 +286,7 @@ public class LoginManager : Singleton<LoginManager>
                 }
 
                 // 갱신된 값을 문자열로 다시 할당
+                tokens[4] = currentScore.ToString();
                 tokens[5] = currentPlayerLevel.ToString();
                 tokens[6] = currentLevelPoint.ToString();
 
@@ -293,6 +301,10 @@ public class LoginManager : Singleton<LoginManager>
             // CSV 파일에 변경된 내용 저장
             File.WriteAllLines(userInfoFilepath, newLines.ToArray());
             Debug.Log("플레이어 레벨과 포인트가 업데이트되었습니다.");
+            
+            GameManager.Instance.playerInfo = GetUserInfo();
+            GameManager.Instance.PlayerLevel = int.Parse(GameManager.Instance.playerInfo[5]);
+            GameManager.Instance.levelPoint = int.Parse(GameManager.Instance.playerInfo[6]);
         }
         else
         {

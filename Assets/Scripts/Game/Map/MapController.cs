@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -39,7 +40,37 @@ public class MapController : MonoBehaviour
             }
         }
     }
-
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            // UI 요소 위를 클릭한 경우는 제외하고
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                // 마우스 위치에서 Raycast를 실행하여 Tile 컴포넌트가 있는지 확인
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (!Physics.Raycast(ray, out hit))
+                {
+                    GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
+                    GameManager.Instance._handManager.playerAHandPanel.SetActive(false);
+                    GameManager.Instance._handManager.playerBHandPanel.SetActive(false);
+                    GameManager.Instance.FinishedAttack();
+                }
+                else
+                {
+                    // 만약 Raycast된 오브젝트에 Tile 컴포넌트가 없다면 카드 패널 비활성화
+                    if (hit.collider.GetComponent<Tile>() == null)
+                    {
+                        GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
+                        GameManager.Instance._handManager.playerAHandPanel.SetActive(false);
+                        GameManager.Instance._handManager.playerBHandPanel.SetActive(false);
+                        GameManager.Instance.FinishedAttack();
+                    }
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// Tile의 랜덤 인덱스에 장애물 생성

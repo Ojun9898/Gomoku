@@ -10,6 +10,7 @@ public class MainPanelController : MonoBehaviour
     [SerializeField] private GameObject ProfilePanel;
     [SerializeField] private Transform canvasTransform;
     [SerializeField] private GameObject FadePanel;
+    [SerializeField] private GameObject KiboPanel;
 
     private GameObject settingPanel;
     private RectTransform settingPanelRect;
@@ -21,6 +22,8 @@ public class MainPanelController : MonoBehaviour
     private RectTransform rankingPanelRect;
     private GameObject profilePanel;
     private RectTransform profilePanelRect;
+    private GameObject kiboPanel;
+    private RectTransform kiboPanelRect;
     
     void Awake()
     {
@@ -120,6 +123,23 @@ public class MainPanelController : MonoBehaviour
         }
 
         profilePanelRect.DOLocalMoveX(0f, 0.3f);
+       
+    }
+
+    public void OnClickKiboButton()
+    {
+       if(kiboPanel == null) 
+       {
+            kiboPanel = Instantiate(KiboPanel, canvasTransform);
+            kiboPanelRect = kiboPanel.GetComponent<RectTransform>();
+            kiboPanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
+        }
+        else
+        {
+            kiboPanel.SetActive(true);
+        }
+
+        kiboPanelRect.DOLocalMoveX(0f, 0.3f);
        
     }
 

@@ -96,6 +96,7 @@ public class RankingPanelController : MonoBehaviour
 
             rankItem.GetChild(0).GetComponent<TMP_Text>().text = RankingRankerInfo[i][3]; // 닉네임
             rankItem.GetChild(1).GetComponent<TMP_Text>().text = RankingRankerInfo[i][4]; // 점수
+            rankItem.GetChild(1).GetComponent<TMP_Text>().text += "승"; // 점수
             rankItem.GetChild(2).GetComponent<TMP_Text>().text = RankingRankerInfo[i][5]; // 랭크
         }
     }
@@ -116,6 +117,7 @@ public class RankingPanelController : MonoBehaviour
 
         PlayerPanel.transform.GetChild(0).GetComponent<TMP_Text>().text = updatedPlayerInfo[3] ?? "N/A"; // 닉네임
         PlayerPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = updatedPlayerInfo[4] ?? "0"; // 점수
+        PlayerPanel.transform.GetChild(1).GetComponent<TMP_Text>().text += "승"; // 점수
         PlayerPanel.transform.GetChild(2).GetComponent<TMP_Text>().text = updatedPlayerInfo[5]; // 랭크
     }
 
