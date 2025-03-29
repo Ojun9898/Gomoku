@@ -116,6 +116,10 @@ public class HandManager : MonoBehaviour
 
             RefreshHandUI(playerOwner);
 
+
+            //기보: 말 추가
+            GameManager.Instance.notationManager.AddPieceType(selectedCard.pieceType);
+            
             // 선택된 타일 초기화
             _selectedTile.ResetClickCount();
             _selectedTile = null;

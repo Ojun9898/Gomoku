@@ -56,8 +56,6 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     }
 
     public void OnClickTileButton() {
-		//기보: 클릭 추가
-        GameManager.Instance.notationManager.AddClickIndex(tileNumber % 8,tileNumber / 8);
         _tileClickCount++;
         // 추가: 타일 클릭 시 HandManager에 선택된 타일 정보 전달
         HandManager hm = FindObjectOfType<HandManager>();

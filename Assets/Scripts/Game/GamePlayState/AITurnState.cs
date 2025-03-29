@@ -69,7 +69,7 @@ public class AITurnState : MonoBehaviour, IState
     public void Exit(Piece.Owner owner)
     {
         BlockPanel.SetActive(false);
-        // GameManager.Instance.notationManager.PrintAll();
+        GameManager.Instance.notationManager.PrintAll();
         GameManager.Instance.ruleManager.DeleteForviddensOnMap();
         GameManager.Instance.SetTileClickEventOff();
         GameManager.Instance.SetFalseIsAlreadySetPiece();

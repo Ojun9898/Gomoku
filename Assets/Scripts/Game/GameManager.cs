@@ -13,6 +13,7 @@ using DG.Tweening;
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private MapController mc;
+    public NotationManager notationManager;
     public GameObject BlackPanel;
     public GameObject BlockPanelPrefab;
     public GameObject forbiddenMoveObject;
@@ -87,6 +88,9 @@ public class GameManager : Singleton<GameManager>
         finishTurnButton.onClick.AddListener(OnButtonClickFinishMyTurn);
         // 선공 정하기
         _playerType = SetFirstAttackPlayer();
+
+      //기보: 첫 플레이어 추가
+        notationManager.AddHowsFirst(_playerType);
         // 플레이어 손패 지급
         _handManager = FindObjectOfType<HandManager>();
         _deckManager = FindObjectOfType<DeckManager>();
@@ -585,6 +589,8 @@ public class GameManager : Singleton<GameManager>
         (bool, Piece.Owner) CheckSome = GameManager.Instance.ruleManager.CheckGameOver();
         if (CheckSome.Item1)
         {
+			//기보 : 턴종료 추가
+            GameManager.Instance.notationManager.AddFinishTurn();
             finishTurnButton.onClick.RemoveAllListeners();
             finishTurnButton.onClick.AddListener(() =>
             {
@@ -596,6 +602,8 @@ public class GameManager : Singleton<GameManager>
 
         if (_handManager.isAlreadySetPiece)
         {
+	 		 //기보 : 턴종료 추가
+            GameManager.Instance.notationManager.AddFinishTurn();
             gamePanelController.StopTimer();
             _changeTurnCount++;
             Debug.Log("턴 진행 횟수 : " + _changeTurnCount);
