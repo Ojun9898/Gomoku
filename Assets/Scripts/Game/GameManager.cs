@@ -5,11 +5,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static Piece;
 using System.Linq;
-using UnityEngine.Serialization;
 using DG.Tweening;
-using static UnityEngine.GraphicsBuffer;
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
 
 
 [RequireComponent(typeof(StateMachine))]
