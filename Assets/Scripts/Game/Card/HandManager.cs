@@ -78,6 +78,7 @@ public class HandManager : MonoBehaviour
             isAlreadySetPiece = true;
             Piece pieceComponent = pieceInstance.GetComponent<Piece>();
             _selectedTile.Piece = pieceComponent;
+
             if (pieceComponent != null)
             {
                 // 카드에 따른 말의 속성(예: 소유자 설정)을 지정합니다.
@@ -116,6 +117,10 @@ public class HandManager : MonoBehaviour
 
             RefreshHandUI(playerOwner);
 
+
+            //기보: 말 추가
+            NotationManager.Instance.AddPieceType(selectedCard.pieceType);
+            
             // 선택된 타일 초기화
             _selectedTile.ResetClickCount();
             _selectedTile = null;
@@ -133,10 +138,11 @@ public class HandManager : MonoBehaviour
         if(_selectedTile.isForbiddenMove)
         {
             MessageManager.Instance.ShowMessagePanel("금수 입니다.");
+            GameManager.Instance.FinishedAttack();
             _selectedTile = null;
             return;
         }
-        else if (_selectedTile.GetObstacle() != null)
+        else if (_selectedTile.IsObstacleNotNull())
         {
             MessageManager.Instance.ShowMessagePanel("장애물이 있습니다.");
             _selectedTile = null;

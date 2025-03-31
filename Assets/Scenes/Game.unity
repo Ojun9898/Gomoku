@@ -181,6 +181,12 @@ MonoBehaviour:
   levelPoint: 0
   cp: {fileID: 0}
   playerInfo: []
+  firstPlayer: 0
+  _deckManager: {fileID: 0}
+  Notationcontroller: {fileID: 0}
+  dropHeight: 2
+  fallDuration: 1
+  curveIntensity: 1.5
 --- !u!4 &247115418
 Transform:
   m_ObjectHideFlags: 0
@@ -442,7 +448,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EventMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 64
   m_MaxRayIntersections: 0
 --- !u!1 &972120610
 GameObject:

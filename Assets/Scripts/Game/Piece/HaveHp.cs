@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using static Piece;
 
 public class HaveHp : MonoBehaviour
 {
@@ -14,8 +15,6 @@ public class HaveHp : MonoBehaviour
             hp = value;
             if (hp <= 0)
             {
-                GameManager.Instance.Mc.tiles[GameManager.Instance.CurrentClickedTileIndex].JustBeforeDestroyPiece?.Invoke();
-                GameManager.Instance.Mc.tiles[GameManager.Instance.CurrentClickedTileIndex].JustBeforeDestroyObstacle?.Invoke();
                 StartCoroutine(DestroyAndWait(gameObject));
             }
         }
@@ -23,8 +22,9 @@ public class HaveHp : MonoBehaviour
 
     IEnumerator DestroyAndWait(GameObject obj)
     {
+        GameManager.Instance.Mc.tiles[GameManager.Instance.CurrentClickedTileIndex]?.JustBeforeDestroyPieceOrObstacle?.Invoke();
+        yield return null; // 1 프레임 대기
         Destroy(obj); // 현재 프레임이 끝난 후 삭제됨
         yield return null; // 1 프레임 대기
-        Debug.Log("객체가 삭제된 후 실행됨!");
     }
 }

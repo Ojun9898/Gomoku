@@ -18,21 +18,14 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public Piece Piece { get; set; }
     
 
-    public Action JustBeforeDestroyPieceOrObstacle;
+    public Action JustBeforeDestroyPiece;
+    public Action JustBeforeDestroyObstacle;
 
-    //타일 초기화는 mc에 있음
-    public void TileInit() {
-        if (JustBeforeDestroyPieceOrObstacle == null)
-        {
-            JustBeforeDestroyPieceOrObstacle = () => {
-                ResetForbbiden();
-            };
-        }
-    }
-    private void ResetPieceObstacle()
-    {
-        Piece = null;
+
+    public void ResetAll() {
         obstacle = null;
+        _buff = null;
+        Piece = null;
     }
 
     public void ResetClick()
@@ -43,18 +36,6 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void ResetClickCount() {
         _tileClickCount = 0;
-    }
-
-    public bool IsObstacleNotNull()
-    {
-        if (obstacle != null)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
     }
 
     public Obstacle GetObstacle() { 
@@ -75,8 +56,6 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     }
 
     public void OnClickTileButton() {
-        //기보: 클릭 추가
-        NotationManager.Instance.AddClickIndex(tileNumber % 8,tileNumber / 8);
         _tileClickCount++;
         // 추가: 타일 클릭 시 HandManager에 선택된 타일 정보 전달
         HandManager hm = FindObjectOfType<HandManager>();
@@ -84,10 +63,17 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         {
             hm.SetSelectedTile(this);
         }
-   
 
+        if (JustBeforeDestroyObstacle == null)
+        {
+            JustBeforeDestroyPiece = () => { this.obstacle = null; };
+        }
         if (Piece != null)
         {
+            if (JustBeforeDestroyPiece == null)
+            {
+                JustBeforeDestroyPiece = () => { this.Piece = null; };
+            }
             var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (needOneClick != null) { 
                 if (needOneClick.Value.isNeedJustOneClick)
@@ -101,6 +87,14 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         if (!_isNeedOneClick)
         {
             Debug.Log(GameManager.Instance.CurrentClickedTileIndex + " : 클릭한 타일 인덱스");
+            if (GameManager.Instance._handManager.playerOwner == Piece.Owner.PLAYER_A)
+            {
+                GameManager.Instance._handManager.playerAHandPanel.SetActive(true);
+            }
+            else
+            {
+                GameManager.Instance._handManager.playerBHandPanel.SetActive(true);
+            }
             var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (pieceAndCaseValue != null)
             {
@@ -140,15 +134,7 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
             _tileClickCount = 0;
         }
     }
-    private void ResetForbbiden() {
-        ResetPieceObstacle();
-        ResetClick();
-        Piece.Owner pc = GameManager.Instance.GetCurrentPlayerType();
-        if (pc == GameManager.Instance.firstPlayer)
-        {
-            GameManager.Instance.ruleManager.UpdateForbiddenMoves(pc);
-        }
-    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (obstacle == null && Piece == null && _tileClickCount == 0)

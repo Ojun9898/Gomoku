@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 247501166194602775}
   - component: {fileID: 8988438156314483459}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ClickImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7183289966820104333}
   - component: {fileID: 3105121734013251924}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CusorImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2388959350059801202}
   - component: {fileID: 7555003400258372997}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RangeImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -240,7 +240,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 22
   m_Sprite: {fileID: 1717351912, guid: 5ed4163f6ea9afa4db05cc0e507de85a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -264,7 +264,7 @@ GameObject:
   - component: {fileID: 7489468195656984136}
   - component: {fileID: 4017245072122875736}
   - component: {fileID: 4870864278519770460}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Tile
   m_TagString: Untagged
   m_Icon: {fileID: 0}

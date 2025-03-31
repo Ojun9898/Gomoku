@@ -12,7 +12,7 @@ public class FinishDirectionState : MonoBehaviour, IState
         //owner에는 우승자 정보가 들어감 여기서 요걸로 판별하거나 아님 먼저 하거나
         //패널하나  열어서  보여주는 것도 ㄱㅊ을듯?
         GameManager.Instance.gamePanelController.StopTimer();
-        
+
         // 플레이어 승리 여부에 따라 levelPoint를 업데이트
         if (owner == Piece.Owner.PLAYER_A)
         {
@@ -24,7 +24,10 @@ public class FinishDirectionState : MonoBehaviour, IState
             // 플레이어 B가 이기면 levelPoint를 -1 감소시킴
             LoginManager.Instance.UpdatePlayerLevelAndPoint(-1);
         }
-        
+
+        // 기보 저장
+        NotationManager.Instance.SaveData(GameManager.Instance.playerInfo[3]);
+
         // GameOverPanel 띄우기
         MainManager.Instance.ShowGameOverPanel(owner);
         

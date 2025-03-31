@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 1a832b141f007174298a948d69f2bb54
+  - enabled: 1
+    path: Assets/Scenes/Notation.unity
+    guid: f0a7b61ddc224d74f86ac91fa377cfd4
   m_configObjects: {}

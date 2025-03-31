@@ -69,7 +69,7 @@ public class AITurnState : MonoBehaviour, IState
     public void Exit(Piece.Owner owner)
     {
         BlockPanel.SetActive(false);
-        // GameManager.Instance.notationManager.PrintAll();
+        NotationManager.Instance.PrintAll();
         GameManager.Instance.ruleManager.DeleteForviddensOnMap();
         GameManager.Instance.SetTileClickEventOff();
         GameManager.Instance.SetFalseIsAlreadySetPiece();
@@ -130,13 +130,13 @@ public class AITurnState : MonoBehaviour, IState
         //공격 순서 가져오기
         List<int> attackPriority = GameManager.Instance.ruleManager.FindPiecesWithAttackRange(owner);
         string priorityString = "";
+        int selectedDamagedTile = -1;
         foreach (var priority in attackPriority)
         {
             priorityString += " " + priority + " ";
         }
         Debug.Log("우선순위 : " + priorityString);
 
-        int selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority.FirstOrDefault(), owner);
 
         //공격
         for (int i = 0; i < attackPriority.Count; i++)
@@ -234,62 +234,62 @@ public class AITurnState : MonoBehaviour, IState
         //공격 순서 가져오기
         List<int> attackPriority = GameManager.Instance.ruleManager.FindPiecesWithAttackRange(owner);
         string priorityString = "";
+        int selectedDamagedTile = -1;
         foreach (var priority in attackPriority)
         {
             priorityString += " " + priority + " ";
         }
         Debug.Log("우선순위 : " + priorityString);
 
-
         //공격
         for (int i = 0; i < attackPriority.Count; i++)
         {
-            Piece pc = GameManager.Instance.Mc.tiles[attackPriority[i]].Piece;
-            if(pc == null)  continue; 
-            if (pc.isAlreadyAttack == true) continue; 
-            if (pc.cost <= AICosts.Count(x => x))
-            {
-
-                int selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
-
-
-                if (pc.attackType == AttackType.BUFF)
+            Piece pc = GameManager.Instance.Mc.tiles[attackPriority[i]]?.Piece;
+            if (pc == null)  continue; 
+            if (pc?.isAlreadyAttack == true) continue;
+    
+                if (pc.cost <= AICosts.Count(x => x))
                 {
-                    //공격자 선택
-                    Tile selectedAttackTile = GameManager.Instance.Mc.tiles[attackPriority[i]];
-                    //선택된 타일 클릭 발생
-                    selectedAttackTile.OnClickTileButton();
-                    yield return new WaitForSeconds(1.2f);
-                    //회복 받는 타일 선택
-                    int selectedHealTile = GameManager.Instance.ruleManager.FindWeakestConsecutiveAllyInRange(attackPriority[i], owner);
-                    if (selectedHealTile < 0) {
-                        continue; 
-                    }
-                    GameManager.Instance.Mc.tiles[selectedHealTile].OnClickTileButton();
-                    yield return new WaitForSeconds(1.2f);
-                }
-                else
-                {
-                    //공격자 선택
-                    Tile selectedAttackTile = GameManager.Instance.Mc.tiles[attackPriority[i]];
-                    //선택된 타일 클릭 발생
-                    selectedAttackTile.OnClickTileButton();
-                    yield return new WaitForSeconds(1.2f);
-                    //공격 받는 타일 선택
 
-                    var RANGE = GameManager.Instance.CanAttackRangeCalculate(attackPriority[i], pc.GetAttackRange());
-                    //이전 공격자가 지금 Piece 사거리 내에 있으면 우선적으로 공격
-                    if (!RANGE.Contains(selectedDamagedTile))
+                    if (pc.attackType == AttackType.BUFF)
                     {
-                        selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
+                        //공격자 선택
+                        Tile selectedAttackTile = GameManager.Instance.Mc.tiles[attackPriority[i]];
+                        //선택된 타일 클릭 발생
+                        selectedAttackTile.OnClickTileButton();
+                        yield return new WaitForSeconds(1.2f);
+                        //회복 받는 타일 선택
+                        int selectedHealTile = GameManager.Instance.ruleManager.FindWeakestConsecutiveAllyInRange(attackPriority[i], owner);
+                        if (selectedHealTile < 0)
+                        {
+                            continue;
+                        }
+                        GameManager.Instance.Mc.tiles[selectedHealTile].OnClickTileButton();
+                        yield return new WaitForSeconds(1.2f);
                     }
-                    if (selectedDamagedTile < 0) {
-                        continue; 
+                    else
+                    {
+                        //공격자 선택
+                        Tile selectedAttackTile = GameManager.Instance.Mc.tiles[attackPriority[i]];
+                        //선택된 타일 클릭 발생
+                        selectedAttackTile.OnClickTileButton();
+                        yield return new WaitForSeconds(1.2f);
+                        //공격 받는 타일 선택
+
+                        var RANGE = GameManager.Instance.CanAttackRangeCalculate(attackPriority[i], pc.GetAttackRange());
+                        //이전 공격자가 지금 Piece 사거리 내에 있으면 우선적으로 공격
+                        if (!RANGE.Contains(selectedDamagedTile))
+                        {
+                            selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
+                        }
+                        if (selectedDamagedTile < 0)
+                        {
+                            continue;
+                        }
+                        GameManager.Instance.Mc.tiles[selectedDamagedTile].OnClickTileButton();
+                        yield return new WaitForSeconds(1.2f);
                     }
-                    GameManager.Instance.Mc.tiles[selectedDamagedTile].OnClickTileButton();
-                    yield return new WaitForSeconds(1.2f);
                 }
-            }
         }
     }
 

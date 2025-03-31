@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
@@ -21,7 +22,7 @@ public class MapController : MonoBehaviour
     private int _obstacleIndex;
     private const int BuffMaxCount = 5;
     private const int ObstacleMaxCount = 5;
-    
+    private string sName;
     private readonly HashSet<int> _usedIndexes = new HashSet<int>();
 
     public void CreateMap()
@@ -35,14 +36,16 @@ public class MapController : MonoBehaviour
                 var tileInstance = Instantiate(tilePrefab, tilePos, Quaternion.identity, tilesParent);
                
                 Tile tileComponent = tileInstance.GetComponent<Tile>();
+                tileComponent.TileInit();
                 tileComponent.tileNumber = i * 8 + j;
                 tiles.Add(tileComponent);
             }
         }
+        sName = SceneManager.GetActiveScene().name;
     }
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && sName == "Game")
         {
             // UI 요소 위를 클릭한 경우는 제외하고
             if (!EventSystem.current.IsPointerOverGameObject())
@@ -52,9 +55,7 @@ public class MapController : MonoBehaviour
                 RaycastHit hit;
                 if (!Physics.Raycast(ray, out hit))
                 {
-                    GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
-                    GameManager.Instance._handManager.playerAHandPanel.SetActive(false);
-                    GameManager.Instance._handManager.playerBHandPanel.SetActive(false);
+                    GameManager.Instance.FadeCardAndResetClick();
                     GameManager.Instance.FinishedAttack();
                 }
                 else
@@ -62,9 +63,7 @@ public class MapController : MonoBehaviour
                     // 만약 Raycast된 오브젝트에 Tile 컴포넌트가 없다면 카드 패널 비활성화
                     if (hit.collider.GetComponent<Tile>() == null)
                     {
-                        GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
-                        GameManager.Instance._handManager.playerAHandPanel.SetActive(false);
-                        GameManager.Instance._handManager.playerBHandPanel.SetActive(false);
+                        GameManager.Instance.FadeCardAndResetClick();
                         GameManager.Instance.FinishedAttack();
                     }
                 }

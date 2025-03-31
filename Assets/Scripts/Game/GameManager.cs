@@ -7,6 +7,9 @@ using static Piece;
 using System.Linq;
 using UnityEngine.Serialization;
 using DG.Tweening;
+using static UnityEngine.GraphicsBuffer;
+using System.Collections;
+using UnityEditor.Experimental.GraphView;
 
 
 [RequireComponent(typeof(StateMachine))]
@@ -32,9 +35,10 @@ public class GameManager : Singleton<GameManager>
     public int levelPoint;
     public CostPanelController cp;
     public string[] playerInfo;
-    
+    public Piece.Owner firstPlayer;
+    public DeckManager _deckManager;
+
     private Owner _playerType;
-    private DeckManager _deckManager;
     private int _lastClickedTileIndex = -1;
     private Piece _damagedPiece;
     private Piece _attackingPiece;
@@ -42,7 +46,11 @@ public class GameManager : Singleton<GameManager>
     private List<int> _currentPieceCanAttackRange;
     private StateMachine _fsm;
     private int _changeTurnCount;
-
+    private GameObject OnePrefab;
+    private GameObject TwoPrefab;
+    private GameObject ThreePrefab;
+    List<(int, int)> allData = new List<(int, int)>();
+    public NotationController Notationcontroller;
 
 
     public MapController Mc { get { return mc; } }
@@ -65,9 +73,16 @@ public class GameManager : Singleton<GameManager>
 
     private void Awake()
     {
-        InitGameManager();
+        if (SceneManager.GetActiveScene().name != "Notation")
+        {
+            InitGameManager();
+             StartGame();
+        }
+        else
+        {
+            InitNotationController();
+        }
 
-        StartGame();
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -78,7 +93,8 @@ public class GameManager : Singleton<GameManager>
     /// 게임 메니저 초기화
     /// </summary>
     private void InitGameManager()
-    {   
+    {
+
         // Map에서 타일 생성후 가져오는 메소드
         SetMapController();
         // 턴 넘김 횟수 초기화 
@@ -87,6 +103,7 @@ public class GameManager : Singleton<GameManager>
         finishTurnButton.onClick.AddListener(OnButtonClickFinishMyTurn);
         // 선공 정하기
         _playerType = SetFirstAttackPlayer();
+        firstPlayer = _playerType;
         // 플레이어 손패 지급
         _handManager = FindObjectOfType<HandManager>();
         _deckManager = FindObjectOfType<DeckManager>();
@@ -99,6 +116,9 @@ public class GameManager : Singleton<GameManager>
         //게임패널컨트롤러 가져오기
         gamePanelController = FindAnyObjectByType<GamePanelController>();
         gamePanelController.InitTimer();
+
+        NotationManager.Instance.NotationManagerinit();
+        NotationManager.Instance.AddHowsFirst(firstPlayer);
         // 코스트 불러오기
         cp = FindObjectOfType<CostPanelController>();
         //RuleManager 초기화
@@ -106,8 +126,49 @@ public class GameManager : Singleton<GameManager>
         // AI 레벨 설정
         playerInfo = LoginManager.Instance.GetUserInfo();
         PlayerLevel = int.Parse(playerInfo[5]);
+        OnePrefab = Resources.Load<GameObject>("DamageImg/Damage_One");
+        TwoPrefab = Resources.Load<GameObject>("DamageImg/Damage_Two");
+        ThreePrefab = Resources.Load<GameObject>("DamageImg/Damage_Three");
         // 상태 머신 가져오기 
         SetFSM();
+    }
+
+
+
+    private void InitNotationController()
+    {
+        //기보 정보 가져오기
+        allData = NotationManager.Instance.currentSelectedFileDatas;
+        //턴종료 인덱스 저장
+        NotationManager.Instance.GetIndexesOf(allData);
+        //선공 정하기
+        Notationcontroller = FindObjectOfType<NotationController>();
+        Notationcontroller.DoSomething(allData[0]);
+        _handManager.playerOwner = _playerType;
+        // Map에서 타일 생성후 가져오는 메소드
+        SetMapController();
+        // 턴 넘김 횟수 초기화 
+        _changeTurnCount = 0;
+        // 선공 정하기
+        _deckManager = FindObjectOfType<DeckManager>();
+        firstPlayer = _playerType;   // Map에서 타일 생성후 가져오는 메소드
+
+        // 프리펩 로드
+
+
+        //RuleManager 가져오기
+        ruleManager = FindAnyObjectByType<RuleManager>();
+
+        // 코스트 불러오기
+        cp = FindObjectOfType<CostPanelController>();
+        //RuleManager 초기화
+        ruleManager.Init(mc.tiles, _playerType);
+        OnePrefab = Resources.Load<GameObject>("DamageImg/Damage_One");
+        TwoPrefab = Resources.Load<GameObject>("DamageImg/Damage_Two");
+        ThreePrefab = Resources.Load<GameObject>("DamageImg/Damage_Three");
+        // 상태 머신 가져오기 
+        SetFSM();
+        StartNotation();
     }
 
     private void StartGame()
@@ -115,6 +176,10 @@ public class GameManager : Singleton<GameManager>
         _fsm.Run(_playerType);
     }
 
+    private void StartNotation()
+    {
+        _fsm.Run(_playerType);
+    }
     /// <summary>
     /// 선공 정하기 메소드
     /// </summary>
@@ -176,6 +241,14 @@ public class GameManager : Singleton<GameManager>
 
             if (_lastClickedTileIndex == -1 || mc.tiles[CurrentClickedTileIndex] == null)
             {
+                if (_handManager.playerOwner == Piece.Owner.PLAYER_A )
+                {
+                    _handManager.playerAHandPanel?.SetActive(true);
+                }
+                else if (_handManager.playerOwner == Piece.Owner.PLAYER_B)
+                {
+                    _handManager.playerBHandPanel?.SetActive(true);
+                }
                 // 기존에는 tileClickCount == 2일 때 말을 생성했으나, 이제 카드를 통해 생성하므로 안내 메시지만 보여줍니다.
                 if (tileClickCount == 2)
                 {
@@ -197,12 +270,21 @@ public class GameManager : Singleton<GameManager>
 
             if (_currentPieceCanAttackRange.Contains(CurrentClickedTileIndex) && _currentChoosingPiece != null)
             {
+                var Obstacle = mc.tiles[CurrentClickedTileIndex].GetObstacle();
                 // 일반 공격, 공격 범위 내에 있을 때
-                if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK && mc.tiles[CurrentClickedTileIndex].GetObstacle() != null)
+                if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK && Obstacle != null)
                 { // Todo : 장애물 공격
-                    _currentChoosingPiece.ChoseAttack(mc.tiles[CurrentClickedTileIndex].GetObstacle(), _currentChoosingPiece.GetAttackPower());
-                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다" + mc.tiles[CurrentClickedTileIndex].GetObstacle().name + "의 Hp:" + mc.tiles[CurrentClickedTileIndex].GetObstacle().Hp);
+                    bool CanAttack = CheckIsLeftCost(Costs, _currentChoosingPiece);
 
+                    if (!CanAttack)
+                    {
+                        MessageManager.Instance.ShowMessagePanel("코스트가 부족합니다");
+                        FinishedAttack();
+                        return (null, 1);
+                    }
+                    _currentChoosingPiece.ChoseAttack(Obstacle, _currentChoosingPiece.GetAttackPower());
+                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다" + Obstacle.name + "의 Hp:" + Obstacle.Hp);
+                    UseCost(Costs, _currentChoosingPiece);
                 }
                 else if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK || _currentChoosingPiece.attackType == AttackType.BUFF)
                 {
@@ -216,6 +298,7 @@ public class GameManager : Singleton<GameManager>
                 MessageManager.Instance.ShowMessagePanel("공격 범위를 벗어납니다");
             }
             // + 장애물 처리
+            FadeCardAndResetClick();
             FinishedAttack();
             return (null, 1);
         };
@@ -285,6 +368,7 @@ public class GameManager : Singleton<GameManager>
                         {
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
+                            switchingPos(_attackingPiece, _damagedPiece);
                             _attackingPiece.animator.Play("ATTACK");
                             _damagedPiece.animator.Play("BUFF");
                             MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
@@ -294,6 +378,7 @@ public class GameManager : Singleton<GameManager>
                     {
                         MessageManager.Instance.ShowMessagePanel("공격 범위를 벗어납니다");
                     }
+
                     FinishedAttack();
                     return (true, 0);
                 }
@@ -353,7 +438,10 @@ public class GameManager : Singleton<GameManager>
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
+
+                            switchingPos(_attackingPiece, _damagedPiece);
                             _attackingPiece.animator.Play("ATTACK");
+                            SpawnDamageEffectByAttackDamage(_attackingPiece, _damagedPiece);
                             _damagedPiece.animator.Play("DAMAGED");
                             if (_damagedPiece.hp <= 0)
                             {
@@ -365,7 +453,9 @@ public class GameManager : Singleton<GameManager>
                             //attackingPiece.RangeAttack(currentClickedTileIndex);
                             UseCost(Costs, _attackingPiece);
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
+                            switchingPos(_attackingPiece, _damagedPiece);
                             _attackingPiece.animator.Play("ATTACK");
+                            SpawnDamageEffectByAttackDamage(_attackingPiece, _damagedPiece);
                             _damagedPiece.animator.Play("DAMAGED");
                             if (_damagedPiece.hp <= 0)
                             {
@@ -394,6 +484,108 @@ public class GameManager : Singleton<GameManager>
             return (true, 0);
         };
     }
+
+    /// <summary>
+    /// 공격 대상 바라보기
+    /// </summary>
+    /// <param name="attackPc"></param>
+    /// <param name="damagedPc"></param>
+    private void switchingPos(Piece attackPc, Piece damagedPc) {
+        if (attackPc.transform.position.x < damagedPc.transform.position.x)
+        {
+            attackPc.transform.rotation = Quaternion.Euler(0, 180, 0);
+            damagedPc.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        else {
+            attackPc.transform.rotation = Quaternion.Euler(0, 0, 0);
+            damagedPc.transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+    }
+
+
+    /// <summary>
+    /// 피스 데미지 별 이팩트 생성
+    /// </summary>
+    /// <param name="attacker"></param>
+    /// <param name="target"></param>
+    private void SpawnDamageEffectByAttackDamage(Piece attacker, Piece target) {
+        int power = attacker.GetAttackPower();
+        switch(power)
+        {
+            case 1:
+                SpawnDamageEffect(OnePrefab, attacker.transform, target.transform);
+                break;
+            case 2:
+                SpawnDamageEffect(TwoPrefab, attacker.transform, target.transform);
+                break;
+            case 3:
+                SpawnDamageEffect(ThreePrefab, attacker.transform, target.transform);
+                break;
+        }
+    }
+
+
+    /// <summary>
+    /// 데미지 이펙트 스폰
+    /// </summary>
+    /// <param name="effectPrefab"></param>
+    /// <param name="attacker"></param>
+    /// <param name="target"></param>
+    private void SpawnDamageEffect(GameObject effectPrefab,Transform attacker, Transform target)
+    {
+        float dropHeight = 0.6f; // 시작 높이
+        if (effectPrefab == null || attacker == null || target == null) return;
+        
+        Vector3 spawnPos = target.position;
+
+        spawnPos += new Vector3(0, dropHeight, 0); // 약간 떨어진 위치에서 생성
+
+        GameObject effect = Instantiate(effectPrefab, spawnPos, Quaternion.identity);
+        var spr = effect.GetComponent<SpriteRenderer>();
+        spr.sortingOrder = 10;
+        spr.color = new Color(1, 1, 1, 0f);
+        
+        StartCoroutine(RiseAndFall(effect.transform, spawnPos, spr));
+      
+    }
+
+    private IEnumerator RiseAndFall(Transform effect, Vector3 startPos,SpriteRenderer spr)
+    {
+        float riseHeight = 0.8f; // 처음에 살짝 올라가는 높이
+        float fallDistance = 10f; // 얼마나 아래로 떨어질지
+        float riseDuration = 0.1f; // 올라가는 시간 (짧을수록 빠르게 올라감)
+        float fallDuration = 1f; // 떨어지는 시간 (짧을수록 빠르게 낙하)
+        float elapsedTime = 0f;
+        spr.DOFade(1, 0.2f);
+        Vector3 risePos = startPos + new Vector3(0, riseHeight, 0); // 살짝 위로 이동
+       
+        Vector3 fallPos = startPos + new Vector3(0, -fallDistance, 0); // 아래로 낙하
+        
+        // 1. 위로 천천히 상승
+        while (elapsedTime < riseDuration)
+        {
+            float t = elapsedTime / riseDuration;
+            effect.position = Vector3.Lerp(startPos, risePos, t);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.4f);
+        // 2. 아래로 빠르게 낙하 (중력 효과처럼 가속)
+        elapsedTime = 0f;
+        spr.DOFade(0, 1f).OnComplete(() => {
+
+            Destroy(effect.gameObject, 1f); // 효과가 끝난 후 삭제
+        });
+        while (elapsedTime < fallDuration)
+        {
+            float t = elapsedTime / fallDuration;
+            effect.position = Vector3.Lerp(risePos, fallPos, t * t); // t^2 적용해서 가속도 효과
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+     
+    }
+
 
     private bool CheckIsLeftCost(List<bool> costs,Piece comparedPiece) { 
 
@@ -489,6 +681,9 @@ public class GameManager : Singleton<GameManager>
     {
         var pieceInstance = Instantiate(this.piece, mc.tiles[tileIndex].transform);
         pieceInstance.transform.position += Vector3.down * 0.31f;
+        if (tileIndex % 8 < 4) {
+            pieceInstance.transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
         return pieceInstance;
     }
 
@@ -585,6 +780,8 @@ public class GameManager : Singleton<GameManager>
         (bool, Piece.Owner) CheckSome = GameManager.Instance.ruleManager.CheckGameOver();
         if (CheckSome.Item1)
         {
+            //기보 : 턴종료 추가
+            NotationManager.Instance.AddFinishTurn();
             finishTurnButton.onClick.RemoveAllListeners();
             finishTurnButton.onClick.AddListener(() =>
             {
@@ -596,6 +793,8 @@ public class GameManager : Singleton<GameManager>
 
         if (_handManager.isAlreadySetPiece)
         {
+            //기보 : 턴종료 추가
+            NotationManager.Instance.AddFinishTurn();
             gamePanelController.StopTimer();
             _changeTurnCount++;
             Debug.Log("턴 진행 횟수 : " + _changeTurnCount);
@@ -612,7 +811,7 @@ public class GameManager : Singleton<GameManager>
                     _playerType = Owner.PLAYER_B;
                     _handManager.playerOwner = _playerType;
                     _handManager.isAlreadySetPiece = false;
-                    _handManager.playerAHandPanel.SetActive(false);
+                    _handManager.playerAHandPanel?.SetActive(false);
                     
                     if (_handManager.playerAHandCards != null)
                     {
@@ -704,6 +903,9 @@ public class GameManager : Singleton<GameManager>
         return _playerType;
     }
 
+    public void SetCurrentPlayerType(Piece.Owner owner) {
+        _playerType = owner;
+    }
     public bool GetIsAlReadySetPiece()
     {
         return _handManager.isAlreadySetPiece;

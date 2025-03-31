@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum StaterType
 {
@@ -21,6 +22,11 @@ public static class StateFactory
         {
             case StaterType.PlayGame:
                 {
+                    if (SceneManager.GetActiveScene().name != "Game") {
+                        states.Add(stateMachine.AddComponent<FirstDirectionScript>());
+                        states.Add(stateMachine.AddComponent<NotationState>());
+                        break;
+                    }
                     states.Add(stateMachine.AddComponent<FirstDirectionScript>());
                     states.Add(stateMachine.AddComponent<PlayerTurnState>());
                     states.Add(stateMachine.AddComponent<FinishDirectionState>());

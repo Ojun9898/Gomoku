@@ -39,6 +39,7 @@ public class PausePanelController : MonoBehaviour
             gameObject.SetActive(false);
         });
 
+        GameManager.Instance.Notationcontroller?.SetCountZero();
         MainManager.Instance.ShowEndGamePanel();
     }
     public void OnClickNoButton()

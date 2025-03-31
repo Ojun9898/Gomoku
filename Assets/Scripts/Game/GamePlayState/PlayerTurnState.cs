@@ -41,6 +41,7 @@ public class PlayerTurnState : MonoBehaviour, IState
 
     public void Exit(Piece.Owner owner)
     {
+        NotationManager.Instance.PrintAll();
         //렌주룰 풀기
         GameManager.Instance.ruleManager.DeleteForviddensOnMap();
         GameManager.Instance.SetTileClickEventOff();

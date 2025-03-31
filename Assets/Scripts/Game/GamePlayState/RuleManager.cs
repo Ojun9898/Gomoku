@@ -15,6 +15,7 @@ public class RuleManager : MonoBehaviour
     private Piece.Owner winner;
     private List<(int, int)> forbiddenMoves;
     private List<GameObject> forbiddenMovesOnMap = new List<GameObject>();
+    private List<(int x,int y)> obstacles;
 
     readonly int[] dx = { 0, 1, 1, 1 };
     readonly int[] dy = { 1, 1, 0, -1 };
@@ -34,10 +35,25 @@ public class RuleManager : MonoBehaviour
         {
             WHITE = Piece.Owner.PLAYER_A;
         }
+        obstacles = GetObstacleIndex();
         gameOver = false;
         winner = EMPTY;
         forbiddenMoves = new List<(int, int)>();
     }
+
+    private List<(int,int)> GetObstacleIndex() {
+        List<(int,int)> value = new List<(int,int)>();
+        foreach (var tile in board) { 
+            if(tile.IsObstacleNotNull())
+            {
+                int x = tile.tileNumber % BOARD_SIZE;
+                int y = tile.tileNumber / BOARD_SIZE;
+                value.Add(new (x,y));
+            }
+        }
+        return value;
+    }
+
 
     /// <summary>
     /// 선공만 금수 계산
@@ -103,7 +119,9 @@ public class RuleManager : MonoBehaviour
         int index = y * BOARD_SIZE + x;
         if (board[index].Piece != null)
             return false;
-        else
+        else if (board[index].IsObstacleNotNull())
+            return false;
+        else 
         {
             // 임시로 흑돌 놓기
             board[index].SetPiece(GameManager.Instance.SetTemporaryPiece(index, BLACK));
@@ -271,7 +289,7 @@ public class RuleManager : MonoBehaviour
                 char expected = pattern[i];
                 if (expected == '_')
                 {
-                    if (board[idx2].Piece != null)
+                    if (board[idx2].Piece != null || board[idx2].IsObstacleNotNull())
                     {
                         valid = false;
                         break;
@@ -325,7 +343,7 @@ public class RuleManager : MonoBehaviour
             {
                 int nx = x + dx[dir] * i;
                 int ny = y + dy[dir] * i;
-                if (!IsInBoard(nx, ny) || board[ny * BOARD_SIZE + nx].Piece?.pieceOwner != stone)
+                if (!IsInBoard(nx, ny) || board[ny * BOARD_SIZE + nx].Piece?.pieceOwner != stone || board[ny * BOARD_SIZE + nx].IsObstacleNotNull())
                 {
                     continuousLine = false;
                     break;
@@ -419,21 +437,37 @@ public class RuleManager : MonoBehaviour
                 // 흑인 경우 금수 건너뛰기
                 if (BLACK == currentPlayer && IsForbiddenMove(x, y))
                     continue;
+                if (board[index].IsObstacleNotNull()) continue;
 
                 double moveScore = EvaluateMove(x, y, currentPlayer);
                 candidateMoves.Add((x, y, moveScore));
             }
         }
 
-        if (board.All(tile => tile.Piece == null)) {
-            System.Random random = new System.Random();
-            int x = random.Next(BOARD_SIZE / 2 - 2, BOARD_SIZE / 2 + 2);
-            int y = random.Next(BOARD_SIZE / 2 - 2, BOARD_SIZE / 2 + 2);
-            return (x, y);
+        if (board.All(tile => tile.Piece == null) || board.Count(tile => tile.Piece != null) == 1) {
+            return RandomIndex();
         }
 
         candidateMoves.Sort((a, b) => b.Item3.CompareTo(a.Item3));
         return (candidateMoves[0].Item1, candidateMoves[0].Item2);
+    }
+
+
+    private (int, int) RandomIndex() {
+        System.Random random = new System.Random();
+        int x = random.Next(BOARD_SIZE / 2 - 2, BOARD_SIZE / 2 + 2);
+        int y = random.Next(BOARD_SIZE / 2 - 2, BOARD_SIZE / 2 + 2);
+        int index = y * BOARD_SIZE + x;
+        if (board[index].Piece != null) {
+            return RandomIndex();
+        }
+        if (board[index].IsObstacleNotNull())
+        {
+            return RandomIndex();
+        }
+        else { 
+            return (x, y);
+        }
     }
 
     private double EvaluateMove(int x, int y, Piece.Owner currentPlayer)
@@ -457,6 +491,10 @@ public class RuleManager : MonoBehaviour
 
             // 4. 위치적 이점 (중앙 제어)
             score += EvaluatePositionalAdvantage(x, y, BOARD_SIZE);
+
+            //5. 장애물의 가로 세로 대각선 라인에 있다면 감점
+            score += EvaluatePositionalAdvantage(x, y);
+
         }
         finally
         {
@@ -469,6 +507,54 @@ public class RuleManager : MonoBehaviour
 
         return score;
     }
+
+    private double EvaluatePositionalAdvantage(int x, int y)
+    {
+        if (obstacles.Count <= 0) return 0;
+        else {
+
+            List<(int, int)> affectedIndexes = new List<(int, int)>();
+            int index = y * BOARD_SIZE + x;
+            foreach (var obstacle in obstacles)
+            {
+                int _x = obstacle.x;
+                int _y = obstacle.y;
+
+                // 가로 라인
+                for (int i = 0; i < BOARD_SIZE; i++)
+                {
+                    affectedIndexes.Add(new(i, _y));
+                }
+
+                // 세로 라인
+                for (int i = 0; i < BOARD_SIZE; i++)
+                {
+                    affectedIndexes.Add(new(_x, i));
+                }
+
+                // 대각선 (\ 방향)
+                for (int i = -BOARD_SIZE; i < BOARD_SIZE; i++)
+                {
+                    int newX = _x + i;
+                    int newY = _y + i;
+                    if (IsInBoard(newX, newY))
+                        affectedIndexes.Add(new(newX, newY));
+                }
+
+                // 대각선 (/ 방향)
+                for (int i = -BOARD_SIZE; i < BOARD_SIZE; i++)
+                {
+                    int newX = _x + i;
+                    int newY = _y - i;
+                    if (IsInBoard(newX, newY))
+                        affectedIndexes.Add(new(newX, newY));
+                }
+            }
+            if (affectedIndexes.Contains((x, y))) return -0.1;
+            return 0;
+        }
+    }
+
 
     // 상대의 위협(threat)이 3개 이상 연속될 경우 차단 점수를 부여하도록 수정
     private double EvaluateBlockingPotential(int x, int y, Piece.Owner currentPlayer)
@@ -542,7 +628,7 @@ public class RuleManager : MonoBehaviour
     public List<int> FindPiecesWithAttackRange(Piece.Owner currentPlayer)
     {
         List<(int index, int cost, int attackableOpponentCount)> attackablePieces = new List<(int, int, int)>();
-
+        List<int> obstacles = new List<int>();
         // 모든 보드를 순회
         for (int y = 0; y < BOARD_SIZE; y++)
         {
@@ -557,10 +643,10 @@ public class RuleManager : MonoBehaviour
                     // 공격 가능 범위 계산
                     List<int> attackRange = GameManager.Instance.CanAttackRangeCalculate(index, currentTile.Piece.GetAttackRange());
 
-                    // 공격 범위 내 적 Piece 수 계산
+                    // 공격 범위 내 적 Piece수 계산
                     int opponentCount = CountOpponentPiecesInRange(attackRange, currentPlayer);
 
-                    // 적 Piece가 있으면 리스트에 추가
+                    // 적 Piece이 있으면 리스트에 추가
                     if (opponentCount > 0)
                     {
                         attackablePieces.Add((index, currentTile.Piece.cost, opponentCount));
@@ -578,7 +664,7 @@ public class RuleManager : MonoBehaviour
             if (costComparison != 0) return costComparison;
             return b.attackableOpponentCount.CompareTo(a.attackableOpponentCount);
         });
-
+        
         // 인덱스만 반환
         return attackablePieces.Select(x => x.index).ToList();
     }
@@ -594,6 +680,11 @@ public class RuleManager : MonoBehaviour
             {
                 opponentCount++;
             }
+            if (board[rangeIndex].IsObstacleNotNull())
+            {
+                opponentCount++;
+            }
+
         }
 
         return opponentCount;
@@ -697,6 +788,7 @@ public class RuleManager : MonoBehaviour
         List<int> allEnemiesInRange = attackRange
             .Where(idx => board[idx].Piece?.pieceOwner == opponentPlayer)
             .ToList();
+ 
 
         if (allEnemiesInRange.Count > 0)
         {
@@ -704,6 +796,24 @@ public class RuleManager : MonoBehaviour
                 .OrderBy(idx => board[idx].Piece.cost)
                 .ThenByDescending(idx => board[idx].Piece.cost)
                 .First();
+        }
+
+        int x = index % BOARD_SIZE;
+        int y = index / BOARD_SIZE;
+
+        List<int> obstacleInRange = new List<int>();
+        for (int i = 0; i < attackRange.Count; i++)
+        {
+            int idx = attackRange[i];
+            if (board[idx].IsObstacleNotNull())
+            {
+                obstacleInRange.Add(idx);
+            }
+        }
+
+        if (obstacleInRange.Count > 0)
+        {
+            return obstacleInRange.First();
         }
 
         // 적 말이 없으면 -1 반환
