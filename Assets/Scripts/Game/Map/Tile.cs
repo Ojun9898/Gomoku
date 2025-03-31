@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
@@ -178,11 +179,15 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         if (isTooltipActive)
         {
             // 툴팁이 활성화된 상태에서만 종료하도록 방지
+            TooltipManager.Instance.CloseTooltip();
+            StartCoroutine(ExitPointer());
             return;
         }
-
+        StartCoroutine(ExitPointer());
+    }
+    IEnumerator ExitPointer() {
         cursorImageObj.SetActive(false);
-        TooltipManager.Instance.CloseTooltip();
+        yield return null;
     }
 
     public void CloseTooltipIfActive()

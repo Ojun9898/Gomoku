@@ -98,6 +98,7 @@ public class GameManager : Singleton<GameManager>
 
         // Map에서 타일 생성후 가져오는 메소드
         SetMapController();
+       
         // 턴 넘김 횟수 초기화 
         _changeTurnCount = 0;
         //턴 넘김 버튼 이벤트 추가
@@ -120,13 +121,14 @@ public class GameManager : Singleton<GameManager>
 
         NotationManager.Instance.NotationManagerinit();
         NotationManager.Instance.AddHowsFirst(firstPlayer);
+        NotationManager.Instance.AddObstacleorBuff(Mc.ActiveObstacleInGameScene());
+        NotationManager.Instance.AddObstacleorBuff(Mc.ActiveBuffInGameScene());
+
         // 코스트 불러오기
         cp = FindObjectOfType<CostPanelController>();
         //RuleManager 초기화
         ruleManager.Init(mc.tiles, _playerType);
-        // AI 레벨 설정
         playerInfo = LoginManager.Instance.GetUserInfo();
-        PlayerLevel = int.Parse(playerInfo[5]);
         OnePrefab = Resources.Load<GameObject>("DamageImg/Damage_One");
         TwoPrefab = Resources.Load<GameObject>("DamageImg/Damage_Two");
         ThreePrefab = Resources.Load<GameObject>("DamageImg/Damage_Three");
@@ -138,24 +140,27 @@ public class GameManager : Singleton<GameManager>
 
     private void InitNotationController()
     {
+        // Map에서 타일 생성후 가져오는 메소드
+        SetMapController();
         //기보 정보 가져오기
         allData = NotationManager.Instance.currentSelectedFileDatas;
-        //턴종료 인덱스 저장
-        NotationManager.Instance.GetIndexesOf(allData);
+
+
         //선공 정하기
         Notationcontroller = FindObjectOfType<NotationController>();
         Notationcontroller.DoSomething(allData[0]);
+        //버프 장애물 생성
+        NotationManager.Instance.startPoint = Notationcontroller.SettingBuffsAndObstacles();
+
+        //턴종료 인덱스 저장
+        NotationManager.Instance.GetIndexesOf(allData);
         _handManager.playerOwner = _playerType;
-        // Map에서 타일 생성후 가져오는 메소드
-        SetMapController();
+        firstPlayer = _playerType;
+
         // 턴 넘김 횟수 초기화 
         _changeTurnCount = 0;
-        // 선공 정하기
+
         _deckManager = FindObjectOfType<DeckManager>();
-        firstPlayer = _playerType;   // Map에서 타일 생성후 가져오는 메소드
-
-        // 프리펩 로드
-
 
         //RuleManager 가져오기
         ruleManager = FindAnyObjectByType<RuleManager>();
@@ -285,7 +290,7 @@ public class GameManager : Singleton<GameManager>
                     }
                     _currentChoosingPiece.ChoseAttack(Obstacle, _currentChoosingPiece.GetAttackPower());
                     PlayAnimationAndEffect(_currentChoosingPiece, Obstacle);
-                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다");
+                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다" + Obstacle.name + "의 Hp:" + Obstacle.Hp);
                     UseCost(Costs, _currentChoosingPiece);
                 }
                 else if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK || _currentChoosingPiece.attackType == AttackType.BUFF)
@@ -371,7 +376,7 @@ public class GameManager : Singleton<GameManager>
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
                             PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
-                            MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다");
+                            MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
                         }
                     }
                     else
@@ -437,7 +442,7 @@ public class GameManager : Singleton<GameManager>
                         {
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
-                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다");
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
 
                             PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                         }
@@ -445,7 +450,7 @@ public class GameManager : Singleton<GameManager>
                         {
                             //attackingPiece.RangeAttack(currentClickedTileIndex);
                             UseCost(Costs, _attackingPiece);
-                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다");
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
 
                             PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                         }

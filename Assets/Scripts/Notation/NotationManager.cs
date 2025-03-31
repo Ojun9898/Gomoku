@@ -38,6 +38,7 @@ public class NotationManager : Singleton<NotationManager>
     public List<(int,int)> currentSelectedFileDatas = new List<(int, int)>();
     public List<(string,string)> recentFileNames = new List<(string, string)>();
     public List<int> EndIndex = new List<int>();
+    public int startPoint;
 
     private void Start()
     {
@@ -75,7 +76,9 @@ public class NotationManager : Singleton<NotationManager>
     {
         values.Add((64, 64));
     }
-
+    public void AddObstacleorBuff(List<(int,int)> obstacleList) {
+        values.AddRange(obstacleList);
+    }
     public void AddHowsFirst(Piece.Owner owner)
     {
         switch (owner)
@@ -252,11 +255,8 @@ public class NotationManager : Singleton<NotationManager>
         }
     
         EndIndex = indexes;
-        //시작 부분 빼기 (추가로 obstacle과 buff가 들어오면 그것까지 처리)
-        if (EndIndex[0] != 0)
-        {
-            EndIndex.Insert(0, 0);
-        }
+        EndIndex.Insert(0, startPoint);
+     
     }
     
     public void NotationElementInit() {

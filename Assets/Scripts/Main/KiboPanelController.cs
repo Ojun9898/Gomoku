@@ -20,6 +20,7 @@ public class KiboPanelController : MonoBehaviour
 
     void OnEnable()
     {
+        UpdateTime();
         // 기보 : 기보 수 만큼 Kibo 생성 초기화
         NotationManager.Instance.PrintRecentFileNames();
         var fileNames = NotationManager.Instance.recentFileNames;

@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 189, y: 283}
+  m_SizeDelta: {x: 264, y: 339}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &751882194972868386
 CanvasRenderer:
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e3741beee73fc68498b94fe10bdf60a1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2d64d9c37a45eb14382422e7ca09abfa, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -212,14 +212,14 @@ MonoBehaviour:
   cardImage: {fileID: 7816493882116550027}
   cardButton: {fileID: 2085480451008962306}
   playerA:
-    warriorWhite: {fileID: 21300000, guid: a8e742e27e293b548ac4745a472473a4, type: 3}
-    archerWhite: {fileID: 21300000, guid: d159d42d0f880924788981b07b5615b0, type: 3}
-    magicianWhite: {fileID: 21300000, guid: d97d10f5e78a8c5479e4a5eddac76329, type: 3}
-    healerWhite: {fileID: 21300000, guid: 73042e5d3e7822845aa487aaa6a0f2c4, type: 3}
-    lancerWhite: {fileID: 21300000, guid: ebb4259f8128ef94a8c6a42b64e7dfc4, type: 3}
+    warriorWhite: {fileID: 21300000, guid: c44b6d146a0584d4ca515c617e7444dd, type: 3}
+    archerWhite: {fileID: 21300000, guid: 8dfdeda1468b70948bc97bdef838201a, type: 3}
+    magicianWhite: {fileID: 21300000, guid: eda7696066b8408489f271af7e384f58, type: 3}
+    healerWhite: {fileID: 21300000, guid: c103dd219d4f0c84dac80e3eb90c7aa5, type: 3}
+    lancerWhite: {fileID: 21300000, guid: cb59ac075d997644ba10f494a2496295, type: 3}
   playerB:
-    warriorBlack: {fileID: 21300000, guid: 0f246f686ceb3f744876e1ac46b4ceaf, type: 3}
-    archerBlack: {fileID: 21300000, guid: e3741beee73fc68498b94fe10bdf60a1, type: 3}
-    magicianBlack: {fileID: 21300000, guid: cea047bab8d7cd645a5ab2e5f6a822d5, type: 3}
-    healerBlack: {fileID: 21300000, guid: 10ac1889781ca934585276a80851a747, type: 3}
-    lancerBlack: {fileID: 21300000, guid: a964a84394c84a54c95cd65508a4ca2b, type: 3}
+    warriorBlack: {fileID: 21300000, guid: d1eef276e30118342bad30232d630b15, type: 3}
+    archerBlack: {fileID: 21300000, guid: a9a0264e74b32dd45b79af3ee6a827eb, type: 3}
+    magicianBlack: {fileID: 21300000, guid: 2d64d9c37a45eb14382422e7ca09abfa, type: 3}
+    healerBlack: {fileID: 21300000, guid: 7951895169ad90b47bc029e89b0fe16b, type: 3}
+    lancerBlack: {fileID: 21300000, guid: 43928700d9539d948aa9ddc8b89c58dc, type: 3}

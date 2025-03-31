@@ -15,7 +15,7 @@ public class AdditionalAttackPowerBuff : Buff
                 pc.SetAttackPower(Power+1) ;
             }
             GameManager.Instance.Mc.tiles[GameManager.Instance.currentClickedTileIndex].GetComponent<SpriteRenderer>().color = Color.cyan;
-            MessageManager.Instance.ShowMessagePanel($"말의 공격력이 1 증가 하였습니다! 말의 현재 공격력 : {pc.GetAttackPower()}");
+            MessageManager.Instance.ShowMessagePanel($"말의 공격력이 1 증가 하였습니다!");
         };
     }
 }

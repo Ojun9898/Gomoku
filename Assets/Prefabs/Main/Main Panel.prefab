@@ -1128,7 +1128,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5842208317247790019, guid: 8534f665f27d70442876d050b31d8f7e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -42.038666
+      value: -442.03867
       objectReference: {fileID: 0}
     - target: {fileID: 5842208317247790019, guid: 8534f665f27d70442876d050b31d8f7e, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1153,13 +1153,67 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6759467852339413120, guid: 8534f665f27d70442876d050b31d8f7e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3817556279738417188}
   m_SourcePrefab: {fileID: 100100000, guid: 8534f665f27d70442876d050b31d8f7e, type: 3}
 --- !u!224 &6169044670957298607 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5842208317247790019, guid: 8534f665f27d70442876d050b31d8f7e, type: 3}
   m_PrefabInstance: {fileID: 328596693569124460}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6431453360193485036 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6759467852339413120, guid: 8534f665f27d70442876d050b31d8f7e, type: 3}
+  m_PrefabInstance: {fileID: 328596693569124460}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3817556279738417188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6431453360193485036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerEnter
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: "\uD074\uB9AD \uC2DC \uC0C1\uC810 \uD398\uC774\uC9C0\uB97C
+              \uC5FD\uB2C8\uB2E4."
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1001 &1622519965038038699
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1238,7 +1292,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6230044506831744800, guid: 0f3871bfe14427249988282e0f58f5f8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 40.961243
+      value: -359.03876
       objectReference: {fileID: 0}
     - target: {fileID: 6230044506831744800, guid: 0f3871bfe14427249988282e0f58f5f8, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1259,13 +1313,67 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6003945412053079285, guid: 0f3871bfe14427249988282e0f58f5f8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7142322123049485859}
   m_SourcePrefab: {fileID: 100100000, guid: 0f3871bfe14427249988282e0f58f5f8, type: 3}
 --- !u!224 &4679742727108567435 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6230044506831744800, guid: 0f3871bfe14427249988282e0f58f5f8, type: 3}
   m_PrefabInstance: {fileID: 1622519965038038699}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5032233569709251166 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6003945412053079285, guid: 0f3871bfe14427249988282e0f58f5f8, type: 3}
+  m_PrefabInstance: {fileID: 1622519965038038699}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7142322123049485859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5032233569709251166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerEnter
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: "\uD074\uB9AD \uC2DC \uB7AD\uD0B9 \uD398\uC774\uC9C0\uB97C
+              \uC5FD\uB2C8\uB2E4."
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1001 &7041443260868349224
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1348,7 +1456,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6321270699110301216, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -203.94368
+      value: -603.9437
       objectReference: {fileID: 0}
     - target: {fileID: 6321270699110301216, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1385,8 +1493,62 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8856066851573004683, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8777542429540162855}
   m_SourcePrefab: {fileID: 100100000, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
+--- !u!1 &1972342131125040291 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8856066851573004683, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
+  m_PrefabInstance: {fileID: 7041443260868349224}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8777542429540162855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1972342131125040291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerEnter
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: "\uD074\uB9AD \uC2DC \uB0B4 \uAE30\uBCF4 \uBAA9\uB85D\uC744
+              \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!224 &3891551408413848328 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6321270699110301216, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
@@ -1470,7 +1632,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2229996458642703223, guid: b81ce683f814d324281e131e516f2e70, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -122.7386
+      value: -522.7386
       objectReference: {fileID: 0}
     - target: {fileID: 2229996458642703223, guid: b81ce683f814d324281e131e516f2e70, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1491,8 +1653,62 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 304675018751793460, guid: b81ce683f814d324281e131e516f2e70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 475945402213898137}
   m_SourcePrefab: {fileID: 100100000, guid: b81ce683f814d324281e131e516f2e70, type: 3}
+--- !u!1 &8039267400296801614 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 304675018751793460, guid: b81ce683f814d324281e131e516f2e70, type: 3}
+  m_PrefabInstance: {fileID: 7758395164677340282}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &475945402213898137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8039267400296801614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerEnter
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: "\uD074\uB9AD \uC2DC \uB0B4 \uC815\uBCF4\uB97C \uBCFC
+              \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!224 &8456021485200637709 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2229996458642703223, guid: b81ce683f814d324281e131e516f2e70, type: 3}
@@ -1568,7 +1784,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6321270699110301216, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 121.961334
+      value: -278.0387
       objectReference: {fileID: 0}
     - target: {fileID: 6321270699110301216, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1597,8 +1813,62 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8856066851573004683, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4241173092241448360}
   m_SourcePrefab: {fileID: 100100000, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
+--- !u!1 &148657844005632495 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8856066851573004683, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}
+  m_PrefabInstance: {fileID: 8716491012267638884}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4241173092241448360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 148657844005632495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerEnter
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: "\uD074\uB9AD \uC2DC \uC124\uC815 \uD398\uC774\uC9C0\uB97C
+              \uC5FD\uB2C8\uB2E4."
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 8381660933879578014}
+          m_TargetAssemblyTypeName: MainPanelController, Assembly-CSharp
+          m_MethodName: OnButtonPointerExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!224 &3408829443229417028 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6321270699110301216, guid: 0ea877280f17b6e45b812f2be4f60a28, type: 3}

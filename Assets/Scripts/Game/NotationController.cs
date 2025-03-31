@@ -66,13 +66,67 @@ public class NotationController : MonoBehaviour
 
     }
 
+
+    public int SettingBuffsAndObstacles() {
+        List<(int, int)> values = NotationManager.Instance.currentSelectedFileDatas;
+        int ObstacleLastIndex = values.FindLastIndex(v => v == (67, 67));
+        int BuffLastIndex = values.FindLastIndex(v => v.Item1 == 68);
+
+        for(int i = 1; i <= ObstacleLastIndex-1; i += 2)
+        {
+            SetObstacleAndBuff(values[i], values[i + 1]);
+        }
+        for (int i = ObstacleLastIndex + 1; i <= BuffLastIndex - 1; i += 2)
+        {
+            SetObstacleAndBuff(values[i], values[i + 1]);
+        }
+
+       return BuffLastIndex+1;
+    }
+
+
+    public void SetObstacleAndBuff((int, int) indexs,(int, int) buffOrObstacle) {
+        int index = indexs.Item2 * 8 + indexs.Item1;
+        Tile SelectTile = GameManager.Instance.Mc.tiles[index]; 
+        switch (buffOrObstacle) {
+            case (67, 67):
+                var obstacleInstance = Instantiate(GameManager.Instance.Mc.GetObstaclePrefab(), SelectTile.transform);
+                SelectTile.SetObstacle(obstacleInstance.GetComponent<Obstacle>());
+                break;
+            case var d when d.Item1 >= 68:
+                var buffInstance = Instantiate(GameManager.Instance.Mc.GetBuffPrefab(), SelectTile.transform);
+                SelectTile.buffPrefab = buffInstance;
+                switch (buffOrObstacle)
+                {
+                    case var c when c.Item2 == 67:
+                        SelectTile.SetBuff(new AdditionalAttackPowerBuff());
+                        break;
+                    case var c when c.Item2 == 68:
+                        SelectTile.SetBuff(new AdditionalRangeBuff());
+                        break;
+                    case var c when c.Item2 == 69:
+                        SelectTile.SetBuff(new AdditionalHpBuff());
+                        break;
+                }
+                break;
+        }
+    }
+
     private void SetPiece(PieceType pt,Piece.Owner owner,int TileIndex) {
         // GameManager의 SetPieceAtTile 메소드를 사용하여 선택된 타일에 말을 생성합니다.
         GameManager.Instance._deckManager.PlayCard(pt, owner);
         GameObject pieceInstance = GameManager.Instance.SetPieceAtTile(TileIndex);
         GameManager.Instance._handManager.isAlreadySetPiece = true;
         Piece pieceComponent = pieceInstance.GetComponent<Piece>();
-        GameManager.Instance.Mc.tiles[TileIndex].Piece = pieceComponent;
+        Tile _selectedTile = GameManager.Instance.Mc.tiles[TileIndex];
+        _selectedTile.Piece = pieceComponent;
+        if (_selectedTile.GetBuff() != null)
+        {
+            _selectedTile.GetBuff().On(pieceComponent);
+            Destroy(_selectedTile.buffPrefab);
+            _selectedTile.buffPrefab = null;
+            _selectedTile.Buff = null;
+        }
         // 선택된 타일 초기화
         GameManager.Instance.Mc.tiles[TileIndex].ResetClick();
     }
@@ -88,10 +142,9 @@ public class NotationController : MonoBehaviour
     IEnumerator PlayDatas() {
         List<(int, int)> values = NotationManager.Instance.currentSelectedFileDatas;
         List<int> endPoint = NotationManager.Instance.EndIndex;
-
         if (count < endPoint.Count - 1)
         {
-            for (int j = endPoint[count] + 1; j < endPoint[count + 1]; j++)
+            for (int j = endPoint[count]; j < endPoint[count + 1]; j++)
             {
                 DoSomething(values[j]);
                 yield return new WaitForSeconds(1.5f);

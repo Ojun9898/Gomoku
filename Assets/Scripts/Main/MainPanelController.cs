@@ -116,20 +116,22 @@ public class MainPanelController : MonoBehaviour
             profilePanel = Instantiate(ProfilePanel, canvasTransform);
             profilePanelRect = profilePanel.GetComponent<RectTransform>();
             profilePanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
-        }
-        else
-        {
-            profilePanel.SetActive(true);
-        }
+       }
+       else
+       {
+           profilePanel.SetActive(true);
+       }
 
-        profilePanelRect.DOLocalMoveX(0f, 0.3f);
+       profilePanelRect.DOLocalMoveX(0f, 0.3f);
        
     }
 
     public void OnClickKiboButton()
     {
-       if(kiboPanel == null) 
-       {
+
+        NotationManager.Instance.NotationManagerinit();
+        if (kiboPanel == null)
+        {
             kiboPanel = Instantiate(KiboPanel, canvasTransform);
             kiboPanelRect = kiboPanel.GetComponent<RectTransform>();
             kiboPanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
@@ -139,10 +141,25 @@ public class MainPanelController : MonoBehaviour
             kiboPanel.SetActive(true);
         }
 
+        //기보 파일 가져오기
+        NotationManager.Instance.GetRecentFiles();
         kiboPanelRect.DOLocalMoveX(0f, 0.3f);
-       
+
+    }
+    
+    // 각 버튼에 마우스 포인터가 들어갈 때 호출할 함수
+    // 인자로 전달받은 tooltipMessage를 보여줌.
+    public void OnButtonPointerEnter(string tooltipMessage)
+    {
+        TooltipManager.Instance.ShowTooltip(tooltipMessage);
     }
 
+    // 각 버튼에서 마우스 포인터가 나갈 때 호출할 함수
+    public void OnButtonPointerExit()
+    {
+        TooltipManager.Instance.CloseTooltip();
+    }
+    
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         FindCanvas();

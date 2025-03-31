@@ -24,8 +24,8 @@ public class MapController : MonoBehaviour
     private const int ObstacleMaxCount = 5;
     private string sName;
     private readonly HashSet<int> _usedIndexes = new HashSet<int>();
-    private HashSet<int> _obstacleIndexes = new HashSet<int>();
-    private HashSet<int> _buffIndexes = new HashSet<int>();
+    private List<(int,int)> _obstacleIndexes = new List<(int, int)>();
+    private List<(int, int)> _buffIndexes = new List<(int, int)>();
 
     public void CreateMap()
     {
@@ -44,8 +44,7 @@ public class MapController : MonoBehaviour
             }
         }
         sName = SceneManager.GetActiveScene().name;
-        ActiveObstacle();
-        ActiveBuff();
+       
     }
     void Update()
     {
@@ -79,24 +78,32 @@ public class MapController : MonoBehaviour
     /// Tile의 랜덤 인덱스에 장애물 생성
     /// 개수는 1~5개 사이로 랜덤하게 생성
     /// </summary>
-    private void ActiveObstacle()
+    public List<(int,int)> ActiveObstacleInGameScene()
     {
-        _usedIndexes.Clear(); // 중복 방지를 위해 장애물과 버프를 배치하기 전에 초기화
+        _usedIndexes.Clear();
+        _obstacleIndexes.Clear(); // 중복 방지를 위해 장애물과 버프를 배치하기 전에 초기화
 
         int obstacleCount = Random.Range(1, ObstacleMaxCount);
 
         for (int i = 0; i < obstacleCount; i++) // <= 대신 < 사용 (정확한 개수 생성)
         {
             int obstacleIndex;
+            int x;
+            int y;
+
             do
             {
                 obstacleIndex = Random.Range(0, tiles.Count); // 중복되지 않는 새로운 인덱스 찾기
+                 x = obstacleIndex % 8;
+                 y = obstacleIndex / 8;
             } while (_usedIndexes.Contains(obstacleIndex)); // 이미 사용된 인덱스라면 다시 뽑기
-
-            _usedIndexes.Add(obstacleIndex); // 사용된 인덱스 저장
+            _usedIndexes.Add(obstacleIndex);
+            _obstacleIndexes.Add((x,y)); // 사용된 인덱스 저장
+            _obstacleIndexes.Add((67, 67));
             var obstacleInstance = Instantiate(obstaclePrefab, tiles[obstacleIndex].transform);
             tiles[obstacleIndex].SetObstacle(obstacleInstance.GetComponent<Obstacle>());
         }
+        return _obstacleIndexes;
     }
 
     /// <summary>
@@ -104,19 +111,24 @@ public class MapController : MonoBehaviour
     /// 효과는 3가지 중 랜덤으로 부여됨
     /// 개수는 1~5개 중으로 랜덤하게 생성
     /// </summary>
-    private void ActiveBuff()
+    public List<(int,int)> ActiveBuffInGameScene()
     {
         int buffCount = Random.Range(1, BuffMaxCount);
+        _buffIndexes.Clear();
 
         for (int i = 0; i < buffCount; i++) // <= 대신 < 사용
         {
             int buffIndex;
+            int x;
+            int y;
             do
             {
                 buffIndex = Random.Range(0, tiles.Count);
+                x = buffIndex % 8;
+                y = buffIndex / 8;
             } while (_usedIndexes.Contains(buffIndex)); // 중복되지 않는 인덱스 찾기
-
             _usedIndexes.Add(buffIndex);
+            _buffIndexes.Add((x,y));
             var buffInstance = Instantiate(buffPrefab, tiles[buffIndex].transform);
             tiles[buffIndex].buffPrefab = buffInstance;
 
@@ -127,15 +139,27 @@ public class MapController : MonoBehaviour
             {
                 case 0:
                     tiles[buffIndex].SetBuff(new AdditionalAttackPowerBuff());
+                    _buffIndexes.Add((68,67));
                     break;
                 case 1:
                     tiles[buffIndex].SetBuff(new AdditionalRangeBuff());
+                    _buffIndexes.Add((68,68));
                     break;
                 case 2:
                     tiles[buffIndex].SetBuff(new AdditionalHpBuff());
+                    _buffIndexes.Add((68,69));
                     break;
             }
         }
+        return _buffIndexes;
     }
 
+    public GameObject GetBuffPrefab() { 
+        return buffPrefab;
+    }
+
+    public GameObject GetObstaclePrefab()
+    {
+        return obstaclePrefab;
+    }
 }

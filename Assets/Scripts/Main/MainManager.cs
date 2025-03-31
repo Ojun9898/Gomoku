@@ -43,7 +43,8 @@ public class MainManager : Singleton<MainManager>
     public void ShowMainPanel()
     {
         if (SceneManager.GetActiveScene().name == "Login" ||
-            SceneManager.GetActiveScene().name == "Game")
+            SceneManager.GetActiveScene().name == "Game" ||
+            SceneManager.GetActiveScene().name == "Notation")
         {
             return;
         }
