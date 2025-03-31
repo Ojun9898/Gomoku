@@ -258,6 +258,14 @@ public class NotationManager : Singleton<NotationManager>
             EndIndex.Insert(0, 0);
         }
     }
+    
+    public void NotationElementInit() {
+        values.Clear();
+        recentFiles.Clear();
+        currentSelectedFileDatas.Clear();
+        recentFileNames.Clear();
+        EndIndex.Clear();
+    }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {

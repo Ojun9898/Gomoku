@@ -113,7 +113,7 @@ public class DeckManager : MonoBehaviour
         {
             case Piece.PieceType.WARRIOR:
                 piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/WarriorWhite" : "Units/WarriorBlack");
-                piecePrefab.GetComponent<Piece>().hp = 4;
+                piecePrefab.GetComponent<Piece>().hp = 3;
                 break;
             case Piece.PieceType.ARCHER:
                 piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/ArcherWhite" : "Units/ArcherBlack");

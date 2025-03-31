@@ -495,8 +495,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16fc54cb1b167c740809d86622f702a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obstaclePrefab: {fileID: 0}
-  buffPrefab: {fileID: 0}
+  obstaclePrefab: {fileID: 6845001562521053175, guid: 30ff8d2e64961ea4ca580610064f2a24, type: 3}
+  buffPrefab: {fileID: 1399491476850481373, guid: 552ef7bba498dab49bfa3f6ee6a96f2e, type: 3}
   tilePrefab: {fileID: 6075720127300758442, guid: 4b41facc398d4b5458bed8efb9f00b41, type: 3}
   tilesParent: {fileID: 504512286}
   tiles: []
@@ -1312,6 +1312,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mc: {fileID: 0}
+  effects:
+  - {fileID: 8525990746615576120, guid: 941d6e7bbfc3bda4da7c2e71c7d7fad7, type: 3}
+  - {fileID: 8771972552311404799, guid: a61c3b70d8c5e014db8f65a9c083ff84, type: 3}
+  - {fileID: 8194992990867289339, guid: 22c8c52ff465db74db11dc36e111ea64, type: 3}
+  - {fileID: 141433446842962269, guid: 2f4278ed74a545b4ea2771fa7a288815, type: 3}
+  - {fileID: 1399491476850481373, guid: 3284375b30b46b249bdbba2c6b938197, type: 3}
   BlackPanel: {fileID: 252631108}
   BlockPanelPrefab: {fileID: 7473840830817089632, guid: 9ec0f97c0b79c11439fb2b7ef4b6dd90, type: 3}
   forbiddenMoveObject: {fileID: 7964786777866648389, guid: 8b1760d8d5339a549bca6c2d5f8c3987, type: 3}

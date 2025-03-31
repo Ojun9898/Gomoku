@@ -17,11 +17,13 @@ public class Piece : HaveHp
         RANGE_ATTACK,
         BUFF
     }
-
+    
+    public PieceType pieceType;
     public AttackType attackType;
     public bool isAlreadyAttack;
     public int[] rangeAttackRange;
     public int cost;
+    public AudioSource audioSource;
     
     [SerializeField] private int attackPower=1;
     [SerializeField] private int attackRange = 1;

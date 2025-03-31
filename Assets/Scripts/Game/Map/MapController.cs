@@ -24,6 +24,8 @@ public class MapController : MonoBehaviour
     private const int ObstacleMaxCount = 5;
     private string sName;
     private readonly HashSet<int> _usedIndexes = new HashSet<int>();
+    private HashSet<int> _obstacleIndexes = new HashSet<int>();
+    private HashSet<int> _buffIndexes = new HashSet<int>();
 
     public void CreateMap()
     {
@@ -42,6 +44,8 @@ public class MapController : MonoBehaviour
             }
         }
         sName = SceneManager.GetActiveScene().name;
+        ActiveObstacle();
+        ActiveBuff();
     }
     void Update()
     {
@@ -113,7 +117,8 @@ public class MapController : MonoBehaviour
             } while (_usedIndexes.Contains(buffIndex)); // 중복되지 않는 인덱스 찾기
 
             _usedIndexes.Add(buffIndex);
-            Instantiate(buffPrefab, tiles[buffIndex].transform);
+            var buffInstance = Instantiate(buffPrefab, tiles[buffIndex].transform);
+            tiles[buffIndex].buffPrefab = buffInstance;
 
             // 3가지 효과 중 랜덤 적용
             int functionIndex = Random.Range(0, 3); // 0~2 (원래 코드에서 2번이 실행 안 될 수도 있었음)

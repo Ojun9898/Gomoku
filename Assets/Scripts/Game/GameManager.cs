@@ -16,6 +16,7 @@ using UnityEditor.Experimental.GraphView;
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private MapController mc;
+	public List<GameObject> effects;
     public GameObject BlackPanel;
     public GameObject BlockPanelPrefab;
     public GameObject forbiddenMoveObject;
@@ -283,6 +284,7 @@ public class GameManager : Singleton<GameManager>
                         return (null, 1);
                     }
                     _currentChoosingPiece.ChoseAttack(Obstacle, _currentChoosingPiece.GetAttackPower());
+                    PlayAnimationAndEffect(_currentChoosingPiece, Obstacle);
                     MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다" + Obstacle.name + "의 Hp:" + Obstacle.Hp);
                     UseCost(Costs, _currentChoosingPiece);
                 }
@@ -368,9 +370,7 @@ public class GameManager : Singleton<GameManager>
                         {
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
-                            switchingPos(_attackingPiece, _damagedPiece);
-                            _attackingPiece.animator.Play("ATTACK");
-                            _damagedPiece.animator.Play("BUFF");
+                            PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                             MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
                         }
                     }
@@ -439,28 +439,15 @@ public class GameManager : Singleton<GameManager>
                             UseCost(Costs, _attackingPiece);
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
 
-                            switchingPos(_attackingPiece, _damagedPiece);
-                            _attackingPiece.animator.Play("ATTACK");
-                            SpawnDamageEffectByAttackDamage(_attackingPiece, _damagedPiece);
-                            _damagedPiece.animator.Play("DAMAGED");
-                            if (_damagedPiece.hp <= 0)
-                            {
-                                _damagedPiece.animator.Play("DEATH");
-                            }
+                            PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                         }
                         else if (_attackingPiece.attackType == AttackType.RANGE_ATTACK)
                         {
                             //attackingPiece.RangeAttack(currentClickedTileIndex);
                             UseCost(Costs, _attackingPiece);
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
-                            switchingPos(_attackingPiece, _damagedPiece);
-                            _attackingPiece.animator.Play("ATTACK");
-                            SpawnDamageEffectByAttackDamage(_attackingPiece, _damagedPiece);
-                            _damagedPiece.animator.Play("DAMAGED");
-                            if (_damagedPiece.hp <= 0)
-                            {
-                                _damagedPiece.animator.Play("DEATH");
-                            }
+
+                            PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                         }
                         else if (_attackingPiece.attackType == AttackType.BUFF)
                         {
@@ -501,6 +488,18 @@ public class GameManager : Singleton<GameManager>
             damagedPc.transform.rotation = Quaternion.Euler(0, 180, 0);
         }
     }
+    
+        private void switchingPos(Piece attackPc, Obstacle obstacle) {
+        if (attackPc.transform.position.x < obstacle.transform.position.x)
+        {
+            attackPc.transform.rotation = Quaternion.Euler(0, 180, 0);
+            obstacle.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        else {
+            attackPc.transform.rotation = Quaternion.Euler(0, 0, 0);
+            obstacle.transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+    }
 
 
     /// <summary>
@@ -509,6 +508,22 @@ public class GameManager : Singleton<GameManager>
     /// <param name="attacker"></param>
     /// <param name="target"></param>
     private void SpawnDamageEffectByAttackDamage(Piece attacker, Piece target) {
+        int power = attacker.GetAttackPower();
+        switch(power)
+        {
+            case 1:
+                SpawnDamageEffect(OnePrefab, attacker.transform, target.transform);
+                break;
+            case 2:
+                SpawnDamageEffect(TwoPrefab, attacker.transform, target.transform);
+                break;
+            case 3:
+                SpawnDamageEffect(ThreePrefab, attacker.transform, target.transform);
+                break;
+        }
+    }
+    
+    private void SpawnDamageEffectByAttackDamage(Piece attacker, Obstacle target) {
         int power = attacker.GetAttackPower();
         switch(power)
         {
@@ -542,7 +557,7 @@ public class GameManager : Singleton<GameManager>
 
         GameObject effect = Instantiate(effectPrefab, spawnPos, Quaternion.identity);
         var spr = effect.GetComponent<SpriteRenderer>();
-        spr.sortingOrder = 10;
+        spr.sortingOrder = 24;
         spr.color = new Color(1, 1, 1, 0f);
         
         StartCoroutine(RiseAndFall(effect.transform, spawnPos, spr));
@@ -869,6 +884,54 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+
+    private void PlayAnimationAndEffect(Piece attackPiece, Obstacle obstacle)
+    {
+    	switchingPos(attackPiece, obstacle);
+        attackPiece.animator.Play("ATTACK");
+        SpawnDamageEffectByAttackDamage(attackPiece, obstacle);
+        obstacle.animator.Play("DAMAGED"); 
+        attackPiece.audioSource.Play();
+    }
+
+    private void PlayAnimationAndEffect(Piece attackPiece, Piece damagedPiece)
+    {
+        if (attackPiece.attackType == AttackType.BUFF)
+        {
+        	switchingPos(attackPiece, damagedPiece);
+            attackPiece.animator.Play("ATTACK");
+            damagedPiece.animator.Play("BUFF");
+            attackPiece.audioSource.Play();
+            var buffInstance = Instantiate(effects[4], damagedPiece.transform.position, Quaternion.identity);
+        }
+        else
+        {
+            attackPiece.animator.Play("ATTACK");
+            SpawnDamageEffectByAttackDamage(attackPiece, damagedPiece);
+            attackPiece.audioSource.Play();
+            if (attackPiece.pieceType == PieceType.WARRIOR)
+            {
+                var buffInstance = Instantiate(effects[0], damagedPiece.transform.position, Quaternion.identity);
+            }
+            
+            else if (attackPiece.pieceType == PieceType.ARCHER)
+            {
+                var buffInstance = Instantiate(effects[1], damagedPiece.transform.position, Quaternion.identity);
+            }
+            
+            else if (attackPiece.pieceType == PieceType.MAGICIAN)
+            {
+                var buffInstance = Instantiate(effects[2], damagedPiece.transform.position, Quaternion.identity);
+            }
+            
+            else if (attackPiece.pieceType == PieceType.RANCER)
+            {
+                var buffInstance = Instantiate(effects[3], damagedPiece.transform.position, Quaternion.identity);
+            }
+            
+            damagedPiece.animator.Play(_damagedPiece.hp <= 0 ? "DEATH" : "DAMAGED");
+        }
+    }
     /// <summary>
     ///  맵위 모든 piece의 공격 초기화 메소드
     /// </summary>

@@ -11,10 +11,11 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     private int _tileClickCount;
     private bool _isNeedOneClick;
     public int tileNumber;
-
+    
     [SerializeField] private Obstacle obstacle;
+    public GameObject buffPrefab;
+    public Buff Buff;
     public bool isForbiddenMove;
-    private Buff _buff;
     public Piece Piece { get; set; }
     
 
@@ -67,11 +68,11 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     
     public Buff GetBuff()
     {
-        return _buff;
+        return Buff;
     } 
     public void SetBuff(Buff buff)
     {
-        this._buff = buff;
+        this.Buff = buff;
     }
 
     public void OnClickTileButton() {

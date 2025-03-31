@@ -115,6 +115,7 @@ public class NotationController : MonoBehaviour
     }
 
     public void SetCountZero() {
+        NotationManager.Instance.NotationElementInit();
         count = 0;
         BeforIndex = 0;
     }

@@ -8,9 +8,10 @@ public class EndGamePanelController : MonoBehaviour
 {
     public void OnClickYesButton()
     {
+        GameManager.Instance.Notationcontroller?.SetCountZero();
         this.GetComponent<RectTransform>().DOLocalMoveX(-600f, 0.3f)
             .OnComplete(() => this.gameObject.SetActive(false)); 
-        
+
         SceneManager.LoadScene("Main");
     }
 

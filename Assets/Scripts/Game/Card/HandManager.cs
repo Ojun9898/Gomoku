@@ -89,6 +89,9 @@ public class HandManager : MonoBehaviour
                 if (_selectedTile.GetBuff() != null)
                 {
                     _selectedTile.GetBuff().On(pieceComponent);
+                    Destroy(_selectedTile.buffPrefab);
+                    _selectedTile.buffPrefab = null;
+                    _selectedTile.Buff = null;
                 }
             }
 
