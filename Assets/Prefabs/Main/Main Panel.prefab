@@ -98,7 +98,7 @@ MonoBehaviour:
   ProfilePanel: {fileID: 1995805009728476610, guid: c13daccf2c73a514398289e8a12e97e0, type: 3}
   canvasTransform: {fileID: 0}
   FadePanel: {fileID: 6830060617901473179, guid: d529d9c7e9c46924d92945795f14a535, type: 3}
-  KiboPanel: {fileID: 1995805009728476610, guid: 681afec6e52d3264eb663bc64259f7bb, type: 3}
+  KiboPanel: {fileID: 1995805009728476610, guid: 77f8fc00899b16a47a4a1b52db38b002, type: 3}
 --- !u!225 &3508809489007581395
 CanvasGroup:
   m_ObjectHideFlags: 0

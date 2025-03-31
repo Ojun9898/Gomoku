@@ -285,7 +285,7 @@ public class GameManager : Singleton<GameManager>
                     }
                     _currentChoosingPiece.ChoseAttack(Obstacle, _currentChoosingPiece.GetAttackPower());
                     PlayAnimationAndEffect(_currentChoosingPiece, Obstacle);
-                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다" + Obstacle.name + "의 Hp:" + Obstacle.Hp);
+                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다");
                     UseCost(Costs, _currentChoosingPiece);
                 }
                 else if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK || _currentChoosingPiece.attackType == AttackType.BUFF)
@@ -371,7 +371,7 @@ public class GameManager : Singleton<GameManager>
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
                             PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
-                            MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다");
                         }
                     }
                     else
@@ -437,7 +437,7 @@ public class GameManager : Singleton<GameManager>
                         {
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
-                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다");
 
                             PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                         }
@@ -445,7 +445,7 @@ public class GameManager : Singleton<GameManager>
                         {
                             //attackingPiece.RangeAttack(currentClickedTileIndex);
                             UseCost(Costs, _attackingPiece);
-                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다");
 
                             PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                         }

@@ -11,7 +11,9 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     private int _tileClickCount;
     private bool _isNeedOneClick;
     public int tileNumber;
-    
+    public int hp = 0;
+    private bool isTooltipActive = false;
+
     [SerializeField] private Obstacle obstacle;
     public GameObject buffPrefab;
     public Buff Buff;
@@ -152,14 +154,44 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
+
         if (obstacle == null && Piece == null && _tileClickCount == 0)
             cursorImageObj.SetActive(true);
+
+        if (Piece != null)
+        {
+            TooltipManager.Instance.ShowTooltip("HP: " + Piece.Hp);
+            isTooltipActive = true;
+        }
+
+        if (obstacle != null)
+        {
+            TooltipManager.Instance.ShowTooltip("HP: " + obstacle.Hp);
+            isTooltipActive = true;
+        }
+
         GameManager.Instance.RangeAttackVisualizeEvent?.Invoke();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (isTooltipActive)
+        {
+            // 툴팁이 활성화된 상태에서만 종료하도록 방지
+            return;
+        }
+
         cursorImageObj.SetActive(false);
+        TooltipManager.Instance.CloseTooltip();
+    }
+
+    public void CloseTooltipIfActive()
+    {
+        if (isTooltipActive)
+        {
+            TooltipManager.Instance.CloseTooltip();
+            isTooltipActive = false;
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)

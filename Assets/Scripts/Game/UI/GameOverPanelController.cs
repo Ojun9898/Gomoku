@@ -1,13 +1,18 @@
+using System.Buffers;
+using DG.Tweening;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameOverPanelController : MonoBehaviour
 {
     [SerializeField] private TMP_Text winText;
     [SerializeField] private TMP_Text playerLevel;
     [SerializeField] private TMP_Text levelPoint;
-
+    
+   
 
     public void SetGameOverPanel(Piece.Owner owner)
     {

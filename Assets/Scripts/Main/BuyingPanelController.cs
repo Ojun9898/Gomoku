@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BuyingPanelController : MonoBehaviour
@@ -19,7 +16,7 @@ public class BuyingPanelController : MonoBehaviour
 
     public void SettingBuyInfo()
     {
-        BuyInfo = BuyManager.Instance.SetData();
+        BuyInfo = BuyManager.Instance.SetCSVFileData();
     }
 
     public void SettingTotalCoin()
@@ -29,9 +26,8 @@ public class BuyingPanelController : MonoBehaviour
 
     public void OnClickitem1Button()
     {
-        // 아이템 구매 (50코인 충전)
         itemPrice = 50;
-        Buying(itemPrice);
+        Buying(itemPrice, "Coin"); // Coin 충전은 Coin
 
     }
 
@@ -39,27 +35,7 @@ public class BuyingPanelController : MonoBehaviour
     {
         // 아이템 구매 (50코인 사용)
         itemPrice = -50;
-        Buying(itemPrice);
-    }
-
-    public void OnClickitem3Button()
-    {
-        // 아이템 구매
-    }
-
-    public void OnClickitem4Button()
-    {
-        // 아이템 구매
-    }
-
-    public void OnClickitem5Button()
-    {
-        // 아이템 구매
-    }
-
-    public void OnClickitem6Button()
-    {
-        // 아이템 구매
+        Buying(itemPrice, "timer"); // 아이템 이름: Timer
     }
 
     public void OnClickCloseButton()
@@ -81,7 +57,7 @@ public class BuyingPanelController : MonoBehaviour
     }
 
 
-    public void Buying(int itemPrice)
+    public void Buying(int itemPrice, string buyItem)
     {
         int haveCoins = BuyManager.Instance.GetCoins();
 
@@ -90,6 +66,9 @@ public class BuyingPanelController : MonoBehaviour
             BuyManager.Instance.UpdateTotalCoin(itemPrice);
             SettingBuyInfo();
             SettingTotalCoin();
+
+            if (buyItem != "Coin")
+                BuyManager.Instance.UpdateBuyItems(buyItem);
         }
     }
 }

@@ -38,7 +38,7 @@ public class PausePanelController : MonoBehaviour
             canvasGroup.blocksRaycasts = false;
             gameObject.SetActive(false);
         });
-        
+
         MainManager.Instance.ShowEndGamePanel();
     }
     public void OnClickNoButton()

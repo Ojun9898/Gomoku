@@ -43,8 +43,7 @@ public class MainManager : Singleton<MainManager>
     public void ShowMainPanel()
     {
         if (SceneManager.GetActiveScene().name == "Login" ||
-            SceneManager.GetActiveScene().name == "Game"||
-            SceneManager.GetActiveScene().name == "Notation")
+            SceneManager.GetActiveScene().name == "Game")
         {
             return;
         }
@@ -129,14 +128,14 @@ public class MainManager : Singleton<MainManager>
          {
              selectPanel = Instantiate(SelectPanel, Canvas);
              selectPanelRect = selectPanel.GetComponent<RectTransform>();
-             selectPanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
+             selectPanelRect.anchoredPosition = new Vector2(-500f, 300f); // 초기 위치 설정
          }
          else
          {
              selectPanel.SetActive(true);
          }
 
-         selectPanelRect.DOLocalMoveX(0f, 0.3f);
+         selectPanelRect.DOLocalMoveX(-300f, 0.3f);
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
