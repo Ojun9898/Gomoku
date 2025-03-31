@@ -23,6 +23,7 @@ public class MapController : MonoBehaviour
     private const int BuffMaxCount = 5;
     private const int ObstacleMaxCount = 5;
     private string sName;
+    private readonly HashSet<int> _usedIndexes = new HashSet<int>();
     private List<(int,int)> _obstacleIndexes = new List<(int, int)>();
     private List<(int, int)> _buffIndexes = new List<(int, int)>();
 
@@ -79,6 +80,7 @@ public class MapController : MonoBehaviour
     /// </summary>
     public List<(int,int)> ActiveObstacleInGameScene()
     {
+        _usedIndexes.Clear();
         _obstacleIndexes.Clear(); // 중복 방지를 위해 장애물과 버프를 배치하기 전에 초기화
 
         int obstacleCount = Random.Range(1, ObstacleMaxCount);
@@ -94,8 +96,8 @@ public class MapController : MonoBehaviour
                 obstacleIndex = Random.Range(0, tiles.Count); // 중복되지 않는 새로운 인덱스 찾기
                  x = obstacleIndex % 8;
                  y = obstacleIndex / 8;
-            } while (_obstacleIndexes.Contains((x,y))); // 이미 사용된 인덱스라면 다시 뽑기
-
+            } while (_usedIndexes.Contains(obstacleIndex)); // 이미 사용된 인덱스라면 다시 뽑기
+            _usedIndexes.Add(obstacleIndex);
             _obstacleIndexes.Add((x,y)); // 사용된 인덱스 저장
             _obstacleIndexes.Add((67, 67));
             var obstacleInstance = Instantiate(obstaclePrefab, tiles[obstacleIndex].transform);
@@ -124,8 +126,8 @@ public class MapController : MonoBehaviour
                 buffIndex = Random.Range(0, tiles.Count);
                 x = buffIndex % 8;
                 y = buffIndex / 8;
-            } while (_buffIndexes.Contains((x,y))); // 중복되지 않는 인덱스 찾기
-
+            } while (_usedIndexes.Contains(buffIndex)); // 중복되지 않는 인덱스 찾기
+            _usedIndexes.Add(buffIndex);
             _buffIndexes.Add((x,y));
             var buffInstance = Instantiate(buffPrefab, tiles[buffIndex].transform);
             tiles[buffIndex].buffPrefab = buffInstance;

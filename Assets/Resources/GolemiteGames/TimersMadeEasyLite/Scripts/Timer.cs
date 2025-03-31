@@ -427,14 +427,14 @@ public class Timer : MonoBehaviour
 
     public void OnTimerEnd()
     {
+        GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
         if (GameManager.Instance.GetIsAlReadySetPiece() == false)
         {
-            //Todo: 피스 생성 메소드 시작
             StartCoroutine(PutPiece(Piece.Owner.PLAYER_A));
-
         }
         else {
             MessageManager.Instance.ShowMessagePanel("타이머가 종료되어 턴이 넘어갑니다");
+            GameManager.Instance.finishTurnButton.onClick.AddListener(() => GameManager.Instance.OnButtonClickFinishMyTurn());
             GameManager.Instance.OnButtonClickFinishMyTurn();
         }
     }
@@ -461,6 +461,7 @@ public class Timer : MonoBehaviour
         {
             GameManager.Instance._handManager.OnCardSelected(HandDeck[0]);
             yield return new WaitForSeconds(2);
+            GameManager.Instance.finishTurnButton.onClick.AddListener(() => GameManager.Instance.OnButtonClickFinishMyTurn());
             GameManager.Instance.OnButtonClickFinishMyTurn();
         }
     }
