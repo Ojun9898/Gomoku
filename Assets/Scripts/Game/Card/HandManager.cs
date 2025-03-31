@@ -69,7 +69,7 @@ public class HandManager : MonoBehaviour
             Debug.Log("먼저 타일을 선택하세요.");
             return;
         }
-        
+
         if (isAlreadySetPiece == false)
         {
             // GameManager의 SetPieceAtTile 메소드를 사용하여 선택된 타일에 말을 생성합니다.
@@ -117,7 +117,11 @@ public class HandManager : MonoBehaviour
             RefreshHandUI(playerOwner);
 
             // 선택된 타일 초기화
+            _selectedTile.ResetClickCount();
             _selectedTile = null;
+        }
+        else { 
+            MessageManager.Instance.ShowMessagePanel("이미 말을 두었습니다.");
         }
     }
 

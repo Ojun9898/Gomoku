@@ -32,7 +32,7 @@ public class PausePanelController : MonoBehaviour
     {
         canvasGroup = GetComponent<CanvasGroup>();
 
-        canvasGroup.DOFade(0f, 0.5f).OnComplete(() => //투명
+        canvasGroup.DOFade(0, 0.5f).OnComplete(() => //투명
         {
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
@@ -45,7 +45,7 @@ public class PausePanelController : MonoBehaviour
     {
         canvasGroup = GetComponent<CanvasGroup>();
 
-        canvasGroup.DOFade(0f, 0.5f).OnComplete(() => //투명
+        canvasGroup.DOFade(0, 0.5f).OnComplete(() => //투명
         {
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;

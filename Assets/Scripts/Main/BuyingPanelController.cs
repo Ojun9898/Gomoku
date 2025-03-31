@@ -9,6 +9,7 @@ public class BuyingPanelController : MonoBehaviour
 {
     [SerializeField] private TMP_Text totalCoinText;
     private string[] BuyInfo;
+    private int itemPrice = 50;
 
     void Start()
     {
@@ -29,17 +30,16 @@ public class BuyingPanelController : MonoBehaviour
     public void OnClickitem1Button()
     {
         // 아이템 구매 (50코인 충전)
-        BuyManager.Instance.UpdateTotalCoin(50);
-        SettingBuyInfo();
-        SettingTotalCoin();
+        itemPrice = 50;
+        Buying(itemPrice);
+
     }
 
     public void OnClickitem2Button()
     {
         // 아이템 구매 (50코인 사용)
-        BuyManager.Instance.UpdateTotalCoin(-50);
-        SettingBuyInfo();
-        SettingTotalCoin();
+        itemPrice = -50;
+        Buying(itemPrice);
     }
 
     public void OnClickitem3Button()
@@ -62,9 +62,34 @@ public class BuyingPanelController : MonoBehaviour
         // 아이템 구매
     }
 
-   public void OnClickCloseButton()
+    public void OnClickCloseButton()
     {
         this.GetComponent<RectTransform>().DOLocalMoveX(-600f, 0.3f)
-            .OnComplete(() => this.gameObject.SetActive(false)); 
+            .OnComplete(() => this.gameObject.SetActive(false));
+    }
+
+    public bool CheckHaveCoin(int coins, int itemPrice)
+    {
+        // itemPrice가 음수일 때만 검사
+        if (itemPrice < 0 && coins < -itemPrice)
+        {
+            MainManager.Instance.ShowErrorPanel("코인이 부족합니다.");
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public void Buying(int itemPrice)
+    {
+        int haveCoins = BuyManager.Instance.GetCoins();
+
+        if (CheckHaveCoin(haveCoins, itemPrice))
+        {
+            BuyManager.Instance.UpdateTotalCoin(itemPrice);
+            SettingBuyInfo();
+            SettingTotalCoin();
+        }
     }
 }

@@ -5,12 +5,14 @@ using System.IO;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 public class LoginManager : Singleton<LoginManager>
 {
     [SerializeField] private GameObject SigninPanel;
     [SerializeField] private GameObject SignupPanel;
+
     [SerializeField] private GameObject ErrorPanel;
     [SerializeField] private Transform Canvas;
 
@@ -21,11 +23,45 @@ public class LoginManager : Singleton<LoginManager>
 
     private float fadeDuration = 0.1f;
     private string currentUsername;
-    private string userInfoFilepath = Path.Combine(Application.dataPath, "Data", "UserInfo.csv");
+    private string userInfoFilepath;
 
     void Start()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        string streamingPath = Path.Combine(Application.streamingAssetsPath, "UserInfo.csv");
+        string persistentPath = Path.Combine(Application.persistentDataPath, "UserInfo.csv");
+
+        if (!File.Exists(persistentPath))
+        {
+            #if UNITY_ANDROID
+            StartCoroutine(CopyFileFromStreamingAssets(streamingPath, persistentPath));
+
+            #else
+            if (File.Exists(streamingPath))
+            {
+                File.Copy(streamingPath, persistentPath, true);
+            }
+
+            #endif
+        }
+
+        userInfoFilepath = persistentPath;
+    }
+
+    private IEnumerator CopyFileFromStreamingAssets(string sourcePath, string destPath)
+    {
+        using (UnityWebRequest request = UnityWebRequest.Get(sourcePath))
+        {
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                File.WriteAllBytes(destPath, request.downloadHandler.data);
+            }
+            else
+            {
+                Debug.LogError("파일 복사 실패: " + request.error);
+            }
+        }
     }
 
     public void ShowSigninPanel()
@@ -38,7 +74,7 @@ public class LoginManager : Singleton<LoginManager>
         if (!signinPanel.activeSelf)
         {
             signinPanel.SetActive(true);
-            signinPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
+            signinPanel.GetComponent<CanvasGroup>().DOFade(1, fadeDuration);
         }
     }
 
@@ -52,7 +88,7 @@ public class LoginManager : Singleton<LoginManager>
         if (!signupPanel.activeSelf)
         {
             signupPanel.SetActive(true);
-            signupPanel.GetComponent<CanvasGroup>().DOFade(1f, fadeDuration);
+            signupPanel.GetComponent<CanvasGroup>().DOFade(1, fadeDuration);
         }
     }
 
@@ -75,7 +111,7 @@ public class LoginManager : Singleton<LoginManager>
     {
         if (signinPanel != null && signinPanel.activeSelf)
         {
-            signinPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
+            signinPanel.GetComponent<CanvasGroup>().DOFade(0, fadeDuration).OnComplete(() =>
             {
                 signinPanel.SetActive(false);
             });
@@ -86,13 +122,12 @@ public class LoginManager : Singleton<LoginManager>
     {
         if (signupPanel != null && signupPanel.activeSelf)
         {
-            signupPanel.GetComponent<CanvasGroup>().DOFade(0f, fadeDuration).OnComplete(() =>
+            signupPanel.GetComponent<CanvasGroup>().DOFade(0, fadeDuration).OnComplete(() =>
             {
                 signupPanel.SetActive(false);
             });
         }
     }
-
     public void AttemptLogin(string username, string password, Action<int> callback)
     {
         StartCoroutine(LoginCoroutine(username, password, callback));
@@ -101,7 +136,9 @@ public class LoginManager : Singleton<LoginManager>
     private IEnumerator LoginCoroutine(string username, string password, Action<int> callback)
     {
         yield return new WaitForSeconds(0.5f); // 서버 요청 대기 시뮬레이션
+
         int result = CheckLogin(username, password);
+
         callback?.Invoke(result);
     }
 
@@ -114,6 +151,7 @@ public class LoginManager : Singleton<LoginManager>
         foreach (string line in lines)
         {
             string[] userData = line.Split(',');
+
             string storedUsername = userData[1].Trim();
             string storedPassword = userData[2].Trim();
 
@@ -123,6 +161,7 @@ public class LoginManager : Singleton<LoginManager>
                 return 1; // 로그인 성공
             }
         }
+
         return 0; // 로그인 실패
     }
 
@@ -139,9 +178,9 @@ public class LoginManager : Singleton<LoginManager>
             string[] userData = line.Split(',');
             allUserInfo.Add(userData);
         }
+
         return allUserInfo;
     }
-
     public string[] GetUserInfo()
     {
         CheckFile();
@@ -158,6 +197,7 @@ public class LoginManager : Singleton<LoginManager>
                 return userData;
             }
         }
+
         return null;
     }
 
@@ -218,27 +258,35 @@ public class LoginManager : Singleton<LoginManager>
             {
                 int currentPlayerLevel = 0;
                 int currentLevelPoint = 0;
+                int currentScore = 0;
+                int.TryParse(tokens[4].Trim(), out currentScore);
                 int.TryParse(tokens[5].Trim(), out currentPlayerLevel);
                 int.TryParse(tokens[6].Trim(), out currentLevelPoint);
 
                 // levelPoint에 변화량 적용
                 currentLevelPoint += levelPointDelta;
 
+                if (levelPointDelta == 1)
+                {
+                    currentScore += 1;
+                }
+
                 // levelPoint가 3 이상이면 playerLevel 업, 3씩 차감
                 while (currentLevelPoint >= 3)
                 {
-                    currentPlayerLevel--;
+                    currentPlayerLevel++;
                     currentLevelPoint -= 3;
                 }
 
                 // levelPoint가 -3 이하이면 playerLevel 다운, 3씩 보정
                 while (currentLevelPoint <= -3)
                 {
-                    currentPlayerLevel++;
+                    currentPlayerLevel--;
                     currentLevelPoint += 3;
                 }
 
                 // 갱신된 값을 문자열로 다시 할당
+                tokens[4] = currentScore.ToString();
                 tokens[5] = currentPlayerLevel.ToString();
                 tokens[6] = currentLevelPoint.ToString();
 
@@ -253,6 +301,10 @@ public class LoginManager : Singleton<LoginManager>
             // CSV 파일에 변경된 내용 저장
             File.WriteAllLines(userInfoFilepath, newLines.ToArray());
             Debug.Log("플레이어 레벨과 포인트가 업데이트되었습니다.");
+            
+            GameManager.Instance.playerInfo = GetUserInfo();
+            GameManager.Instance.playerLevel = int.Parse(GameManager.Instance.playerInfo[5]);
+            GameManager.Instance.levelPoint = int.Parse(GameManager.Instance.playerInfo[6]);
         }
         else
         {

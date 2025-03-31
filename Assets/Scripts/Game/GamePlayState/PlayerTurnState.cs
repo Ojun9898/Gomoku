@@ -20,7 +20,7 @@ public class PlayerTurnState : MonoBehaviour, IState
         Debug.Log("현재 코스트: " + PlayerCosts.Count);
         GameManager.Instance.cp.SetCost(PlayerCosts);
         
-        GameManager.Instance.Costs = PlayerCosts;
+        GameManager.Instance.costs = PlayerCosts;
         //렌주룰
         GameManager.Instance.ruleManager.UpdateForbiddenMoves(owner);
     
@@ -36,14 +36,13 @@ public class PlayerTurnState : MonoBehaviour, IState
         //턴 텍스트 설정
         TurnPanelController tp = FindObjectOfType<TurnPanelController>();
         tp.ShowTurnText(owner);
-     }
+        MessageManager.Instance.ShowMessagePanel("플레이어의 턴 입니다");
+    }
 
     public void Exit(Piece.Owner owner)
     {
         //렌주룰 풀기
         GameManager.Instance.ruleManager.DeleteForviddensOnMap();
-        //ToDo : Ai 턴 생기면 활성화
-        //GameManager.Instance.finishTurnButton.onClick.RemoveAllListeners();
         GameManager.Instance.SetTileClickEventOff();
         GameManager.Instance.SetFalseIsAlreadySetPiece();
         GameManager.Instance.AllTileClickCountSetZero();

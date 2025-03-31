@@ -26,10 +26,12 @@ public class GamePanelController : MonoBehaviour
     }
 
     public void StartTimer() {
+        timer.SetSliderColor();
         timer.StartTimer();
     }
 
     public void StopTimer() {
+        timer.SetSliderColor();
         timer.StopTimer();
     }
    
@@ -41,10 +43,10 @@ public class GamePanelController : MonoBehaviour
         pausePanel.SetActive(true);
         canvasGroup = pausePanel.GetComponent<CanvasGroup>();
 
-        canvasGroup.alpha = 0f;
+        canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-        canvasGroup.DOFade(1f, 0.5f).OnComplete(() =>
+        canvasGroup.DOFade(1, 0.5f).OnComplete(() =>
         {
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;

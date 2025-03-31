@@ -16,8 +16,15 @@ public class HaveHp : MonoBehaviour
             {
                 GameManager.Instance.Mc.tiles[GameManager.Instance.CurrentClickedTileIndex].JustBeforeDestroyPiece?.Invoke();
                 GameManager.Instance.Mc.tiles[GameManager.Instance.CurrentClickedTileIndex].JustBeforeDestroyObstacle?.Invoke();
-                Destroy(gameObject);
+                StartCoroutine(DestroyAndWait(gameObject));
             }
         }
+    }
+
+    IEnumerator DestroyAndWait(GameObject obj)
+    {
+        Destroy(obj); // 현재 프레임이 끝난 후 삭제됨
+        yield return null; // 1 프레임 대기
+        Debug.Log("객체가 삭제된 후 실행됨!");
     }
 }

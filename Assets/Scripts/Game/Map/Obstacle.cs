@@ -8,6 +8,8 @@ public class Obstacle :HaveHp
     //스프라이트 넣어서 다르게 보여주기만 하면됨
     // 필요시 사운드랑, 에니메이션 추가
     [SerializeField] private int _hpSetting;
+    
+    public Animator animator;
     private void Start()
     {
         Hp = _hpSetting;

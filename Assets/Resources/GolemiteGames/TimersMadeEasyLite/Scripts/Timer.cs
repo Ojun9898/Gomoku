@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -284,9 +283,9 @@ public class Timer : MonoBehaviour
     }
     public void StartTimer()
     {
+        ResetTimer();
         if (!timerRunning && !timerPaused)
         {
-            ResetTimer();
             timerRunning = true;
             if (countMethod == CountMethod.CountDown)
             {
@@ -316,9 +315,9 @@ public class Timer : MonoBehaviour
     private void ResetTimer()
     {
         timerPaused = false;
-        dialSlider.color = new Color32(159, 241, 65, 255);
-
-
+        
+        StartCoroutine(SetSliderGreen());
+        
         if (countMethod == CountMethod.CountDown)
         {
             timeRemaining = ReturnTotalSeconds();
@@ -439,6 +438,12 @@ public class Timer : MonoBehaviour
             GameManager.Instance.OnButtonClickFinishMyTurn();
         }
     }
+
+    public void SetSliderColor()
+    {
+        StartCoroutine(SetSliderGreen());
+    }
+
     IEnumerator PutPiece(Piece.Owner owner)
     {
         MessageManager.Instance.ShowMessagePanel("타이머가 종료되어 자동으로 말이 배치됩니다");
@@ -451,13 +456,26 @@ public class Timer : MonoBehaviour
         Tile selectedTile = GameManager.Instance.Mc.tiles[index];
         //선택된 타일 클릭 발생
         selectedTile.OnClickTileButton();
-        List<DeckManager.Card> HandDeck = GameManager.Instance._handManager.GetPlayerAorBHandCards(owner);
+        List<DeckManager.Card> HandDeck = GameManager.Instance.handManager.GetPlayerAorBHandCards(owner);
         if (HandDeck != null)
         {
-            GameManager.Instance._handManager.OnCardSelected(HandDeck[0]);
+            GameManager.Instance.handManager.OnCardSelected(HandDeck[0]);
             yield return new WaitForSeconds(2);
             GameManager.Instance.OnButtonClickFinishMyTurn();
         }
+    }
+    
+    IEnumerator SetSliderGreen() {
+        if (colorTween != null)
+        {
+            if (colorTween.IsPlaying())
+            {
+                colorTween.Kill();
+                colorTween = null;
+            }
+        }
+        dialSlider.color = new Color32(159, 241, 65, 255);
+        yield return null;
     }
 
 }

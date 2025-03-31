@@ -7,25 +7,40 @@ using UnityEngine.SceneManagement;
 
 public class BuyManager : Singleton<BuyManager>
 {
-    private string filePath = Path.Combine(Application.dataPath, "Data", "UserPurchases.csv");
+    private string streamingPath;
+    private string persistentPath;
+    private int coins = 0;
 
+    private void Awake()
+    {
+        streamingPath = Path.Combine(Application.streamingAssetsPath, "UserPurchases.csv");
+        persistentPath = Path.Combine(Application.persistentDataPath, "UserPurchases.csv");
+
+        CopyFileIfNotExists();
+    }
+
+    private void CopyFileIfNotExists()
+    {
+        if (!File.Exists(persistentPath))
+        {
+            try
+            {
+                File.Copy(streamingPath, persistentPath, true);
+                Debug.Log("파일이 StreamingAssets에서 persistentDataPath로 복사되었습니다.");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("파일 복사 실패: " + ex.Message);
+            }
+        }
+    }
 
     public string[] SetData()
     {
-        if (string.IsNullOrEmpty(filePath))
+        if (!File.Exists(persistentPath))
         {
-            filePath = Path.Combine(Application.dataPath, "Data", "UserPurchases.csv");
-        }
-
-        if (string.IsNullOrEmpty(filePath) || !Directory.Exists(Path.GetDirectoryName(filePath)))
-        {
-            Debug.LogError("Invalid file path: " + filePath);
+            Debug.LogError("파일이 존재하지 않습니다: " + persistentPath);
             return null;
-        }
-
-        if (!File.Exists(filePath))
-        {
-            File.WriteAllText(filePath, "Username,TotalCoin,BuyItems,UseItems\n");
         }
 
         string currentUsername = LoginManager.Instance.GetUsername();
@@ -35,7 +50,7 @@ public class BuyManager : Singleton<BuyManager>
     public string[] GetBuyInfo(string currentUsername)
     {
         CheckFile();
-        string[] lines = File.ReadAllLines(filePath);
+        string[] lines = File.ReadAllLines(persistentPath);
         List<string> buyInfo = new List<string>();
 
         foreach (string line in lines)
@@ -50,15 +65,28 @@ public class BuyManager : Singleton<BuyManager>
         }
 
         string newEntry = $"{currentUsername},0,,\n";
-        File.AppendAllText(filePath, newEntry);
+        File.AppendAllText(persistentPath, newEntry);
 
         return new string[] { currentUsername, "0", "", "" };
+    }
+
+    public int GetCoins()
+    {
+        string[] buyInfo = SetData();
+
+        if (buyInfo == null)
+        {
+            MainManager.Instance.ShowErrorPanel("구매 정보 오류입니다");
+            return 0;
+        }
+
+        return int.TryParse(buyInfo[1], out int coins) ? coins : 0;
     }
 
     public void UpdateTotalCoin(int coin)
     {
         string currentUsername = LoginManager.Instance.GetUsername();
-        string[] currentBuyInfo = GetBuyInfo(currentUsername); // GetBuyInfo 사용하여 구매 정보 가져오기
+        string[] currentBuyInfo = GetBuyInfo(currentUsername);
 
         if (currentBuyInfo == null || currentBuyInfo.Length != 4)
         {
@@ -67,16 +95,16 @@ public class BuyManager : Singleton<BuyManager>
         }
 
         int totalCoin = 0;
+
         if (!int.TryParse(currentBuyInfo[1], out totalCoin))
         {
-            totalCoin = 0; // 만약 값이 비어있거나 잘못된 값이면 0으로 설정
+            totalCoin = 0;
         }
 
-        totalCoin += coin; // 코인 추가
+        totalCoin += coin;
         currentBuyInfo[1] = totalCoin.ToString();
 
-        // 전체 파일 내용을 갱신
-        string[] lines = File.ReadAllLines(filePath);
+        string[] lines = File.ReadAllLines(persistentPath);
         List<string> newLines = new List<string>();
         bool isUpdated = false;
 
@@ -85,38 +113,37 @@ public class BuyManager : Singleton<BuyManager>
             string[] userData = line.Split(',');
             if (userData.Length == 4 && userData[0].Trim() == currentUsername)
             {
-                newLines.Add(string.Join(",", currentBuyInfo)); // 수정된 구매 정보 추가
+                newLines.Add(string.Join(",", currentBuyInfo));
                 isUpdated = true;
             }
             else
             {
-                newLines.Add(line); // 기존 데이터 그대로 추가
+                newLines.Add(line);
             }
         }
 
         if (!isUpdated)
         {
-            newLines.Add(string.Join(",", currentBuyInfo)); // 새로 추가
+            newLines.Add(string.Join(",", currentBuyInfo));
         }
 
-        File.WriteAllLines(filePath, newLines); // 파일에 저장
+        File.WriteAllLines(persistentPath, newLines);
         MainManager.Instance.ShowErrorPanel("구매 완료되었습니다.");
     }
 
-
-
     public void UpdateBuyItems(string buyItems)
     {
+        // 구현 필요
     }
 
     public void UpdateUseItems(string useItems)
     {
+        // 구현 필요
     }
-
 
     private void CheckFile()
     {
-        if (!File.Exists(filePath))
+        if (!File.Exists(persistentPath))
         {
             Debug.LogError("구매 파일이 없습니다.");
         }

@@ -6,12 +6,15 @@ using UnityEngine.UI;
 using static Piece;
 using System.Linq;
 using UnityEngine.Serialization;
+using DG.Tweening;
 
 
 [RequireComponent(typeof(StateMachine))]
 public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private MapController mc;
+    public List<GameObject> effects;
+    public GameObject BlackPanel;
     public GameObject BlockPanelPrefab;
     public GameObject forbiddenMoveObject;
     public GameObject piece;
@@ -24,10 +27,12 @@ public class GameManager : Singleton<GameManager>
     public Action RangeAttackResetVisualizeEvent;
     public RuleManager ruleManager;
     public int currentClickedTileIndex;
-    public HandManager _handManager;
-    public List<bool> Costs;
-    public int PlayerLevel;
+    public HandManager handManager;
+    public List<bool> costs;
+    public int playerLevel;
+    public int levelPoint;
     public CostPanelController cp;
+    public string[] playerInfo;
     
     private Owner _playerType;
     private DeckManager _deckManager;
@@ -74,8 +79,7 @@ public class GameManager : Singleton<GameManager>
     /// 게임 메니저 초기화
     /// </summary>
     private void InitGameManager()
-    {   // 카드 생성 메소드 
-
+    {   
         // Map에서 타일 생성후 가져오는 메소드
         SetMapController();
         // 턴 넘김 횟수 초기화 
@@ -85,12 +89,12 @@ public class GameManager : Singleton<GameManager>
         // 선공 정하기
         _playerType = SetFirstAttackPlayer();
         // 플레이어 손패 지급
-        _handManager = FindObjectOfType<HandManager>();
+        handManager = FindObjectOfType<HandManager>();
         _deckManager = FindObjectOfType<DeckManager>();
-        _handManager.playerOwner = _playerType;
+        handManager.playerOwner = _playerType;
 
         _deckManager.InitializeDeck();
-        _handManager.InitializeHand(_deckManager);
+        handManager.InitializeHand(_deckManager);
         //RuleManager 가져오기
         ruleManager = FindAnyObjectByType<RuleManager>();
         //게임패널컨트롤러 가져오기
@@ -100,7 +104,9 @@ public class GameManager : Singleton<GameManager>
         cp = FindObjectOfType<CostPanelController>();
         //RuleManager 초기화
         ruleManager.Init(mc.tiles, _playerType);
-
+        // AI 레벨 설정
+        playerInfo = LoginManager.Instance.GetUserInfo();
+        playerLevel = int.Parse(playerInfo[5]);
         // 상태 머신 가져오기 
         SetFSM();
     }
@@ -174,7 +180,7 @@ public class GameManager : Singleton<GameManager>
                 // 기존에는 tileClickCount == 2일 때 말을 생성했으나, 이제 카드를 통해 생성하므로 안내 메시지만 보여줍니다.
                 if (tileClickCount == 2)
                 {
-                    if (_handManager.isAlreadySetPiece)
+                    if (handManager.isAlreadySetPiece)
                     {
                         MessageManager.Instance.ShowMessagePanel("이미 말이 존재합니다");
                         Debug.Log(mc.tiles[CurrentClickedTileIndex].Piece);
@@ -196,7 +202,9 @@ public class GameManager : Singleton<GameManager>
                 if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK && mc.tiles[CurrentClickedTileIndex].GetObstacle() != null)
                 { // Todo : 장애물 공격
                     _currentChoosingPiece.ChoseAttack(mc.tiles[CurrentClickedTileIndex].GetObstacle(), _currentChoosingPiece.GetAttackPower());
-                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다" + mc.tiles[CurrentClickedTileIndex].GetObstacle().name + "의 Hp:" + mc.tiles[CurrentClickedTileIndex].GetObstacle().Hp);
+                    PlayAnimationAndEffect(_currentChoosingPiece, mc.tiles[CurrentClickedTileIndex].GetObstacle());
+                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다" + "장애물의 Hp:" + mc.tiles[CurrentClickedTileIndex].GetObstacle().Hp);
+                    
 
                 }
                 else if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK || _currentChoosingPiece.attackType == AttackType.BUFF)
@@ -257,7 +265,7 @@ public class GameManager : Singleton<GameManager>
                     _damagedPiece = _currentChoosingPiece;
                     _attackingPiece = mc.tiles[_lastClickedTileIndex].Piece;
 
-                    bool CanAttack = CheckIsLeftCost(Costs,_attackingPiece);
+                    bool CanAttack = CheckIsLeftCost(costs,_attackingPiece);
 
                     if (!CanAttack) {
                         MessageManager.Instance.ShowMessagePanel("코스트가 부족합니다");
@@ -279,9 +287,8 @@ public class GameManager : Singleton<GameManager>
                         else if (_attackingPiece.attackType == AttackType.BUFF)
                         {
                             _attackingPiece.Buff(_damagedPiece, _attackingPiece.GetAttackPower());
-                            UseCost(Costs, _attackingPiece);
-                            _attackingPiece.animator.Play("ATTACK");
-                            _damagedPiece.animator.Play("BUFF");
+                            UseCost(costs, _attackingPiece);
+                            PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                             MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
                         }
                     }
@@ -301,19 +308,27 @@ public class GameManager : Singleton<GameManager>
                 if (_currentChoosingPiece.isAlreadyAttack)
                 {
                     MessageManager.Instance.ShowMessagePanel("이미 공격한 말 입니다");
+                    FadeCardAndResetClick();
                     FinishedAttack();
                     return (true, 0);
                 }
-                if (_handManager.playerAHandPanel.activeInHierarchy)
+                if (handManager.playerAHandPanel.activeInHierarchy)
                 {
-                    _handManager.playerAHandPanel.SetActive(false);
+                    handManager.playerAHandPanel.SetActive(false);
                 }
 
-                else if (_handManager.playerBHandPanel.activeInHierarchy)
+                else if (handManager.playerBHandPanel.activeInHierarchy)
                 {
-                    _handManager.playerBHandPanel.SetActive(false);
+                    handManager.playerBHandPanel.SetActive(false);
                 }
-                MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
+
+                if (Mc.tiles[CurrentClickedTileIndex].Piece.attackType == AttackType.BUFF)
+                {
+                    MessageManager.Instance.ShowMessagePanel("체력을 회복할 말을 선택하세요");
+                }
+                else {
+                    MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
+                }
             }
             else
             {
@@ -324,7 +339,7 @@ public class GameManager : Singleton<GameManager>
                     _damagedPiece = mc.tiles[CurrentClickedTileIndex].Piece;
                     _attackingPiece = mc.tiles[_lastClickedTileIndex].Piece;
 
-                    bool CanAttack = CheckIsLeftCost(Costs, _attackingPiece);
+                    bool CanAttack = CheckIsLeftCost(costs, _attackingPiece);
 
                     if (!CanAttack)
                     {
@@ -338,26 +353,16 @@ public class GameManager : Singleton<GameManager>
                         if (_attackingPiece.attackType == AttackType.CHOOSE_ATTACK)
                         {
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
-                            UseCost(Costs, _attackingPiece);
+                            UseCost(costs, _attackingPiece);
+                            PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
-                            _attackingPiece.animator.Play("ATTACK");
-                            _damagedPiece.animator.Play("DAMAGED");
-                            if (_damagedPiece.hp <= 0)
-                            {
-                                _damagedPiece.animator.Play("DEATH");
-                            }
                         }
                         else if (_attackingPiece.attackType == AttackType.RANGE_ATTACK)
                         {
                             //attackingPiece.RangeAttack(currentClickedTileIndex);
-                            UseCost(Costs, _attackingPiece);
+                            UseCost(costs, _attackingPiece);
+                            PlayAnimationAndEffect(_attackingPiece, _damagedPiece);
                             MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
-                            _attackingPiece.animator.Play("ATTACK");
-                            _damagedPiece.animator.Play("DAMAGED");
-                            if (_damagedPiece.hp <= 0)
-                            {
-                                _damagedPiece.animator.Play("DEATH");
-                            }
                         }
                         else if (_attackingPiece.attackType == AttackType.BUFF)
                         {
@@ -374,6 +379,7 @@ public class GameManager : Singleton<GameManager>
                 else
                 {
                     MessageManager.Instance.ShowMessagePanel("상대의 말입니다");
+                    FadeCardAndResetClick();
                     return (true, 0);
                 }
             }
@@ -447,13 +453,13 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void SetFalseIsAlreadySetPiece()
     {
-        _handManager.isAlreadySetPiece = false;
+        handManager.isAlreadySetPiece = false;
     }
 
     /// <summary>
     /// 공격 상황이 끝났을 때를 가정하고 모든 상황을 초기화하는 메소드
     /// </summary>
-    private void FinishedAttack()
+    public void FinishedAttack()
     {
         _damagedPiece = null;
         _attackingPiece = null;
@@ -580,9 +586,9 @@ public class GameManager : Singleton<GameManager>
             return;
         }
 
-        if (_handManager.isAlreadySetPiece)
+        if (handManager.isAlreadySetPiece)
         {
-            GameManager.Instance.gamePanelController.StopTimer();
+            gamePanelController.StopTimer();
             _changeTurnCount++;
             Debug.Log("턴 진행 횟수 : " + _changeTurnCount);
             if (_changeTurnCount >= 30)
@@ -596,34 +602,34 @@ public class GameManager : Singleton<GameManager>
             {
                 case Owner.PLAYER_A:
                     _playerType = Owner.PLAYER_B;
-                    _handManager.playerOwner = _playerType;
-                    _handManager.isAlreadySetPiece = false;
-                    _handManager.playerAHandPanel.SetActive(false);
+                    handManager.playerOwner = _playerType;
+                    handManager.isAlreadySetPiece = false;
+                    handManager.playerAHandPanel.SetActive(false);
                     
-                    if (_handManager.playerAHandCards != null)
+                    if (handManager.playerAHandCards != null)
                     {
-                        DeckManager.Card card = _deckManager.PopCard(_handManager.GetPlayerDeck(_deckManager.playerACards));
+                        DeckManager.Card card = _deckManager.PopCard(handManager.GetPlayerDeck(_deckManager.playerACards));
                         if (card != null)
                         {
-                            _handManager.playerAHandCards.Add(card);
-                            _handManager.CreateCardUI(card, Owner.PLAYER_A);
+                            handManager.playerAHandCards.Add(card);
+                            handManager.CreateCardUI(card, Owner.PLAYER_A);
                         }
                     } 
                     
                     break;
                 case Owner.PLAYER_B:
                     _playerType = Owner.PLAYER_A;
-                    _handManager.playerOwner = _playerType;
-                    _handManager.isAlreadySetPiece = false;
-                    _handManager.playerBHandPanel.SetActive(false);
+                    handManager.playerOwner = _playerType;
+                    handManager.isAlreadySetPiece = false;
+                    handManager.playerBHandPanel.SetActive(false);
                     
-                    if (_handManager.playerBHandCards != null)
+                    if (handManager.playerBHandCards != null)
                     {
-                        DeckManager.Card card = _deckManager.PopCard(_handManager.GetPlayerDeck(_deckManager.playerBCards));
+                        DeckManager.Card card = _deckManager.PopCard(handManager.GetPlayerDeck(_deckManager.playerBCards));
                         if (card != null)
                         {
-                            _handManager.playerBHandCards.Add(card);
-                            _handManager.CreateCardUI(card, Owner.PLAYER_B);
+                            handManager.playerBHandCards.Add(card);
+                            handManager.CreateCardUI(card, Owner.PLAYER_B);
                         }
                     } 
                     
@@ -656,6 +662,50 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    private void PlayAnimationAndEffect(Piece attackPiece, Obstacle obstacle)
+    {
+        attackPiece.animator.Play("ATTACK");
+        obstacle.animator.Play("DAMAGED"); 
+        attackPiece.audioSource.Play();
+    }
+
+    private void PlayAnimationAndEffect(Piece attackPiece, Piece damagedPiece)
+    {
+        if (attackPiece.attackType == AttackType.BUFF)
+        {
+            attackPiece.animator.Play("ATTACK");
+            damagedPiece.animator.Play("BUFF");
+            attackPiece.audioSource.Play();
+            var buffInstance = Instantiate(effects[4], damagedPiece.transform.position, Quaternion.identity);
+        }
+        else
+        {
+            attackPiece.animator.Play("ATTACK");
+            attackPiece.audioSource.Play();
+            if (attackPiece.pieceType == PieceType.WARRIOR)
+            {
+                var buffInstance = Instantiate(effects[0], damagedPiece.transform.position, Quaternion.identity);
+            }
+            
+            else if (attackPiece.pieceType == PieceType.ARCHER)
+            {
+                var buffInstance = Instantiate(effects[1], damagedPiece.transform.position, Quaternion.identity);
+            }
+            
+            else if (attackPiece.pieceType == PieceType.MAGICIAN)
+            {
+                var buffInstance = Instantiate(effects[2], damagedPiece.transform.position, Quaternion.identity);
+            }
+            
+            else if (attackPiece.pieceType == PieceType.RANCER)
+            {
+                var buffInstance = Instantiate(effects[3], damagedPiece.transform.position, Quaternion.identity);
+            }
+            
+            damagedPiece.animator.Play(_damagedPiece.hp <= 0 ? "DEATH" : "DAMAGED");
+        }
+    }
+    
     /// <summary>
     ///  맵위 모든 piece의 공격 초기화 메소드
     /// </summary>
@@ -680,6 +730,11 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void FadeCardAndResetClick() {
+        Mc.tiles[GameManager.Instance.currentClickedTileIndex].ResetClick();
+        handManager.playerAHandPanel.SetActive(false);
+        handManager.playerBHandPanel.SetActive(false);
+    }
     public Owner GetCurrentPlayerType()
     {
         return _playerType;
@@ -687,11 +742,11 @@ public class GameManager : Singleton<GameManager>
 
     public bool GetIsAlReadySetPiece()
     {
-        return _handManager.isAlreadySetPiece;
+        return handManager.isAlreadySetPiece;
     }
     public void SetIsAlReadySetPiece(bool isAlreadySetPiece)
     {
-        _handManager.isAlreadySetPiece = isAlreadySetPiece;
+        handManager.isAlreadySetPiece = isAlreadySetPiece;
     }
 
     public StateMachine GetFSM()

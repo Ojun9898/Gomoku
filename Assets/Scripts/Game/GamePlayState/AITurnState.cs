@@ -1,11 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DG.Tweening;
 using UnityEngine;
 using static Piece;
-using static RuleManager;
 
 public class AITurnState : MonoBehaviour, IState
 { 
@@ -27,7 +24,7 @@ public class AITurnState : MonoBehaviour, IState
         Debug.Log("현재 코스트: " + AICosts.Count);
         GameManager.Instance.cp.SetCost(AICosts);
 
-        GameManager.Instance.Costs = AICosts;
+        GameManager.Instance.costs = AICosts;
 
         //클릭 막이 패널
         if (BlockPanel == null)
@@ -44,30 +41,25 @@ public class AITurnState : MonoBehaviour, IState
         GameManager.Instance.PiecesInit();
         //타이머 on
         GameManager.Instance.gamePanelController.StartTimer();
-        int level = GameManager.Instance.PlayerLevel;
+        int level = GameManager.Instance.playerLevel;
 
         if (level <= 3)
         {
             StartCoroutine(PutPiece(owner));
         }
-        else if (level <= 10) {
+        else if (level <= 7) {
 
             StartCoroutine(PutPieceAndOnlyAttack(owner));
         } 
-        else if(level <= 15) {
+        else if(level <= 12) {
             StartCoroutine(PutPieceThenAttackandHeal(owner));
         }
         else
         {
             StartCoroutine(AttackandHealThenPutPiece(owner));
         }
-    
 
 
-        //돌 두기 ai
-        //돌 공격 ai
-        //더이상 공격할 수 없거나(코스트 부족),공격할 게 없을 때 (모든 piece범위에 적 없음 or 공격 남은 말이 없음)
-        //턴 변경
 
         //턴 텍스트 설정
         TurnPanelController tp = FindObjectOfType<TurnPanelController>();
@@ -77,6 +69,7 @@ public class AITurnState : MonoBehaviour, IState
     public void Exit(Piece.Owner owner)
     {
         BlockPanel.SetActive(false);
+        // GameManager.Instance.notationManager.PrintAll();
         GameManager.Instance.ruleManager.DeleteForviddensOnMap();
         GameManager.Instance.SetTileClickEventOff();
         GameManager.Instance.SetFalseIsAlreadySetPiece();
@@ -86,24 +79,24 @@ public class AITurnState : MonoBehaviour, IState
 
     IEnumerator PutPiece(Piece.Owner owner)
     {
-        MessageManager.Instance.ShowMessagePanel("AI의 턴 입니다");
+        MessageManager.Instance.ShowMessagePanel("상대의 턴 입니다");
         yield return new WaitForSeconds(1.6f);
         int randomTime = GetRandomValue();
-        MessageManager.Instance.ShowMessagePanel(owner + "가 좋은 위치를 물색하고 있습니다", randomTime);
+        MessageManager.Instance.ShowMessagePanel("상대가 좋은 위치를 물색하고 있습니다", randomTime);
         // 최적의 인덱스 받아오기
         yield return new WaitForSeconds(randomTime + 0.7f);
         
         (int x, int y) bestMoveIndex = GameManager.Instance.ruleManager.FindOptimalMove(owner);
 
         int index = bestMoveIndex.y * 8 + bestMoveIndex.x;
-        MessageManager.Instance.ShowMessagePanel(index+"에 말을 배치합니다");
+        MessageManager.Instance.ShowMessagePanel("상대가 말을 배치합니다");
         Tile selectedTile = GameManager.Instance.Mc.tiles[index];
         //선택된 타일 클릭 발생
         selectedTile.OnClickTileButton();
-        List<DeckManager.Card> HandDeck = GameManager.Instance._handManager.GetPlayerAorBHandCards(owner);
+        List<DeckManager.Card> HandDeck = GameManager.Instance.handManager.GetPlayerAorBHandCards(owner);
         if (HandDeck != null) { 
         
-            GameManager.Instance._handManager.OnCardSelected(HandDeck.FirstOrDefault());
+            GameManager.Instance.handManager.OnCardSelected(HandDeck.FirstOrDefault());
             yield return new WaitForSeconds(2);
         }
         GameManager.Instance.OnButtonClickFinishMyTurn();
@@ -111,25 +104,25 @@ public class AITurnState : MonoBehaviour, IState
 
     IEnumerator PutPieceAndOnlyAttack(Piece.Owner owner)
     {
-        MessageManager.Instance.ShowMessagePanel("AI의 턴 입니다");
+        MessageManager.Instance.ShowMessagePanel("상대의 턴 입니다");
         yield return new WaitForSeconds(1.6f);
         int randomTime = GetRandomValue();
-        MessageManager.Instance.ShowMessagePanel(owner + "가 좋은 위치를 물색하고 있습니다", randomTime);
+        MessageManager.Instance.ShowMessagePanel("상대가 좋은 위치를 물색하고 있습니다", randomTime);
         // 최적의 인덱스 받아오기
         yield return new WaitForSeconds(randomTime + 0.7f);
 
         (int x, int y) bestMoveIndex = GameManager.Instance.ruleManager.FindOptimalMove(owner);
 
         int index = bestMoveIndex.y * 8 + bestMoveIndex.x;
-        MessageManager.Instance.ShowMessagePanel(index + "에 말을 배치합니다");
+        MessageManager.Instance.ShowMessagePanel("상대가 말을 배치합니다");
         Tile selectedTile = GameManager.Instance.Mc.tiles[index];
         //선택된 타일 클릭 발생
         selectedTile.OnClickTileButton();
-        List<DeckManager.Card> HandDeck = GameManager.Instance._handManager.GetPlayerAorBHandCards(owner);
+        List<DeckManager.Card> HandDeck = GameManager.Instance.handManager.GetPlayerAorBHandCards(owner);
         if (HandDeck != null)
         {
 
-            GameManager.Instance._handManager.OnCardSelected(HandDeck.FirstOrDefault(card => card.pieceCost == HandDeck.Min(c => c.pieceCost)));
+            GameManager.Instance.handManager.OnCardSelected(HandDeck.FirstOrDefault(card => card.pieceCost == HandDeck.Min(c => c.pieceCost)));
             yield return new WaitForSeconds(2);
         }
    
@@ -150,7 +143,8 @@ public class AITurnState : MonoBehaviour, IState
         {
 
             Piece pc = GameManager.Instance.Mc.tiles[attackPriority[i]].Piece;
-            if (pc.attackType == AttackType.BUFF) { continue; }
+            if (pc == null) continue;
+            if (pc.attackType == AttackType.BUFF)  continue; 
 
             if (pc.cost <= AICosts.Count(x => x))
             {
@@ -164,7 +158,9 @@ public class AITurnState : MonoBehaviour, IState
                 if (!RANGE.Contains(selectedDamagedTile)) {
                     selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
                 }
-                if (selectedDamagedTile == -1) { continue; }
+                if (selectedDamagedTile < 0) {
+                    continue; 
+                }
                 GameManager.Instance.Mc.tiles[selectedDamagedTile].OnClickTileButton();
                 yield return new WaitForSeconds(1.2f);
             }
@@ -174,25 +170,25 @@ public class AITurnState : MonoBehaviour, IState
     }
     IEnumerator PutPieceThenAttackandHeal(Piece.Owner owner)
     {
-        MessageManager.Instance.ShowMessagePanel("AI의 턴 입니다");
+        MessageManager.Instance.ShowMessagePanel("상대의 턴 입니다");
         yield return new WaitForSeconds(1.6f);
         int randomTime = GetRandomValue();
-        MessageManager.Instance.ShowMessagePanel(owner + "가 좋은 위치를 물색하고 있습니다", randomTime);
+        MessageManager.Instance.ShowMessagePanel("상대가 좋은 위치를 물색하고 있습니다", randomTime);
         // 최적의 인덱스 받아오기
         yield return new WaitForSeconds(randomTime + 0.7f);
 
         (int x, int y) bestMoveIndex = GameManager.Instance.ruleManager.FindOptimalMove(owner);
 
         int index = bestMoveIndex.y * 8 + bestMoveIndex.x;
-        MessageManager.Instance.ShowMessagePanel(index + "에 말을 배치합니다");
+        MessageManager.Instance.ShowMessagePanel("상대가 말을 배치합니다");
         Tile selectedTile = GameManager.Instance.Mc.tiles[index];
         //선택된 타일 클릭 발생
         selectedTile.OnClickTileButton();
-        List<DeckManager.Card> HandDeck = GameManager.Instance._handManager.GetPlayerAorBHandCards(owner);
+        List<DeckManager.Card> HandDeck = GameManager.Instance.handManager.GetPlayerAorBHandCards(owner);
         if (HandDeck != null)
         {
 
-            GameManager.Instance._handManager.OnCardSelected(HandDeck.FirstOrDefault(card => card.pieceCost == HandDeck.Min(c => c.pieceCost)));
+            GameManager.Instance.handManager.OnCardSelected(HandDeck.FirstOrDefault(card => card.pieceCost == HandDeck.Min(c => c.pieceCost)));
             yield return new WaitForSeconds(2);
         }
 
@@ -203,29 +199,30 @@ public class AITurnState : MonoBehaviour, IState
 
     IEnumerator AttackandHealThenPutPiece(Piece.Owner owner)
     {
-        MessageManager.Instance.ShowMessagePanel("AI의 턴 입니다");
+        MessageManager.Instance.ShowMessagePanel("상대의 턴 입니다");
         yield return new WaitForSeconds(1.6f);
         int randomTime = GetRandomValue();
         yield return new WaitForSeconds(1.6f);
+
         yield return AttackAndHeal(owner);
 
 
-        MessageManager.Instance.ShowMessagePanel(owner + "가 좋은 위치를 물색하고 있습니다", randomTime);
+        MessageManager.Instance.ShowMessagePanel("상대가 좋은 위치를 물색하고 있습니다", randomTime);
         // 최적의 인덱스 받아오기
         yield return new WaitForSeconds(randomTime + 0.7f);
 
         (int x, int y) bestMoveIndex = GameManager.Instance.ruleManager.FindOptimalMove(owner);
 
         int index = bestMoveIndex.y * 8 + bestMoveIndex.x;
-        MessageManager.Instance.ShowMessagePanel(index + "에 말을 배치합니다");
+        MessageManager.Instance.ShowMessagePanel("상대가 말을 배치합니다");
         Tile selectedTile = GameManager.Instance.Mc.tiles[index];
         //선택된 타일 클릭 발생
         selectedTile.OnClickTileButton();
-        List<DeckManager.Card> HandDeck = GameManager.Instance._handManager.GetPlayerAorBHandCards(owner);
+        List<DeckManager.Card> HandDeck = GameManager.Instance.handManager.GetPlayerAorBHandCards(owner);
         if (HandDeck != null)
         {
 
-            GameManager.Instance._handManager.OnCardSelected(HandDeck.FirstOrDefault(card => card.pieceCost == HandDeck.Min(c => c.pieceCost)));
+            GameManager.Instance.handManager.OnCardSelected(HandDeck.FirstOrDefault(card => card.pieceCost == HandDeck.Min(c => c.pieceCost)));
             yield return new WaitForSeconds(2);
         }
 
@@ -248,11 +245,14 @@ public class AITurnState : MonoBehaviour, IState
         for (int i = 0; i < attackPriority.Count; i++)
         {
             Piece pc = GameManager.Instance.Mc.tiles[attackPriority[i]].Piece;
-            if (pc.isAlreadyAttack == true) { continue; }
+            if(pc == null)  continue; 
+            if (pc.isAlreadyAttack == true) continue; 
             if (pc.cost <= AICosts.Count(x => x))
             {
 
                 int selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
+
+
                 if (pc.attackType == AttackType.BUFF)
                 {
                     //공격자 선택
@@ -262,7 +262,9 @@ public class AITurnState : MonoBehaviour, IState
                     yield return new WaitForSeconds(1.2f);
                     //회복 받는 타일 선택
                     int selectedHealTile = GameManager.Instance.ruleManager.FindWeakestConsecutiveAllyInRange(attackPriority[i], owner);
-                    if (selectedDamagedTile == -1) { continue; }
+                    if (selectedHealTile < 0) {
+                        continue; 
+                    }
                     GameManager.Instance.Mc.tiles[selectedHealTile].OnClickTileButton();
                     yield return new WaitForSeconds(1.2f);
                 }
@@ -281,7 +283,9 @@ public class AITurnState : MonoBehaviour, IState
                     {
                         selectedDamagedTile = GameManager.Instance.ruleManager.FindBestAttackTarget(attackPriority[i], owner);
                     }
-                    if (selectedDamagedTile == -1) { continue; }
+                    if (selectedDamagedTile < 0) {
+                        continue; 
+                    }
                     GameManager.Instance.Mc.tiles[selectedDamagedTile].OnClickTileButton();
                     yield return new WaitForSeconds(1.2f);
                 }

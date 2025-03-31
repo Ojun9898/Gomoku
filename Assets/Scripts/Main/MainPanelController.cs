@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using DG.Tweening;
-using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -48,9 +45,9 @@ public class MainPanelController : MonoBehaviour
     {
         FadePanel = Instantiate(FadePanel, canvasTransform);
 
-        FadePanel.GetComponent<CanvasGroup>().alpha = 0f;
+        FadePanel.GetComponent<CanvasGroup>().alpha = 0;
 
-        FadePanel.GetComponent<CanvasGroup>().DOFade(1f, 1.5f).OnComplete(() =>
+        FadePanel.GetComponent<CanvasGroup>().DOFade(1, 1.5f).OnComplete(() =>
         {
             SceneManager.LoadScene("Game");
         });
@@ -58,12 +55,7 @@ public class MainPanelController : MonoBehaviour
 
     public void OnClickExitButton()
     {
-        if (Application.isEditor)
-        {
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
-        
-        else Application.Quit();
+        Application.Quit();
     }
 
     public void OnClickRankingButton() 
@@ -120,7 +112,7 @@ public class MainPanelController : MonoBehaviour
        {
             profilePanel = Instantiate(ProfilePanel, canvasTransform);
             profilePanelRect = profilePanel.GetComponent<RectTransform>();
-            profilePanelRect.anchoredPosition = new Vector2(-500f, 515f); // 초기 위치 설정
+            profilePanelRect.anchoredPosition = new Vector2(-500f, 0f); // 초기 위치 설정
         }
         else
         {

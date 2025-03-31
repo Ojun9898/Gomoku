@@ -17,45 +17,10 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     private Buff _buff;
     public Piece Piece { get; set; }
     
-    private HandManager _handManager;
 
     public Action JustBeforeDestroyPiece;
     public Action JustBeforeDestroyObstacle;
 
-    private void Start()
-    {
-        _handManager = FindObjectOfType<HandManager>();
-    }
-
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            // UI 요소 위를 클릭한 경우는 제외하고
-            if (!EventSystem.current.IsPointerOverGameObject())
-            {
-                // 마우스 위치에서 Raycast를 실행하여 Tile 컴포넌트가 있는지 확인
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-                if (!Physics.Raycast(ray, out hit))
-                {
-                        _handManager.playerAHandPanel.SetActive(false);
-                        _handManager.playerBHandPanel.SetActive(false);
-                        clickedImageObj.SetActive(false);
-                }
-                else
-                {
-                    // 만약 Raycast된 오브젝트에 Tile 컴포넌트가 없다면 카드 패널 비활성화
-                    if (hit.collider.GetComponent<Tile>() == null)
-                    {
-                        _handManager.playerAHandPanel.SetActive(false);
-                        _handManager.playerBHandPanel.SetActive(false);
-                        clickedImageObj.SetActive(false);
-                    }
-                }
-            }
-        }
-    }
 
     public void ResetAll() {
         obstacle = null;
@@ -66,6 +31,10 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public void ResetClick()
     {
         clickedImageObj.SetActive(false);
+        _tileClickCount = 0;
+    }
+
+    public void ResetClickCount() {
         _tileClickCount = 0;
     }
 
@@ -118,13 +87,13 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         if (!_isNeedOneClick)
         {
             Debug.Log(GameManager.Instance.CurrentClickedTileIndex + " : 클릭한 타일 인덱스");
-            if (_handManager.playerOwner == Piece.Owner.PLAYER_A)
+            if (GameManager.Instance.handManager.playerOwner == Piece.Owner.PLAYER_A)
             {
-                _handManager.playerAHandPanel.SetActive(true);
+                GameManager.Instance.handManager.playerAHandPanel.SetActive(true);
             }
             else
             {
-                _handManager.playerBHandPanel.SetActive(true);
+                GameManager.Instance.handManager.playerBHandPanel.SetActive(true);
             }
             var pieceAndCaseValue = GameManager.Instance.FirstTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
             if (pieceAndCaseValue != null)

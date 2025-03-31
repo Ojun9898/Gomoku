@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,8 +12,7 @@ public class FinishDirectionState : MonoBehaviour, IState
         //owner에는 우승자 정보가 들어감 여기서 요걸로 판별하거나 아님 먼저 하거나
         //패널하나  열어서  보여주는 것도 ㄱㅊ을듯?
         GameManager.Instance.gamePanelController.StopTimer();
-        MessageManager.Instance.ShowMessagePanel($"{owner}의 승리입니다!");
-
+        
         // 플레이어 승리 여부에 따라 levelPoint를 업데이트
         if (owner == Piece.Owner.PLAYER_A)
         {
@@ -27,19 +25,14 @@ public class FinishDirectionState : MonoBehaviour, IState
             LoginManager.Instance.UpdatePlayerLevelAndPoint(-1);
         }
         
-        StartCoroutine(WaitFinishGame());
+        // GameOverPanel 띄우기
+        MainManager.Instance.ShowGameOverPanel(owner);
+        
         Debug.Log("FinishDirectionState입니다");
     }
 
     public void Exit(Piece.Owner owner)
     {
         Debug.Log("FinishDirectionState 나갔습니다");
-    }
-
-    IEnumerator WaitFinishGame()
-    {
-        yield return new WaitForSeconds(2f);
-
-        SceneManager.LoadScene("Main");
     }
 }
