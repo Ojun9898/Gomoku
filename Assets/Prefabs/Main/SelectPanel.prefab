@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c124770e94a304b94776fd736f7e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectImageName: 
 --- !u!1 &2064884177034986462
 GameObject:
   m_ObjectHideFlags: 0
@@ -347,11 +348,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 2265348031157125201}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -479,11 +480,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 2397292304819932143}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -611,11 +612,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 2493082686247547861}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -743,11 +744,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 3131696067622102912}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -875,11 +876,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 4565920210197502146}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1007,11 +1008,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 5379213987797156570}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1272,11 +1273,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 6795901574325976568}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1404,11 +1405,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 6914479587444980548}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1536,11 +1537,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 6925283413153323042}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1668,11 +1669,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692299909588020905}
         m_TargetAssemblyTypeName: SelectPanelController, Assembly-CSharp
-        m_MethodName: OnClickSelecButton
-        m_Mode: 1
+        m_MethodName: OnClickSelectButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 7132460160071809957}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1824,7 +1825,7 @@ GameObject:
   - component: {fileID: 6678750758081581043}
   - component: {fileID: 1760057607608721181}
   m_Layer: 5
-  m_Name: SelectPanel
+  m_Name: Units
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
@@ -11,18 +12,21 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     private int _tileClickCount;
     private bool _isNeedOneClick;
     public int tileNumber;
+    public int hp = 0;
+     private bool isTooltipActive = false;
 
     [SerializeField] private Obstacle obstacle;
     public bool isForbiddenMove;
     private Buff _buff;
     public Piece Piece { get; set; }
-    
+
 
     public Action JustBeforeDestroyPiece;
     public Action JustBeforeDestroyObstacle;
 
 
-    public void ResetAll() {
+    public void ResetAll()
+    {
         obstacle = null;
         _buff = null;
         Piece = null;
@@ -34,28 +38,31 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         _tileClickCount = 0;
     }
 
-    public void ResetClickCount() {
+    public void ResetClickCount()
+    {
         _tileClickCount = 0;
     }
 
-    public Obstacle GetObstacle() { 
+    public Obstacle GetObstacle()
+    {
         return obstacle;
     }
     public void SetObstacle(Obstacle obstacle)
     {
         this.obstacle = obstacle;
     }
-    
+
     public Buff GetBuff()
     {
         return _buff;
-    } 
+    }
     public void SetBuff(Buff buff)
     {
         this._buff = buff;
     }
 
-    public void OnClickTileButton() {
+    public void OnClickTileButton()
+    {
         _tileClickCount++;
         // 추가: 타일 클릭 시 HandManager에 선택된 타일 정보 전달
         HandManager hm = FindObjectOfType<HandManager>();
@@ -75,7 +82,8 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                 JustBeforeDestroyPiece = () => { this.Piece = null; };
             }
             var needOneClick = GameManager.Instance.SecondTimeTileClickEvent?.Invoke(tileNumber, _tileClickCount);
-            if (needOneClick != null) { 
+            if (needOneClick != null)
+            {
                 if (needOneClick.Value.isNeedJustOneClick)
                 {
                     _isNeedOneClick = true;
@@ -129,7 +137,8 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
                 }
             }
         }
-        else {
+        else
+        {
             _isNeedOneClick = false;
             _tileClickCount = 0;
         }
@@ -137,28 +146,60 @@ public class Tile : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+
         if (obstacle == null && Piece == null && _tileClickCount == 0)
             cursorImageObj.SetActive(true);
+
+        if (Piece != null)
+        {
+            TooltipManager.Instance.ShowTooltip("HP: " + Piece.Hp);
+            isTooltipActive = true;
+        }
+
+        if (obstacle != null)
+        {
+            TooltipManager.Instance.ShowTooltip("HP: " + obstacle.Hp);
+            isTooltipActive = true;
+        }
+
         GameManager.Instance.RangeAttackVisualizeEvent?.Invoke();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (isTooltipActive)
+        {
+            // 툴팁이 활성화된 상태에서만 종료하도록 방지
+            return;
+        }
+
         cursorImageObj.SetActive(false);
+        TooltipManager.Instance.CloseTooltip();
+    }
+
+    public void CloseTooltipIfActive()
+    {
+        if (isTooltipActive)
+        {
+            TooltipManager.Instance.CloseTooltip();
+            isTooltipActive = false;
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (GameManager.Instance.FirstTimeTileClickEvent == null && GameManager.Instance.SecondTimeTileClickEvent == null) return;
-        OnClickTileButton(); 
+        OnClickTileButton();
     }
 
-    public void ResetTile() {
+    public void ResetTile()
+    {
         cursorImageObj.SetActive(false);
         clickedImageObj.SetActive(false);
     }
 
-    public void SetPiece(Piece piece) {
+    public void SetPiece(Piece piece)
+    {
         this.Piece = piece;
     }
 }

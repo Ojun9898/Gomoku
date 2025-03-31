@@ -201,7 +201,7 @@ public class GameManager : Singleton<GameManager>
                 if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK && mc.tiles[CurrentClickedTileIndex].GetObstacle() != null)
                 { // Todo : 장애물 공격
                     _currentChoosingPiece.ChoseAttack(mc.tiles[CurrentClickedTileIndex].GetObstacle(), _currentChoosingPiece.GetAttackPower());
-                    MessageManager.Instance.ShowMessagePanel("장애물을 공격했습니다" + mc.tiles[CurrentClickedTileIndex].GetObstacle().name + "의 Hp:" + mc.tiles[CurrentClickedTileIndex].GetObstacle().Hp);
+                    MessageManager.Instance.ShowMessagePanel(mc.tiles[CurrentClickedTileIndex].GetObstacle().name + " 장애물을 공격했습니다");
 
                 }
                 else if (_currentChoosingPiece.attackType == AttackType.CHOOSE_ATTACK || _currentChoosingPiece.attackType == AttackType.BUFF)
@@ -287,7 +287,7 @@ public class GameManager : Singleton<GameManager>
                             UseCost(Costs, _attackingPiece);
                             _attackingPiece.animator.Play("ATTACK");
                             _damagedPiece.animator.Play("BUFF");
-                            MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다" + "아군의 Hp :" + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("아군을 치료했습니다");
                         }
                     }
                     else
@@ -322,7 +322,7 @@ public class GameManager : Singleton<GameManager>
 
                 if (Mc.tiles[CurrentClickedTileIndex].Piece.attackType == AttackType.BUFF)
                 {
-                    MessageManager.Instance.ShowMessagePanel("체력을 회복할 말을 선택하세요");
+                    MessageManager.Instance.ShowMessagePanel("치료할 말을 선택하세요");
                 }
                 else {
                     MessageManager.Instance.ShowMessagePanel("공격할 말을 선택하세요");
@@ -352,7 +352,7 @@ public class GameManager : Singleton<GameManager>
                         {
                             _attackingPiece.ChoseAttack(_damagedPiece, _attackingPiece.GetAttackPower());
                             UseCost(Costs, _attackingPiece);
-                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다");
                             _attackingPiece.animator.Play("ATTACK");
                             _damagedPiece.animator.Play("DAMAGED");
                             if (_damagedPiece.hp <= 0)
@@ -364,7 +364,7 @@ public class GameManager : Singleton<GameManager>
                         {
                             //attackingPiece.RangeAttack(currentClickedTileIndex);
                             UseCost(Costs, _attackingPiece);
-                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다" + "남은 HP : " + _damagedPiece.Hp);
+                            MessageManager.Instance.ShowMessagePanel("적을 공격했습니다");
                             _attackingPiece.animator.Play("ATTACK");
                             _damagedPiece.animator.Play("DAMAGED");
                             if (_damagedPiece.hp <= 0)

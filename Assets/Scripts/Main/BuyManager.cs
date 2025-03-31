@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,7 +10,12 @@ public class BuyManager : Singleton<BuyManager>
 {
     private string streamingPath;
     private string persistentPath;
-    private int coins = 0;
+    string currentUsername;
+    private string[] buyInfo;
+    private string BuyItem;
+    private string UseItem;
+    List<string> availableItems = new List<string>();
+    Dictionary<string, int> itemCounts = new Dictionary<string, int>();
 
     private void Awake()
     {
@@ -35,7 +41,7 @@ public class BuyManager : Singleton<BuyManager>
         }
     }
 
-    public string[] SetData()
+    public string[] SetCSVFileData()
     {
         if (!File.Exists(persistentPath))
         {
@@ -72,7 +78,7 @@ public class BuyManager : Singleton<BuyManager>
 
     public int GetCoins()
     {
-        string[] buyInfo = SetData();
+        string[] buyInfo = SetCSVFileData();
 
         if (buyInfo == null)
         {
@@ -85,12 +91,12 @@ public class BuyManager : Singleton<BuyManager>
 
     public void UpdateTotalCoin(int coin)
     {
-        string currentUsername = LoginManager.Instance.GetUsername();
+        currentUsername = LoginManager.Instance.GetUsername();
         string[] currentBuyInfo = GetBuyInfo(currentUsername);
 
         if (currentBuyInfo == null || currentBuyInfo.Length != 4)
         {
-            MainManager.Instance.ShowErrorPanel("구매 정보 오류");
+            MainManager.Instance.ShowErrorPanel("구매 정보 오류입니다");
             return;
         }
 
@@ -128,18 +134,157 @@ public class BuyManager : Singleton<BuyManager>
         }
 
         File.WriteAllLines(persistentPath, newLines);
-        MainManager.Instance.ShowErrorPanel("구매 완료되었습니다.");
+        MainManager.Instance.ShowErrorPanel("구매 완료되었습니다");
     }
 
-    public void UpdateBuyItems(string buyItems)
+    public void UpdateBuyItems(string buyItem)
     {
-        // 구현 필요
+        currentUsername = LoginManager.Instance.GetUsername();
+        string[] currentBuyInfo = GetBuyInfo(currentUsername);
+
+        if (currentBuyInfo == null)
+        {
+            MainManager.Instance.ShowErrorPanel("구매 정보 오류");
+            return;
+        }
+
+        // 기존 구매 아이템 정보 업데이트
+        if (string.IsNullOrWhiteSpace(currentBuyInfo[2]))
+        {
+            currentBuyInfo[2] = buyItem;
+        }
+        else
+        {
+            currentBuyInfo[2] += "." + buyItem; // 기존 아이템 목록에 '.'으로 추가
+        }
+
+        // 기존 파일에서 해당 유저 데이터만 수정하여 다시 저장
+        string[] lines = File.ReadAllLines(persistentPath);
+        List<string> newLines = new List<string>();
+
+        foreach (string line in lines)
+        {
+            string[] userData = line.Split(','); // 기존 정보는 ','로 구분
+            if (userData[0].Trim() == currentUsername)
+            {
+                userData[2] = currentBuyInfo[2]; // 기존 데이터에서 구매 아이템 목록만 수정
+                newLines.Add(string.Join(",", userData));
+            }
+            else
+            {
+                newLines.Add(line);
+            }
+        }
+
+        File.WriteAllLines(persistentPath, newLines);
+        Debug.Log("BuyItem 업데이트: " + currentBuyInfo[2]);
     }
 
-    public void UpdateUseItems(string useItems)
+
+    public void UpdateUseItems(string useItem)
     {
-        // 구현 필요
+        currentUsername = LoginManager.Instance.GetUsername();
+        string[] currentBuyInfo = GetBuyInfo(currentUsername);
+
+        if (currentBuyInfo == null)
+        {
+            MainManager.Instance.ShowErrorPanel("구매 정보 오류");
+            return;
+        }
+
+        // 기존 사용 아이템 정보 업데이트
+        if (string.IsNullOrWhiteSpace(currentBuyInfo[3]))
+        {
+            currentBuyInfo[3] = useItem;
+        }
+        else
+        {
+            currentBuyInfo[3] += "." + useItem; // 기존 아이템 목록에 '.'으로 추가
+        }
+
+        // 기존 파일에서 해당 유저 데이터만 수정하여 다시 저장
+        string[] lines = File.ReadAllLines(persistentPath);
+        List<string> newLines = new List<string>();
+
+        foreach (string line in lines)
+        {
+            string[] userData = line.Split(','); // 기존 정보는 ','로 구분
+            if (userData[0].Trim() == currentUsername)
+            {
+                userData[3] = currentBuyInfo[3]; // 기존 데이터에서 사용 아이템 목록만 수정
+                newLines.Add(string.Join(",", userData));
+            }
+            else
+            {
+                newLines.Add(line);
+            }
+        }
+
+        File.WriteAllLines(persistentPath, newLines);
+        Debug.Log("UseItem 업데이트: " + currentBuyInfo[3]);
     }
+
+
+    public void SetItemData()
+    {
+        // 이전 데이터를 초기화
+        availableItems.Clear();
+        itemCounts.Clear();
+
+        // CSV 파일에서 최신 구매 정보를 가져옴
+        buyInfo = SetCSVFileData();
+
+        // 구매 아이템과 사용 아이템 문자열 가져오기
+        BuyItem = buyInfo[2]; // 예: "timer.timer.timer"
+        UseItem = buyInfo[3]; // 예: "timer"
+
+        // 공백이나 빈 항목 제거 옵션 포함해서 분리
+        List<string> buyItemList = new List<string>(BuyItem.Split(new char[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries));
+        List<string> useItemList = new List<string>(UseItem.Split(new char[] { '.' }, System.StringSplitOptions.RemoveEmptyEntries));
+
+        // 사용한 아이템 하나씩 제거 (멀티셋 차집합)
+        foreach (string used in useItemList)
+        {
+            // buyItemList에서 한 번만 제거
+            if (buyItemList.Contains(used))
+            {
+                buyItemList.Remove(used);
+            }
+        }
+
+        // 남은 아이템들이 availableItems가 됨
+        availableItems = buyItemList;
+
+        // availableItems의 각 아이템 개수를 카운트 (선택 사항)
+        foreach (string item in availableItems)
+        {
+            if (!string.IsNullOrEmpty(item))
+            {
+                if (itemCounts.ContainsKey(item))
+                {
+                    itemCounts[item]++;
+                }
+                else
+                {
+                    itemCounts[item] = 1;
+                }
+            }
+        }
+    }
+
+
+    public List<string> GetAvailableItemInfo()
+    {
+        SetItemData();
+        return availableItems;
+    }
+
+    public int GetItemCount(string item)
+    {
+        SetItemData();
+        return itemCounts[item];
+    }
+
 
     private void CheckFile()
     {

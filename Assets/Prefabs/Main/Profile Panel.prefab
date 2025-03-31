@@ -778,10 +778,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 646d07599620e4e4f9401b4474d74d5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Username: {fileID: 4740408329516606161}
-  Nickname: {fileID: 6576675356757530764}
-  Date: {fileID: 1177517594608790848}
-  PlayerLevel: {fileID: 8630852840432233836}
+  username: {fileID: 4740408329516606161}
+  nickname: {fileID: 6576675356757530764}
+  date: {fileID: 1177517594608790848}
+  playerLevel: {fileID: 8630852840432233836}
+  image: {fileID: 1671948023189394606}
+  unitSprites:
+  - {fileID: 21300000, guid: 57dcd00ac502d9a4a93f1c4108733577, type: 3}
+  - {fileID: 21300000, guid: 5b476c055b0bf314093f0cf71f8cb091, type: 3}
+  - {fileID: 21300000, guid: ef6c94d9e0e0a804d982c3aedfa075ec, type: 3}
+  - {fileID: 21300000, guid: a3866c9d6ce7f324088762fd09a24949, type: 3}
+  - {fileID: 21300000, guid: 541478744aefc3a499d6037bdf65925a, type: 3}
+  - {fileID: 21300000, guid: bfb0bbffee9bb6c40b99cec69a9e5f6f, type: 3}
+  - {fileID: 21300000, guid: ae26b340dfb32ff46bdcee37cdb57f48, type: 3}
+  - {fileID: 21300000, guid: 226aebb0c5b1b5c468ed03d8832380af, type: 3}
+  - {fileID: 21300000, guid: 7df91c68c0181c042918e78beb2ed66a, type: 3}
+  - {fileID: 21300000, guid: 879e3a9e1d0de2e41aa666de41bf93a8, type: 3}
+  - {fileID: 21300000, guid: 679f597ba84905a43b23e46e4089ad8c, type: 3}
 --- !u!1 &2250371591914523208
 GameObject:
   m_ObjectHideFlags: 0

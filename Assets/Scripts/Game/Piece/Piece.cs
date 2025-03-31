@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Piece : HaveHp
 {
@@ -10,8 +11,9 @@ public class Piece : HaveHp
         HEALER,
         ARCHER
     }
-    
-    public enum AttackType {
+
+    public enum AttackType
+    {
         NONE,
         CHOOSE_ATTACK,
         RANGE_ATTACK,
@@ -22,11 +24,11 @@ public class Piece : HaveHp
     public bool isAlreadyAttack;
     public int[] rangeAttackRange;
     public int cost;
-    
-    [SerializeField] private int attackPower=1;
+
+    [SerializeField] private int attackPower = 1;
     [SerializeField] private int attackRange = 1;
     public Animator animator;
-    
+
     private SPUM_Prefabs _prefab;
 
     private void Start()
@@ -73,16 +75,13 @@ public class Piece : HaveHp
         this.attackPower = attackPowers;
     }
 
-
-
-
-
-
-    public void ChoseAttack(Piece piece,int attackPowers) { 
+    public void ChoseAttack(Piece piece, int attackPowers)
+    {
         piece.Hp -= attackPowers;
         isAlreadyAttack = true;
     }
-    public void Buff(Piece piece, int attackPowers) {
+    public void Buff(Piece piece, int attackPowers)
+    {
         piece.Hp += attackPowers;
         isAlreadyAttack = true;
     }
@@ -91,6 +90,4 @@ public class Piece : HaveHp
         oc.Hp -= attackPowers;
         isAlreadyAttack = true;
     }
-
-
 }
