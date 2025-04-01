@@ -71,10 +71,11 @@ public class GameManager : Singleton<GameManager>
 
     private void Awake()
     {
+        NotationManager.Instance.NotationManagerinit();
         if (SceneManager.GetActiveScene().name != "Notation")
         {
             InitGameManager();
-             StartGame();
+            StartGame();
         }
         else
         {
@@ -116,7 +117,6 @@ public class GameManager : Singleton<GameManager>
         gamePanelController = FindAnyObjectByType<GamePanelController>();
         gamePanelController.InitTimer();
 
-        NotationManager.Instance.NotationManagerinit();
         NotationManager.Instance.AddHowsFirst(firstPlayer);
         NotationManager.Instance.AddObstacleorBuff(Mc.ActiveObstacleInGameScene());
         NotationManager.Instance.AddObstacleorBuff(Mc.ActiveBuffInGameScene());

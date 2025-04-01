@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -200,6 +201,8 @@ public class NotationManager : Singleton<NotationManager>
         Debug.Log($"데이터 불러오기 완료: {recentFiles[index]}");
         currentSelectedFileDatas = data;
     }
+
+
     // 📌 파일명에서 플레이어 이름과 날짜 분리
     public (string playerName, string timestamp) ParseFileName(string fileName)
     {
