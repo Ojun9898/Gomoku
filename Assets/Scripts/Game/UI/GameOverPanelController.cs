@@ -34,11 +34,13 @@ public class GameOverPanelController : MonoBehaviour
 
     public void OnClickRestartButton()
     {
+        NotationManager.Instance.NotationElementInit();
         SceneManager.LoadScene("Game");
     }
 
     public void OnClickHomeButton()
     {
+        NotationManager.Instance.NotationElementInit();
         SceneManager.LoadScene("Main");
     }
 }

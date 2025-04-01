@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static Piece;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -71,8 +72,47 @@ public class NotationController : MonoBehaviour
         List<(int, int)> values = NotationManager.Instance.currentSelectedFileDatas;
         int ObstacleLastIndex = values.FindLastIndex(v => v == (67, 67));
         int BuffLastIndex = values.FindLastIndex(v => v.Item1 == 68);
+        int firstPiece = values.FindIndex(v => v.Item1 == 66);
+        int firstPlayerB = values.FindIndex(v => v.Item1 == 64);
+        int firstPlayerA = values.FindIndex(v => v.Item1 == 65);
 
-        for(int i = 1; i <= ObstacleLastIndex-1; i += 2)
+        if (BuffLastIndex <= ObstacleLastIndex)
+        {
+    
+            NotationManager.Instance.NotationElementInit();
+            SceneManager.LoadScene("Main");
+            return -1;
+        }else if(firstPiece <= ObstacleLastIndex)
+        {
+            
+            NotationManager.Instance.NotationElementInit();
+            SceneManager.LoadScene("Main");
+            return -1;
+        }
+        else if (firstPlayerB >= ObstacleLastIndex)
+        {
+        
+            NotationManager.Instance.NotationElementInit();
+            SceneManager.LoadScene("Main");
+            return -1;
+        }
+        else if (ObstacleLastIndex>=12)
+        {
+          
+            NotationManager.Instance.NotationElementInit();
+            SceneManager.LoadScene("Main");
+            return -1;
+        }
+        else if (BuffLastIndex >=22)
+        {
+
+            NotationManager.Instance.NotationElementInit();
+            SceneManager.LoadScene("Main");
+            return -1;
+        }
+
+
+        for (int i = 1; i <= ObstacleLastIndex-1; i += 2)
         {
             SetObstacleAndBuff(values[i], values[i + 1]);
         }
