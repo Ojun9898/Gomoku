@@ -479,7 +479,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     /// <param name="attackPc"></param>
     /// <param name="damagedPc"></param>
-    private void switchingPos(Piece attackPc, Piece damagedPc) {
+    IEnumerator switchingPos(Piece attackPc, Piece damagedPc) {
         if (attackPc.transform.position.x < damagedPc.transform.position.x)
         {
             attackPc.transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -489,9 +489,10 @@ public class GameManager : Singleton<GameManager>
             attackPc.transform.rotation = Quaternion.Euler(0, 0, 0);
             damagedPc.transform.rotation = Quaternion.Euler(0, 180, 0);
         }
+        yield return null;
     }
     
-        private void switchingPos(Piece attackPc, Obstacle obstacle) {
+        IEnumerator switchingPos(Piece attackPc, Obstacle obstacle) {
         if (attackPc.transform.position.x < obstacle.transform.position.x)
         {
             attackPc.transform.rotation = Quaternion.Euler(0, 180, 0);
@@ -501,6 +502,7 @@ public class GameManager : Singleton<GameManager>
             attackPc.transform.rotation = Quaternion.Euler(0, 0, 0);
             obstacle.transform.rotation = Quaternion.Euler(0, 180, 0);
         }
+        yield return null;
     }
 
 
@@ -889,7 +891,7 @@ public class GameManager : Singleton<GameManager>
 
     private void PlayAnimationAndEffect(Piece attackPiece, Obstacle obstacle)
     {
-    	switchingPos(attackPiece, obstacle);
+    	StartCoroutine(switchingPos(attackPiece, obstacle));
         attackPiece.animator.Play("ATTACK");
         SpawnDamageEffectByAttackDamage(attackPiece, obstacle);
         obstacle.animator.Play("DAMAGED"); 
@@ -898,9 +900,10 @@ public class GameManager : Singleton<GameManager>
 
     private void PlayAnimationAndEffect(Piece attackPiece, Piece damagedPiece)
     {
+
+        StartCoroutine(switchingPos(attackPiece, damagedPiece));
         if (attackPiece.attackType == AttackType.BUFF)
         {
-        	switchingPos(attackPiece, damagedPiece);
             attackPiece.animator.Play("ATTACK");
             damagedPiece.animator.Play("BUFF");
             attackPiece.audioSource.Play();
