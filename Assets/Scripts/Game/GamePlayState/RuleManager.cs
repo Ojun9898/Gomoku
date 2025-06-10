@@ -133,10 +133,6 @@ public class RuleManager : MonoBehaviour
             bool isForbidden = (isOver || isDoubleFour || isDoubleThree) && (!canWin);
 
             // 임시 돌 제거
-            if (board[index].Piece != null)
-            {
-                Destroy(board[index].Piece.gameObject);
-            }
             board[index].SetPiece(null);
 
             return isForbidden;
@@ -498,10 +494,6 @@ public class RuleManager : MonoBehaviour
         }
         finally
         {
-            if (board[index].Piece != null)
-            {
-                Destroy(board[index].Piece.gameObject);
-            }
             board[index].SetPiece(null);
         }
 
@@ -586,7 +578,6 @@ public class RuleManager : MonoBehaviour
         }
         finally
         {
-            Destroy(board[index].Piece.gameObject);
             board[index].SetPiece(null);
         }
         return blockScore;

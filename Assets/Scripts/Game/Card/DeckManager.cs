@@ -9,6 +9,16 @@ public class DeckManager : MonoBehaviour
     [SerializeField] private List<Card> deck = new List<Card>();
     public List<Card> playerACards = new List<Card>();
     public List<Card> playerBCards = new List<Card>();
+    GameObject WarriorWhite;
+    GameObject WarriorBlack;
+    GameObject ArcherWhite ;
+    GameObject ArcherBlack ;
+    GameObject MagicianWhite ;
+    GameObject MagicianBlack ;
+    GameObject HealerWhite ;
+    GameObject HealerBlack ;
+    GameObject RancerWhite ;
+    GameObject RancerBlack ;
 
     /// <summary>
     /// 카드 데이터 구조체
@@ -28,6 +38,17 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public void InitializeDeck()
     {
+         WarriorWhite = Resources.Load<GameObject>("Units/WarriorWhite");
+        WarriorBlack = Resources.Load<GameObject>("Units/WarriorBlack");
+        ArcherWhite = Resources.Load<GameObject>("Units/ArcherWhite");
+        ArcherBlack = Resources.Load<GameObject>("Units/ArcherBlack");
+        MagicianWhite = Resources.Load<GameObject>("Units/MagicianWhite");
+        MagicianBlack = Resources.Load<GameObject>("Units/MagicianBlack");
+        HealerWhite = Resources.Load<GameObject>("Units/HealerWhite");
+        HealerBlack = Resources.Load<GameObject>("Units/HealerBlack");
+        RancerWhite = Resources.Load<GameObject>("Units/RancerWhite");
+        RancerBlack = Resources.Load<GameObject>("Units/RancerBlack");
+
         // 덱에 카드 추가 (예시)
         for (int i = 0; i < 15; i++)
         {
@@ -111,24 +132,27 @@ public class DeckManager : MonoBehaviour
 
         switch (pieceType)
         {
+           
+
+
             case Piece.PieceType.WARRIOR:
-                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/WarriorWhite" : "Units/WarriorBlack");
+                piecePrefab = owner == Piece.Owner.PLAYER_A ? WarriorWhite : WarriorBlack;
                 piecePrefab.GetComponent<Piece>().hp = 3;
                 break;
             case Piece.PieceType.ARCHER:
-                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/ArcherWhite" : "Units/ArcherBlack");
+                piecePrefab = owner == Piece.Owner.PLAYER_A ? ArcherWhite : ArcherBlack;
                 piecePrefab.GetComponent<Piece>().hp = 3;
                 break;
             case Piece.PieceType.MAGICIAN:
-                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/MagicianWhite" : "Units/MagicianBlack");
+                piecePrefab = owner == Piece.Owner.PLAYER_A ? MagicianWhite : MagicianBlack;
                 piecePrefab.GetComponent<Piece>().hp = 2;
                 break;
             case Piece.PieceType.HEALER:
-                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/HealerWhite" : "Units/HealerBlack");
+                piecePrefab = owner == Piece.Owner.PLAYER_A ? HealerWhite : HealerBlack;
                 piecePrefab.GetComponent<Piece>().hp = 4;
                 break;
             case Piece.PieceType.RANCER:
-                piecePrefab = Resources.Load<GameObject>(owner == Piece.Owner.PLAYER_A ? "Units/RancerWhite" : "Units/RancerBlack");
+                piecePrefab = owner == Piece.Owner.PLAYER_A ? RancerWhite : RancerBlack;
                 piecePrefab.GetComponent<Piece>().hp = 5;
                 break;
             // 추가 PieceType 처리 가능
