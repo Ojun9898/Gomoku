@@ -34,6 +34,7 @@ public class Piece : HaveHp
     private void Start()
     {
         _prefab = GetComponent<SPUM_Prefabs>();
+        if(_prefab != null)
         animator = _prefab._anim;
     }
 

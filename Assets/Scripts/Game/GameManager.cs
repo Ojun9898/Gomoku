@@ -36,6 +36,7 @@ public class GameManager : Singleton<GameManager>
     public Piece.Owner firstPlayer;
     public DeckManager _deckManager;
 
+    private Piece pieceInstance;
     private Owner _playerType;
     private int _lastClickedTileIndex = -1;
     private Piece _damagedPiece;
@@ -716,7 +717,9 @@ public class GameManager : Singleton<GameManager>
     public Piece SetTemporaryPiece(int index, Owner currentPlayer)
     {
 
-        Piece pieceInstance = Instantiate(this.piece).GetComponent<Piece>();
+        if (pieceInstance == null) {
+            pieceInstance = Instantiate(this.piece).GetComponent<Piece>();
+        }
         if (currentPlayer == Owner.PLAYER_B)
         {
             pieceInstance.pieceOwner = Owner.PLAYER_B;
