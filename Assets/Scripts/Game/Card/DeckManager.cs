@@ -12,14 +12,15 @@ public class DeckManager : MonoBehaviour
     public List<Card> playerBCards = new List<Card>();
     GameObject WarriorWhite;
     GameObject WarriorBlack;
-    GameObject ArcherWhite;
-    GameObject ArcherBlack;
-    GameObject MagicianWhite;
-    GameObject MagicianBlack;
-    GameObject HealerWhite;
-    GameObject HealerBlack;
-    GameObject RancerWhite;
-    GameObject RancerBlack;
+    GameObject ArcherWhite ;
+    GameObject ArcherBlack ;
+    GameObject MagicianWhite ;
+    GameObject MagicianBlack ;
+    GameObject HealerWhite ;
+    GameObject HealerBlack ;
+    GameObject RancerWhite ;
+    GameObject RancerBlack ;
+
 
     /// <summary>
     /// 카드 데이터 구조체
@@ -54,6 +55,7 @@ public class DeckManager : MonoBehaviour
     public void InitializeDeck()
     {
         Init();
+
         // 덱에 카드 추가 (예시)
         for (int i = 0; i < 15; i++)
         {
@@ -151,6 +153,9 @@ public class DeckManager : MonoBehaviour
 
         switch (pieceType)
         {
+           
+
+
             case Piece.PieceType.WARRIOR:
                 piecePrefab = owner == Piece.Owner.PLAYER_A ? WarriorWhite : WarriorBlack;
                 piecePrefab.GetComponent<Piece>().hp = 3;
