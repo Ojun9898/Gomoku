@@ -117,7 +117,6 @@ public class NotationManager : Singleton<NotationManager>
         }
     }
 
-    // 📌 1. 데이터 저장 (NotationData 폴더 내에 저장)
     public void SaveData(string playerName)
     {
         string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
@@ -134,7 +133,6 @@ public class NotationManager : Singleton<NotationManager>
         File.WriteAllText(filePath, json);
         Debug.Log($"데이터 저장 완료: {filePath}");
 
-        // 📌 최근 파일 유지 및 가장 오래된 파일 삭제
         MaintainRecentFiles();
     }
 

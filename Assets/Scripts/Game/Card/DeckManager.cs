@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,14 +12,14 @@ public class DeckManager : MonoBehaviour
     public List<Card> playerBCards = new List<Card>();
     GameObject WarriorWhite;
     GameObject WarriorBlack;
-    GameObject ArcherWhite ;
-    GameObject ArcherBlack ;
-    GameObject MagicianWhite ;
-    GameObject MagicianBlack ;
-    GameObject HealerWhite ;
-    GameObject HealerBlack ;
-    GameObject RancerWhite ;
-    GameObject RancerBlack ;
+    GameObject ArcherWhite;
+    GameObject ArcherBlack;
+    GameObject MagicianWhite;
+    GameObject MagicianBlack;
+    GameObject HealerWhite;
+    GameObject HealerBlack;
+    GameObject RancerWhite;
+    GameObject RancerBlack;
 
     /// <summary>
     /// 카드 데이터 구조체
@@ -33,12 +34,10 @@ public class DeckManager : MonoBehaviour
         public Piece.Owner owner = Piece.Owner.PLAYER_A;
     }
 
-    /// <summary>
-    /// 카드 덱 초기화
-    /// </summary>
-    public void InitializeDeck()
+    void Init()
     {
-         WarriorWhite = Resources.Load<GameObject>("Units/WarriorWhite");
+
+        WarriorWhite = Resources.Load<GameObject>("Units/WarriorWhite");
         WarriorBlack = Resources.Load<GameObject>("Units/WarriorBlack");
         ArcherWhite = Resources.Load<GameObject>("Units/ArcherWhite");
         ArcherBlack = Resources.Load<GameObject>("Units/ArcherBlack");
@@ -48,7 +47,13 @@ public class DeckManager : MonoBehaviour
         HealerBlack = Resources.Load<GameObject>("Units/HealerBlack");
         RancerWhite = Resources.Load<GameObject>("Units/RancerWhite");
         RancerBlack = Resources.Load<GameObject>("Units/RancerBlack");
-
+    }
+    /// <summary>
+    /// 카드 덱 초기화
+    /// </summary>
+    public void InitializeDeck()
+    {
+        Init();
         // 덱에 카드 추가 (예시)
         for (int i = 0; i < 15; i++)
         {
@@ -59,25 +64,25 @@ public class DeckManager : MonoBehaviour
                 case 0:
                     deck.Add(new Card { pieceType = Piece.PieceType.WARRIOR, pieceCost = 1, cardSprite = null });
                     break;
-                
+
                 case 1:
                     deck.Add(new Card { pieceType = Piece.PieceType.ARCHER, pieceCost = 2, cardSprite = null });
                     break;
-                
+
                 case 2:
                     deck.Add(new Card { pieceType = Piece.PieceType.MAGICIAN, pieceCost = 3, cardSprite = null });
                     break;
-                
+
                 case 3:
                     deck.Add(new Card { pieceType = Piece.PieceType.HEALER, pieceCost = 3, cardSprite = null });
                     break;
-                
+
                 case 4:
                     deck.Add(new Card { pieceType = Piece.PieceType.RANCER, pieceCost = 4, cardSprite = null });
                     break;
             }
-        } 
-        
+        }
+
         DealCards();
     }
 
@@ -102,22 +107,22 @@ public class DeckManager : MonoBehaviour
     {
         playerACards.Clear();
         playerBCards.Clear();
-        
-        
-        
+
+
+
         // 플레이어 A와 B에게 각각 15장씩 카드 분배
         for (int i = 0; i < 15; i++)
         {
             deck[i].owner = Piece.Owner.PLAYER_A;
             playerACards.Add(deck[i]);
         }
-        
+
         for (int i = 0; i < 15; i++)
         {
             deck[i].owner = Piece.Owner.PLAYER_B;
             playerBCards.Add(deck[i]);
         }
-        
+
         ShuffleDeck(playerACards);
         ShuffleDeck(playerBCards);
     }
@@ -130,11 +135,22 @@ public class DeckManager : MonoBehaviour
     {
         GameObject piecePrefab = null;
 
+        if (WarriorWhite != null)
+        {
+            if (WarriorBlack != null || ArcherBlack != null ||
+        ArcherWhite != null || MagicianBlack != null || MagicianWhite != null ||
+        HealerBlack != null || HealerWhite != null || RancerBlack != null || RancerWhite != null)
+            {
+
+            }
+            else { Init(); }
+        }
+        else {
+            Init();
+        }
+
         switch (pieceType)
         {
-           
-
-
             case Piece.PieceType.WARRIOR:
                 piecePrefab = owner == Piece.Owner.PLAYER_A ? WarriorWhite : WarriorBlack;
                 piecePrefab.GetComponent<Piece>().hp = 3;
@@ -155,7 +171,7 @@ public class DeckManager : MonoBehaviour
                 piecePrefab = owner == Piece.Owner.PLAYER_A ? RancerWhite : RancerBlack;
                 piecePrefab.GetComponent<Piece>().hp = 5;
                 break;
-            // 추가 PieceType 처리 가능
+                // 추가 PieceType 처리 가능
         }
 
         if (piecePrefab != null)
@@ -164,7 +180,7 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    
+
     // 추가: 덱에서 카드를 Pop 방식으로 받아오는 메소드 (삭제 없이 추가)
     public Card PopCard(List<Card> deckList)
     {
